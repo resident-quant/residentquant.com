@@ -1,0 +1,274 @@
+{
+ "id": "toystore",
+ "as_of": "2015-03-15",
+ "as_of_note": "Data ends Mar 19, 2015, so the latest complete week ends Mar 15, 2015.",
+ "time_grains": [
+  "day",
+  "week",
+  "month",
+  "quarter",
+  "year"
+ ],
+ "sources": {
+  "agg_sessions_daily": {
+   "kind": "aggregate",
+   "file": "agg_sessions_daily.parquet",
+   "time": "session_date",
+   "description": "Website sessions rolled up by day, channel, campaign, device, landing page and visitor type, with funnel step counts.",
+   "rows": 19272,
+   "bytes": 185911,
+   "date_min": "2012-03-19",
+   "date_max": "2015-03-19",
+   "dimensions": {
+    "channel_group": "direct, organic_search, paid_brand, paid_nonbrand, paid_social",
+    "utm_source": "gsearch, bsearch, socialbook or null",
+    "utm_campaign": "brand, nonbrand, pilot, desktop_targeted or null",
+    "campaign": "utm_source + utm_campaign, or the channel when there is no utm",
+    "device_type": "desktop or mobile",
+    "landing_page": "First page of the session (/home, /lander-1 ...)",
+    "visitor_type": "new or repeat"
+   },
+   "measures": [
+    "sessions",
+    "bounces",
+    "orders",
+    "revenue",
+    "pageviews",
+    "reached_products",
+    "reached_product_page",
+    "reached_cart",
+    "reached_shipping",
+    "reached_billing"
+   ]
+  },
+  "agg_product_daily": {
+   "kind": "aggregate",
+   "file": "agg_product_daily.parquet",
+   "time": "order_date",
+   "description": "Order items rolled up by day, product and whether the item was the primary product or a cross-sell.",
+   "rows": 3926,
+   "bytes": 20492,
+   "date_min": "2012-03-19",
+   "date_max": "2015-03-19",
+   "dimensions": {
+    "product_name": "One of four products",
+    "item_role": "primary or cross-sell"
+   },
+   "measures": [
+    "items",
+    "revenue",
+    "cogs",
+    "refunded_items",
+    "refunds"
+   ]
+  },
+  "fct_sessions": {
+   "kind": "fact",
+   "file": "fct_sessions.parquet",
+   "time": "session_date",
+   "description": "Raw fact table, used for distinct counts.",
+   "dimensions": {
+    "device_type": "desktop or mobile",
+    "channel_group": "Marketing channel"
+   }
+  }
+ },
+ "metrics": [
+  {
+   "name": "sessions",
+   "label": "Sessions",
+   "format": "number",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(sessions)",
+   "description": "Website sessions.",
+   "polarity": "up",
+   "value_all_time": 472871.0
+  },
+  {
+   "name": "orders",
+   "label": "Orders",
+   "format": "number",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(orders)",
+   "description": "Sessions that ended in an order.",
+   "polarity": "up",
+   "value_all_time": 32313.0
+  },
+  {
+   "name": "conversion_rate",
+   "label": "Conversion rate",
+   "format": "percent",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(orders)/NULLIF(SUM(sessions),0)",
+   "description": "Orders / sessions.",
+   "polarity": "up",
+   "value_all_time": 0.0683
+  },
+  {
+   "name": "revenue",
+   "label": "Revenue",
+   "format": "currency",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(revenue)",
+   "description": "Order revenue in USD before refunds, attributed to the session.",
+   "polarity": "up",
+   "value_all_time": 1938509.75
+  },
+  {
+   "name": "revenue_per_session",
+   "label": "Revenue per session",
+   "format": "currency",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(revenue)/NULLIF(SUM(sessions),0)",
+   "description": "Revenue / sessions.",
+   "polarity": "up",
+   "value_all_time": 4.0994
+  },
+  {
+   "name": "bounce_rate",
+   "label": "Bounce rate",
+   "format": "percent",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(bounces)/NULLIF(SUM(sessions),0)",
+   "description": "Single-page sessions / sessions.",
+   "polarity": "down",
+   "value_all_time": 0.4476
+  },
+  {
+   "name": "products_rate",
+   "label": "Reach /products",
+   "format": "percent",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(reached_products)/NULLIF(SUM(sessions),0)",
+   "description": "Share of sessions that reached /products (funnel step 1).",
+   "polarity": "up",
+   "value_all_time": 0.5524
+  },
+  {
+   "name": "cart_rate",
+   "label": "Reach cart",
+   "format": "percent",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(reached_cart)/NULLIF(SUM(sessions),0)",
+   "description": "Share of sessions that reached /cart.",
+   "polarity": "up",
+   "value_all_time": 0.2008
+  },
+  {
+   "name": "billing_to_order_rate",
+   "label": "Billing to order",
+   "format": "percent",
+   "source": "agg_sessions_daily",
+   "sql": "SUM(orders)/NULLIF(SUM(reached_billing),0)",
+   "description": "Orders / sessions that reached a billing page.",
+   "polarity": "up",
+   "value_all_time": 0.6207
+  },
+  {
+   "name": "items_sold",
+   "label": "Items sold",
+   "format": "number",
+   "source": "agg_product_daily",
+   "sql": "SUM(items)",
+   "description": "Items sold.",
+   "polarity": "up",
+   "value_all_time": 40025.0
+  },
+  {
+   "name": "product_revenue",
+   "label": "Product revenue",
+   "format": "currency",
+   "source": "agg_product_daily",
+   "sql": "SUM(revenue)",
+   "description": "Item revenue in USD; use when grouping by product_name or item_role.",
+   "polarity": "up",
+   "value_all_time": 1938509.75
+  },
+  {
+   "name": "margin_rate",
+   "label": "Margin",
+   "format": "percent",
+   "source": "agg_product_daily",
+   "sql": "(SUM(revenue)-SUM(cogs))/NULLIF(SUM(revenue),0)",
+   "description": "Gross margin: (revenue - COGS) / revenue.",
+   "polarity": "up",
+   "value_all_time": 0.6274
+  },
+  {
+   "name": "refund_rate",
+   "label": "Refund rate",
+   "format": "percent",
+   "source": "agg_product_daily",
+   "sql": "SUM(refunded_items)/NULLIF(SUM(items),0)",
+   "description": "Refunded items / items sold, by order date.",
+   "polarity": "down",
+   "value_all_time": 0.0432
+  },
+  {
+   "name": "refunds",
+   "label": "Refunds",
+   "format": "currency",
+   "source": "agg_product_daily",
+   "sql": "SUM(refunds)",
+   "description": "Refunded USD, by order date.",
+   "polarity": "down",
+   "value_all_time": 85338.69
+  }
+ ],
+ "home": {
+  "grain": "week",
+  "wbr": [
+   "sessions",
+   "orders",
+   "conversion_rate",
+   "revenue",
+   "revenue_per_session",
+   "bounce_rate",
+   "margin_rate",
+   "refund_rate"
+  ],
+  "segments": {
+   "title": "Campaigns you own",
+   "note": "by sessions",
+   "dimension": "campaign",
+   "metric": "sessions",
+   "extra": [
+    "conversion_rate",
+    "revenue"
+   ],
+   "top": 6
+  }
+ },
+ "reconciliation": [
+  {
+   "metric": "sessions",
+   "semantic": 472871.0,
+   "raw": 472871.0,
+   "status": "pass"
+  },
+  {
+   "metric": "revenue",
+   "semantic": 1938509.75,
+   "raw": 1938509.75,
+   "status": "pass"
+  },
+  {
+   "metric": "product_revenue",
+   "semantic": 1938509.75,
+   "raw": 1938509.75,
+   "status": "pass"
+  },
+  {
+   "metric": "refund_rate",
+   "semantic": 0.0432,
+   "raw": 0.0432,
+   "status": "pass"
+  },
+  {
+   "metric": "bounce_rate",
+   "semantic": 0.4476,
+   "raw": 0.4476,
+   "status": "pass"
+  }
+ ]
+}

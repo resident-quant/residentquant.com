@@ -1,0 +1,333 @@
+{
+ "id": "saas",
+ "as_of": "2024-12-31",
+ "as_of_note": "Data ends Dec 31, 2024. The home page reviews complete months.",
+ "time_grains": [
+  "day",
+  "week",
+  "month",
+  "quarter",
+  "year"
+ ],
+ "sources": {
+  "agg_mrr_monthly": {
+   "kind": "aggregate",
+   "file": "agg_mrr_monthly.parquet",
+   "time": "month_end",
+   "description": "Month-end snapshot of paid subscriptions active on the last day of each month. A snapshot: never sum across months.",
+   "rows": 7371,
+   "bytes": 40476,
+   "date_min": "2023-01-31",
+   "date_max": "2024-12-31",
+   "dimensions": {
+    "plan_tier": "Basic, Pro or Enterprise",
+    "industry": "Customer industry",
+    "country": "Two-letter country code",
+    "billing_frequency": "monthly or annual",
+    "referral_source": "How the account found the product"
+   },
+   "measures": [
+    "mrr",
+    "active_subscriptions",
+    "seats"
+   ]
+  },
+  "agg_churn_daily": {
+   "kind": "aggregate",
+   "file": "agg_churn_daily.parquet",
+   "time": "churn_date",
+   "description": "Churn events by day, reason and account attributes. fct_churn_events is the churn source of truth.",
+   "rows": 599,
+   "bytes": 4460,
+   "date_min": "2023-01-25",
+   "date_max": "2024-12-31",
+   "dimensions": {
+    "reason_code": "budget, competitor, features, pricing, support, unknown",
+    "industry": "Customer industry",
+    "country": "Two-letter country code",
+    "referral_source": "How the account found the product"
+   },
+   "measures": [
+    "churn_events",
+    "churn_refunds",
+    "repeat_churns"
+   ]
+  },
+  "agg_signups_daily": {
+   "kind": "aggregate",
+   "file": "agg_signups_daily.parquet",
+   "time": "signup_date",
+   "description": "Account signups by day.",
+   "rows": 500,
+   "bytes": 3272,
+   "date_min": "2023-01-02",
+   "date_max": "2024-12-31",
+   "dimensions": {
+    "industry": "Customer industry",
+    "country": "Two-letter country code",
+    "referral_source": "How the account found the product",
+    "plan_tier": "Plan at signup",
+    "signup_type": "trial or paid"
+   },
+   "measures": [
+    "signups"
+   ]
+  },
+  "agg_usage_daily": {
+   "kind": "aggregate",
+   "file": "agg_usage_daily.parquet",
+   "time": "usage_date",
+   "description": "Feature usage by day, feature, plan tier and beta flag.",
+   "rows": 22308,
+   "bytes": 104044,
+   "date_min": "2023-01-01",
+   "date_max": "2024-12-31",
+   "dimensions": {
+    "feature_name": "feature_1 to feature_40",
+    "plan_tier": "Plan of the subscription using the feature",
+    "feature_stage": "beta or ga"
+   },
+   "measures": [
+    "usage_count",
+    "usage_secs",
+    "errors",
+    "usage_rows"
+   ]
+  },
+  "agg_tickets_daily": {
+   "kind": "aggregate",
+   "file": "agg_tickets_daily.parquet",
+   "time": "submitted_date",
+   "description": "Support tickets by day opened, priority and account attributes.",
+   "rows": 1947,
+   "bytes": 11362,
+   "date_min": "2023-01-02",
+   "date_max": "2024-12-31",
+   "dimensions": {
+    "priority": "low, medium, high, urgent",
+    "industry": "Customer industry",
+    "country": "Two-letter country code"
+   },
+   "measures": [
+    "tickets",
+    "escalated",
+    "csat_responses",
+    "csat_sum",
+    "resolution_hours_sum",
+    "first_response_min_sum"
+   ]
+  }
+ },
+ "metrics": [
+  {
+   "name": "mrr",
+   "label": "MRR",
+   "format": "currency",
+   "source": "agg_mrr_monthly",
+   "sql": "SUM(mrr)",
+   "description": "Monthly recurring revenue of paid subscriptions active at month end. Snapshot: a quarter or year shows its last month.",
+   "polarity": "up",
+   "snapshot": true,
+   "value_all_time": 10159608.0
+  },
+  {
+   "name": "arr",
+   "label": "ARR",
+   "format": "currency",
+   "source": "agg_mrr_monthly",
+   "sql": "12*SUM(mrr)",
+   "description": "12 x MRR at period end.",
+   "polarity": "up",
+   "snapshot": true,
+   "value_all_time": 121915296.0
+  },
+  {
+   "name": "active_subscriptions",
+   "label": "Active subscriptions",
+   "format": "number",
+   "source": "agg_mrr_monthly",
+   "sql": "SUM(active_subscriptions)",
+   "description": "Paid subscriptions active at period end.",
+   "polarity": "up",
+   "snapshot": true,
+   "value_all_time": 3814.0
+  },
+  {
+   "name": "seats",
+   "label": "Seats",
+   "format": "number",
+   "source": "agg_mrr_monthly",
+   "sql": "SUM(seats)",
+   "description": "Licensed seats on active paid subscriptions at period end.",
+   "polarity": "up",
+   "snapshot": true,
+   "value_all_time": 113412.0
+  },
+  {
+   "name": "mrr_per_subscription",
+   "label": "MRR per subscription",
+   "format": "currency",
+   "source": "agg_mrr_monthly",
+   "sql": "SUM(mrr)/NULLIF(SUM(active_subscriptions),0)",
+   "description": "MRR / active subscriptions at period end.",
+   "polarity": "up",
+   "snapshot": true,
+   "value_all_time": 2663.7672
+  },
+  {
+   "name": "churn_events",
+   "label": "Churn events",
+   "format": "number",
+   "source": "agg_churn_daily",
+   "sql": "SUM(churn_events)",
+   "description": "Accounts churning in the period (an account can churn more than once).",
+   "polarity": "down",
+   "value_all_time": 600.0
+  },
+  {
+   "name": "churn_refunds",
+   "label": "Churn refunds",
+   "format": "currency",
+   "source": "agg_churn_daily",
+   "sql": "SUM(churn_refunds)",
+   "description": "Refunds issued on churn, USD.",
+   "polarity": "down",
+   "value_all_time": 8652.25
+  },
+  {
+   "name": "signups",
+   "label": "Signups",
+   "format": "number",
+   "source": "agg_signups_daily",
+   "sql": "SUM(signups)",
+   "description": "New accounts.",
+   "polarity": "up",
+   "value_all_time": 500.0
+  },
+  {
+   "name": "trial_share",
+   "label": "Trial share of signups",
+   "format": "percent",
+   "source": "agg_signups_daily",
+   "sql": "SUM(signups) FILTER (WHERE signup_type='trial')/NULLIF(SUM(signups),0)",
+   "description": "Share of signups that started on a trial.",
+   "polarity": "up",
+   "value_all_time": 0.194
+  },
+  {
+   "name": "feature_usage",
+   "label": "Feature uses",
+   "format": "number",
+   "source": "agg_usage_daily",
+   "sql": "SUM(usage_count)",
+   "description": "Times features were used.",
+   "polarity": "up",
+   "value_all_time": 250525.0
+  },
+  {
+   "name": "usage_error_rate",
+   "label": "Errors per use",
+   "format": "percent",
+   "source": "agg_usage_daily",
+   "sql": "SUM(errors)/NULLIF(SUM(usage_count),0)",
+   "description": "Errors / feature uses.",
+   "polarity": "down",
+   "value_all_time": 0.0563
+  },
+  {
+   "name": "tickets",
+   "label": "Support tickets",
+   "format": "number",
+   "source": "agg_tickets_daily",
+   "sql": "SUM(tickets)",
+   "description": "Tickets opened.",
+   "polarity": "down",
+   "value_all_time": 2000.0
+  },
+  {
+   "name": "csat",
+   "label": "CSAT",
+   "format": "score",
+   "source": "agg_tickets_daily",
+   "sql": "SUM(csat_sum)/NULLIF(SUM(csat_responses),0)",
+   "description": "Average satisfaction score (1 to 5) of answered surveys.",
+   "polarity": "up",
+   "value_all_time": 3.9813
+  },
+  {
+   "name": "escalation_rate",
+   "label": "Escalation rate",
+   "format": "percent",
+   "source": "agg_tickets_daily",
+   "sql": "SUM(escalated)/NULLIF(SUM(tickets),0)",
+   "description": "Escalated tickets / tickets.",
+   "polarity": "down",
+   "value_all_time": 0.0475
+  },
+  {
+   "name": "avg_resolution_hours",
+   "label": "Hours to resolve",
+   "format": "hours",
+   "source": "agg_tickets_daily",
+   "sql": "SUM(resolution_hours_sum)/NULLIF(SUM(tickets),0)",
+   "description": "Average hours to resolve a ticket.",
+   "polarity": "down",
+   "value_all_time": 35.861
+  }
+ ],
+ "home": {
+  "grain": "month",
+  "wbr": [
+   "mrr",
+   "active_subscriptions",
+   "signups",
+   "churn_events",
+   "csat",
+   "escalation_rate",
+   "usage_error_rate",
+   "avg_resolution_hours"
+  ],
+  "segments": {
+   "title": "Industries you own",
+   "note": "by MRR at month end",
+   "dimension": "industry",
+   "metric": "mrr",
+   "extra": [
+    "churn_events"
+   ],
+   "top": 6
+  }
+ },
+ "reconciliation": [
+  {
+   "metric": "churn_events",
+   "semantic": 600.0,
+   "raw": 600.0,
+   "status": "pass"
+  },
+  {
+   "metric": "signups",
+   "semantic": 500.0,
+   "raw": 500.0,
+   "status": "pass"
+  },
+  {
+   "metric": "tickets",
+   "semantic": 2000.0,
+   "raw": 2000.0,
+   "status": "pass"
+  },
+  {
+   "metric": "csat",
+   "semantic": 3.9813,
+   "raw": 3.9813,
+   "status": "pass"
+  },
+  {
+   "metric": "feature_usage",
+   "semantic": 250525.0,
+   "raw": 250525.0,
+   "status": "pass"
+  }
+ ]
+}

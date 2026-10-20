@@ -1,0 +1,681 @@
+{
+ "id": "orbit",
+ "name": "Satellite autonomy ops",
+ "story": "A 9-person spacecraft autonomy startup with 5 contracts; its onboard software and camera modules fly on 44 customer satellites, from a 4-cubesat swarm to GEO servicers. Onboard object detections, conjunctions, avoidance maneuvers and navigation health from Mar 2025 to Oct 2026. Fully synthetic.",
+ "source": {
+  "title": "Synthetic spacecraft autonomy operations data",
+  "url": "https://github.com/vibedatascience/vibelogs/blob/main/residentquant/live/data/orbit/_generate.py",
+  "license": "CC0",
+  "credit": "ResidentQuant (generated)"
+ },
+ "tables": [
+  {
+   "name": "dim_customers",
+   "file": "dim_customers.parquet",
+   "description": "One row per customer mission.",
+   "grain": "One row per customer",
+   "primary_key": "customer_id",
+   "rows": 5,
+   "bytes": 2106,
+   "columns": [
+    {
+     "name": "customer_id",
+     "type": "VARCHAR",
+     "description": "Customer key"
+    },
+    {
+     "name": "customer_name",
+     "type": "VARCHAR",
+     "description": "Customer (invented)"
+    },
+    {
+     "name": "mission_type",
+     "type": "VARCHAR",
+     "description": "What the customer flies"
+    },
+    {
+     "name": "segment",
+     "type": "VARCHAR",
+     "description": "commercial, civil, defense or academic"
+    },
+    {
+     "name": "contract_start",
+     "type": "DATE",
+     "description": "Contract start date"
+    },
+    {
+     "name": "autonomous_ca_enabled_date",
+     "type": "DATE",
+     "description": "Date the customer let spacecraft decide collision avoidance onboard; null if never"
+    },
+    {
+     "name": "license_per_satellite_usd",
+     "type": "BIGINT",
+     "description": "Yearly software license per satellite, USD"
+    },
+    {
+     "name": "hardware_passthrough_usd",
+     "type": "BIGINT",
+     "description": "Cameras and modules resold at cost, USD (no margin)"
+    },
+    {
+     "name": "data_sharing_agreement",
+     "type": "BOOLEAN",
+     "description": "Customer shares onboard data back for model tuning and space traffic intelligence"
+    },
+    {
+     "name": "annual_contract_value_usd",
+     "type": "BIGINT",
+     "description": "Annual contract value, USD"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "commissioning_date",
+    "min": "2023-08-13",
+    "max": "2026-07-27"
+   },
+   "name": "dim_spacecraft",
+   "file": "dim_spacecraft.parquet",
+   "description": "One row per customer spacecraft carrying the autonomy software or module.",
+   "grain": "One row per spacecraft",
+   "primary_key": "spacecraft_id",
+   "rows": 44,
+   "bytes": 5462,
+   "columns": [
+    {
+     "name": "spacecraft_id",
+     "type": "VARCHAR",
+     "description": "Spacecraft key"
+    },
+    {
+     "name": "customer_id",
+     "type": "VARCHAR",
+     "description": "Customer key"
+    },
+    {
+     "name": "spacecraft_name",
+     "type": "VARCHAR",
+     "description": "Spacecraft name"
+    },
+    {
+     "name": "orbit_class",
+     "type": "VARCHAR",
+     "description": "SSO dawn-dusk, SSO midday, LEO 53 deg or GEO"
+    },
+    {
+     "name": "orbit_regime",
+     "type": "VARCHAR",
+     "description": "LEO or GEO"
+    },
+    {
+     "name": "altitude_km",
+     "type": "DOUBLE",
+     "description": "Mean altitude, km"
+    },
+    {
+     "name": "inclination_deg",
+     "type": "DOUBLE",
+     "description": "Orbit inclination, degrees"
+    },
+    {
+     "name": "sensor",
+     "type": "VARCHAR",
+     "description": "Onboard sensor used for detection: HDR camera, ST-100 or ST-200 star tracker"
+    },
+    {
+     "name": "era_product",
+     "type": "VARCHAR",
+     "description": "Era-Node (camera + processor module) or Era-Core (software only)"
+    },
+    {
+     "name": "bus_class",
+     "type": "VARCHAR",
+     "description": "Spacecraft bus"
+    },
+    {
+     "name": "dry_mass_kg",
+     "type": "BIGINT",
+     "description": "Mass, kg"
+    },
+    {
+     "name": "isp_s",
+     "type": "BIGINT",
+     "description": "Thruster specific impulse, s"
+    },
+    {
+     "name": "altpnt_enabled",
+     "type": "BOOLEAN",
+     "description": "Alternative navigation (works without GNSS) is turned on"
+    },
+    {
+     "name": "launch_date",
+     "type": "DATE",
+     "description": "Launch date"
+    },
+    {
+     "name": "commissioning_date",
+     "type": "DATE",
+     "description": "Date operations began"
+    },
+    {
+     "name": "status",
+     "type": "VARCHAR",
+     "description": "operational"
+    },
+    {
+     "name": "module_size_u",
+     "type": "DOUBLE",
+     "description": "Era-Node module volume in U (1U = 10 cm cube); null for software only"
+    },
+    {
+     "name": "camera_count",
+     "type": "BIGINT",
+     "description": "Cameras in the Era-Node module"
+    },
+    {
+     "name": "software_host",
+     "type": "VARCHAR",
+     "description": "Where the autonomy software runs"
+    },
+    {
+     "name": "data_start_date",
+     "type": "DATE",
+     "description": "First day in this data: later of commissioning and contract start"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "first_cataloged",
+    "min": "1967-01-08",
+    "max": "2026-10-07"
+   },
+   "name": "dim_rso",
+   "file": "dim_rso.parquet",
+   "description": "Resident space object catalog: tracked objects in orbit (payloads, rocket bodies, debris).",
+   "grain": "One row per tracked object",
+   "primary_key": "rso_id",
+   "rows": 6221,
+   "bytes": 103842,
+   "columns": [
+    {
+     "name": "rso_id",
+     "type": "BIGINT",
+     "description": "Catalog number"
+    },
+    {
+     "name": "object_name",
+     "type": "VARCHAR",
+     "description": "Object name"
+    },
+    {
+     "name": "object_type",
+     "type": "VARCHAR",
+     "description": "payload, payload_inactive, rocket_body or debris"
+    },
+    {
+     "name": "size_class",
+     "type": "VARCHAR",
+     "description": "small, medium or large"
+    },
+    {
+     "name": "owner_country",
+     "type": "VARCHAR",
+     "description": "Owner"
+    },
+    {
+     "name": "perigee_km",
+     "type": "DOUBLE",
+     "description": "Perigee altitude, km"
+    },
+    {
+     "name": "apogee_km",
+     "type": "DOUBLE",
+     "description": "Apogee altitude, km"
+    },
+    {
+     "name": "inclination_deg",
+     "type": "DOUBLE",
+     "description": "Inclination, degrees"
+    },
+    {
+     "name": "first_cataloged",
+     "type": "DATE",
+     "description": "Date the object entered the public catalog"
+    },
+    {
+     "name": "is_fragment",
+     "type": "BOOLEAN",
+     "description": "Fragment from a known breakup event"
+    },
+    {
+     "name": "parent_event",
+     "type": "VARCHAR",
+     "description": "Breakup event the fragment came from"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "detected_at",
+    "min": "2025-06-16",
+    "max": "2026-10-11"
+   },
+   "name": "fct_detections",
+   "file": "fct_detections.parquet",
+   "description": "Objects detected by onboard sensors and the onboard attempt to identify them against the onboard catalog.",
+   "grain": "One row per detection",
+   "primary_key": "detection_id",
+   "rows": 155096,
+   "bytes": 2189618,
+   "columns": [
+    {
+     "name": "detection_id",
+     "type": "VARCHAR",
+     "description": "Detection key"
+    },
+    {
+     "name": "spacecraft_id",
+     "type": "VARCHAR",
+     "description": "Spacecraft key"
+    },
+    {
+     "name": "detected_at",
+     "type": "TIMESTAMP",
+     "description": "Detection time, UTC"
+    },
+    {
+     "name": "sensor",
+     "type": "VARCHAR",
+     "description": "Sensor that saw it"
+    },
+    {
+     "name": "firmware_version",
+     "type": "VARCHAR",
+     "description": "Era-Core firmware running at detection time"
+    },
+    {
+     "name": "match_status",
+     "type": "VARCHAR",
+     "description": "matched (identified), unmatched (real object, not in onboard catalog) or false_alarm (no object)"
+    },
+    {
+     "name": "rso_id",
+     "type": "BIGINT",
+     "description": "Identified object; null unless matched"
+    },
+    {
+     "name": "range_km",
+     "type": "DOUBLE",
+     "description": "Estimated range, km"
+    },
+    {
+     "name": "visual_magnitude",
+     "type": "DOUBLE",
+     "description": "Apparent brightness (lower is brighter)"
+    },
+    {
+     "name": "sun_angle_deg",
+     "type": "DOUBLE",
+     "description": "Angle between sensor boresight and the Sun, degrees"
+    },
+    {
+     "name": "onboard_latency_ms",
+     "type": "BIGINT",
+     "description": "Time from image to identification, ms"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "screened_at",
+    "min": "2025-06-17",
+    "max": "2026-10-11"
+   },
+   "name": "fct_conjunctions",
+   "file": "fct_conjunctions.parquet",
+   "description": "Close approaches screened for each spacecraft and the decision taken.",
+   "grain": "One row per screening message (see caveats on repeats)",
+   "primary_key": "conjunction_id",
+   "rows": 3906,
+   "bytes": 139434,
+   "columns": [
+    {
+     "name": "conjunction_id",
+     "type": "VARCHAR",
+     "description": "Conjunction key"
+    },
+    {
+     "name": "spacecraft_id",
+     "type": "VARCHAR",
+     "description": "Spacecraft key"
+    },
+    {
+     "name": "rso_id",
+     "type": "BIGINT",
+     "description": "Other object"
+    },
+    {
+     "name": "screened_at",
+     "type": "TIMESTAMP",
+     "description": "Screening time, UTC"
+    },
+    {
+     "name": "tca",
+     "type": "TIMESTAMP_NS",
+     "description": "Time of closest approach, UTC"
+    },
+    {
+     "name": "miss_distance_m",
+     "type": "DOUBLE",
+     "description": "Predicted miss distance, m"
+    },
+    {
+     "name": "radial_sep_m",
+     "type": "DOUBLE",
+     "description": "Radial separation, m"
+    },
+    {
+     "name": "collision_probability",
+     "type": "DOUBLE",
+     "description": "Probability of collision (Pc)"
+    },
+    {
+     "name": "risk_tier",
+     "type": "VARCHAR",
+     "description": "high (Pc >= 1e-4), medium (>= 1e-5) or low"
+    },
+    {
+     "name": "source",
+     "type": "VARCHAR",
+     "description": "onboard (own screening) or ground_cdm (ground conjunction data message)"
+    },
+    {
+     "name": "decision_mode",
+     "type": "VARCHAR",
+     "description": "autonomous (onboard) or ground; null for low risk"
+    },
+    {
+     "name": "action",
+     "type": "VARCHAR",
+     "description": "maneuver, monitor or none"
+    },
+    {
+     "name": "decision_latency_min",
+     "type": "DOUBLE",
+     "description": "Minutes from screening to decision; null for low risk"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "executed_at",
+    "min": "2025-06-16",
+    "max": "2026-10-11"
+   },
+   "name": "fct_maneuvers",
+   "file": "fct_maneuvers.parquet",
+   "description": "Thruster burns.",
+   "grain": "One row per maneuver",
+   "primary_key": "maneuver_id",
+   "rows": 2194,
+   "bytes": 53546,
+   "columns": [
+    {
+     "name": "maneuver_id",
+     "type": "VARCHAR",
+     "description": "Maneuver key"
+    },
+    {
+     "name": "spacecraft_id",
+     "type": "VARCHAR",
+     "description": "Spacecraft key"
+    },
+    {
+     "name": "executed_at",
+     "type": "TIMESTAMP_NS",
+     "description": "Burn time, UTC"
+    },
+    {
+     "name": "purpose",
+     "type": "VARCHAR",
+     "description": "collision_avoidance, station_keeping, formation_keeping or rpo_approach"
+    },
+    {
+     "name": "conjunction_id",
+     "type": "VARCHAR",
+     "description": "Conjunction it avoided (collision_avoidance only)"
+    },
+    {
+     "name": "autonomous",
+     "type": "BOOLEAN",
+     "description": "Planned and executed onboard"
+    },
+    {
+     "name": "planned_dv_mps",
+     "type": "DOUBLE",
+     "description": "Planned delta-v, m/s"
+    },
+    {
+     "name": "executed_dv_mps",
+     "type": "DOUBLE",
+     "description": "Executed delta-v, m/s"
+    },
+    {
+     "name": "propellant_g",
+     "type": "DOUBLE",
+     "description": "Propellant used, g"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "nav_date",
+    "min": "2025-06-16",
+    "max": "2026-10-11"
+   },
+   "name": "fct_nav_daily",
+   "file": "fct_nav_daily.parquet",
+   "description": "Daily navigation health per spacecraft.",
+   "grain": "One row per spacecraft per day",
+   "rows": 12543,
+   "bytes": 100635,
+   "columns": [
+    {
+     "name": "nav_date",
+     "type": "DATE",
+     "description": "Day (UTC)"
+    },
+    {
+     "name": "spacecraft_id",
+     "type": "VARCHAR",
+     "description": "Spacecraft key"
+    },
+    {
+     "name": "firmware_version",
+     "type": "VARCHAR",
+     "description": "Firmware at end of day"
+    },
+    {
+     "name": "gnss_available_pct",
+     "type": "DOUBLE",
+     "description": "Share of the day with a GNSS fix"
+    },
+    {
+     "name": "jamming_minutes",
+     "type": "BIGINT",
+     "description": "Minutes with GNSS jamming detected"
+    },
+    {
+     "name": "gnss_outage_minutes",
+     "type": "BIGINT",
+     "description": "Minutes without a GNSS fix"
+    },
+    {
+     "name": "altpnt_minutes",
+     "type": "BIGINT",
+     "description": "Minutes navigating on alt-PNT"
+    },
+    {
+     "name": "pos_error_p50_m",
+     "type": "DOUBLE",
+     "description": "Median position error vs. post-processed truth, m"
+    },
+    {
+     "name": "pos_error_p95_m",
+     "type": "DOUBLE",
+     "description": "95th percentile position error, m"
+    },
+    {
+     "name": "uptime_pct",
+     "type": "DOUBLE",
+     "description": "Share of the day in nominal mode (not safe mode)"
+    }
+   ]
+  }
+ ],
+ "tests": [
+  {
+   "table": "dim_spacecraft",
+   "test": "unique(spacecraft_id)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "dim_spacecraft",
+   "test": "relationships(customer_id -> dim_customers)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "dim_rso",
+   "test": "unique(rso_id)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_detections",
+   "test": "relationships(rso_id -> dim_rso)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_detections",
+   "test": "rso_id is set only when matched",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_conjunctions",
+   "test": "unique(conjunction_id)",
+   "status": "warn",
+   "failing_rows": 41
+  },
+  {
+   "table": "fct_conjunctions",
+   "test": "tca > screened_at",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_conjunctions",
+   "test": "relationships(rso_id -> dim_rso)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_maneuvers",
+   "test": "collision_avoidance has conjunction_id",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_maneuvers",
+   "test": "relationships(conjunction_id -> fct_conjunctions)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_nav_daily",
+   "test": "unique(spacecraft_id, nav_date)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_detections",
+   "test": "detections on fragments before they were cataloged",
+   "status": "pass",
+   "failing_rows": 0
+  }
+ ],
+ "metrics": [
+  {
+   "name": "detections",
+   "description": "Onboard detections in a period.",
+   "sql": "SELECT COUNT(*) FROM orbit.fct_detections WHERE detected_at::DATE BETWEEN DATE '2026-10-05' AND DATE '2026-10-11'",
+   "value": 4930.0,
+   "value_label": "week of 2026-10-05"
+  },
+  {
+   "name": "catalog_match_rate",
+   "description": "Matched detections / detections.",
+   "sql": "SELECT AVG((match_status='matched')::INT) FROM orbit.fct_detections WHERE detected_at::DATE BETWEEN DATE '2026-10-05' AND DATE '2026-10-11'",
+   "value": 0.876673,
+   "value_label": "week of 2026-10-05"
+  },
+  {
+   "name": "false_alarm_rate",
+   "description": "False alarms / detections.",
+   "sql": "SELECT AVG((match_status='false_alarm')::INT) FROM orbit.fct_detections WHERE detected_at::DATE BETWEEN DATE '2026-10-05' AND DATE '2026-10-11'",
+   "value": 0.03428,
+   "value_label": "week of 2026-10-05"
+  },
+  {
+   "name": "conjunctions",
+   "description": "Distinct conjunction_id screened (repeats removed).",
+   "sql": "SELECT COUNT(DISTINCT conjunction_id) FROM orbit.fct_conjunctions WHERE screened_at::DATE BETWEEN DATE '2026-10-05' AND DATE '2026-10-11'",
+   "value": 205.0,
+   "value_label": "week of 2026-10-05"
+  },
+  {
+   "name": "autonomous_decision_share",
+   "description": "Autonomous decisions / medium and high risk conjunctions (repeats removed).",
+   "sql": "SELECT AVG((decision_mode='autonomous')::INT) FROM (SELECT * FROM orbit.fct_conjunctions QUALIFY ROW_NUMBER() OVER (PARTITION BY conjunction_id ORDER BY screened_at)=1) WHERE risk_tier<>'low' AND screened_at::DATE BETWEEN DATE '2026-10-05' AND DATE '2026-10-11'",
+   "value": 1.0,
+   "value_label": "week of 2026-10-05"
+  },
+  {
+   "name": "delta_v_mps",
+   "description": "Executed delta-v, m/s.",
+   "sql": "SELECT SUM(executed_dv_mps) FROM orbit.fct_maneuvers WHERE executed_at::DATE BETWEEN DATE '2026-01-01' AND DATE '2026-10-11'",
+   "value": 152.38256,
+   "value_label": "2026 to date"
+  },
+  {
+   "name": "nav_error_p95_m",
+   "description": "Mean of daily p95 position error across spacecraft-days, m.",
+   "sql": "SELECT AVG(pos_error_p95_m) FROM orbit.fct_nav_daily WHERE nav_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11'",
+   "value": 43.206786,
+   "value_label": "week of 2026-10-05"
+  }
+ ],
+ "caveats": [
+  "Fully synthetic. Modeled on what spacecraft autonomy companies describe in public; customers, spacecraft and objects are invented.",
+  "fct_conjunctions has repeated rows: the ground CDM feed resends messages. Count DISTINCT conjunction_id, or keep the first row per conjunction_id.",
+  "unmatched is not a false alarm: unmatched is a real object that is not in the onboard catalog; false_alarm has no object behind it.",
+  "The onboard catalog is uploaded weekly, so objects new to the public catalog show as unmatched for about a week.",
+  "Spacecraft enter the data at data_start_date (later of commissioning and contract start), so the fleet grows over time. Normalize counts per spacecraft-day before comparing periods.",
+  "nav_error_p95_m is the mean of daily per-spacecraft p95 values, not a fleet-wide p95.",
+  "Firmware is per detection and per day; rollouts are staged by customer, so versions overlap for days.",
+  "All times are UTC."
+ ],
+ "questions": [
+  "Why did the false alarm rate rise in the week of Oct 5, 2026?",
+  "Why did conjunctions and delta-v jump in late August 2026?",
+  "Does alt-PNT keep navigation error down during GNSS jamming? Compare missions.",
+  "How much faster are autonomous avoidance decisions than ground decisions?",
+  "Which firmware version has the best catalog match rate, by sensor?"
+ ]
+}

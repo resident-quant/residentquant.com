@@ -1,0 +1,429 @@
+{
+ "id": "toystore",
+ "name": "Toy store web analytics",
+ "story": "An online toy store (Maven Fuzzy Factory) selling four stuffed-animal products. Every website session, pageview, order and refund from Mar 2012 to Mar 2015, with paid search and social campaigns.",
+ "source": {
+  "title": "Toy Store E-Commerce Database (Maven Fuzzy Factory)",
+  "url": "https://www.kaggle.com/datasets/siddharth0935/toy-store-e-commerce-database",
+  "license": "CC0: Public Domain",
+  "credit": "Maven Analytics, shared by Siddharth Vora"
+ },
+ "tables": [
+  {
+   "date_range": {
+    "column": "launched_at",
+    "min": "2012-03-19",
+    "max": "2014-02-05"
+   },
+   "name": "dim_products",
+   "file": "dim_products.parquet",
+   "description": "One row per product. Four products launched between 2012 and 2014.",
+   "grain": "One row per product",
+   "primary_key": "product_id",
+   "rows": 4,
+   "bytes": 724,
+   "columns": [
+    {
+     "name": "product_id",
+     "type": "BIGINT",
+     "description": "Product key"
+    },
+    {
+     "name": "product_name",
+     "type": "VARCHAR",
+     "description": "Product name"
+    },
+    {
+     "name": "launched_at",
+     "type": "TIMESTAMP",
+     "description": "Launch timestamp"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "viewed_at",
+    "min": "2012-03-19",
+    "max": "2015-03-19"
+   },
+   "name": "fct_pageviews",
+   "file": "fct_pageviews.parquet",
+   "description": "One row per pageview.",
+   "grain": "One row per pageview",
+   "primary_key": "pageview_id",
+   "rows": 1188124,
+   "bytes": 8830064,
+   "columns": [
+    {
+     "name": "pageview_id",
+     "type": "BIGINT",
+     "description": "Pageview key"
+    },
+    {
+     "name": "session_id",
+     "type": "BIGINT",
+     "description": "Session key"
+    },
+    {
+     "name": "viewed_at",
+     "type": "TIMESTAMP",
+     "description": "Pageview timestamp"
+    },
+    {
+     "name": "pageview_url",
+     "type": "VARCHAR",
+     "description": "Page path such as /home, /lander-1, /products, /cart, /shipping, /billing, /thank-you-for-your-order"
+    },
+    {
+     "name": "pageview_seq",
+     "type": "BIGINT",
+     "description": "Order of the pageview within its session, starting at 1"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "session_date",
+    "min": "2012-03-19",
+    "max": "2015-03-19"
+   },
+   "name": "fct_sessions",
+   "file": "fct_sessions.parquet",
+   "description": "One row per website session with traffic source, landing page, bounce and conversion.",
+   "grain": "One row per website session with traffic source, landing page, bounce and conversion",
+   "primary_key": "session_id",
+   "rows": 472871,
+   "bytes": 4929369,
+   "columns": [
+    {
+     "name": "session_id",
+     "type": "BIGINT",
+     "description": "Session key"
+    },
+    {
+     "name": "user_id",
+     "type": "BIGINT",
+     "description": "Visitor (cookie) id"
+    },
+    {
+     "name": "started_at",
+     "type": "TIMESTAMP",
+     "description": "Session start"
+    },
+    {
+     "name": "session_date",
+     "type": "DATE",
+     "description": "Session date"
+    },
+    {
+     "name": "is_repeat_session",
+     "type": "BOOLEAN",
+     "description": "True if the visitor had an earlier session"
+    },
+    {
+     "name": "utm_source",
+     "type": "VARCHAR",
+     "description": "gsearch, bsearch or socialbook; null for unpaid traffic"
+    },
+    {
+     "name": "utm_campaign",
+     "type": "VARCHAR",
+     "description": "nonbrand, brand, pilot, desktop_targeted; null for unpaid"
+    },
+    {
+     "name": "utm_content",
+     "type": "VARCHAR",
+     "description": "Ad variant"
+    },
+    {
+     "name": "device_type",
+     "type": "VARCHAR",
+     "description": "desktop or mobile"
+    },
+    {
+     "name": "http_referer",
+     "type": "VARCHAR",
+     "description": "Referring site; null for direct type-in"
+    },
+    {
+     "name": "channel_group",
+     "type": "VARCHAR",
+     "description": "direct, organic_search, paid_brand, paid_nonbrand, paid_social (derived from utm and referer)"
+    },
+    {
+     "name": "pageviews",
+     "type": "BIGINT",
+     "description": "Pageviews in the session"
+    },
+    {
+     "name": "landing_page",
+     "type": "VARCHAR",
+     "description": "First page viewed"
+    },
+    {
+     "name": "exit_page",
+     "type": "VARCHAR",
+     "description": "Last page viewed"
+    },
+    {
+     "name": "is_bounce",
+     "type": "BOOLEAN",
+     "description": "Session with a single pageview"
+    },
+    {
+     "name": "has_order",
+     "type": "BOOLEAN",
+     "description": "Session placed an order"
+    },
+    {
+     "name": "order_id",
+     "type": "BIGINT",
+     "description": "Order placed in the session, if any"
+    },
+    {
+     "name": "revenue_usd",
+     "type": "DOUBLE",
+     "description": "Order revenue in USD, 0 if no order"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "order_date",
+    "min": "2012-03-19",
+    "max": "2015-03-19"
+   },
+   "name": "fct_orders",
+   "file": "fct_orders.parquet",
+   "description": "One row per order.",
+   "grain": "One row per order",
+   "primary_key": "order_id",
+   "rows": 32313,
+   "bytes": 363296,
+   "columns": [
+    {
+     "name": "order_id",
+     "type": "BIGINT",
+     "description": "Order key"
+    },
+    {
+     "name": "session_id",
+     "type": "BIGINT",
+     "description": "Session that placed the order"
+    },
+    {
+     "name": "user_id",
+     "type": "BIGINT",
+     "description": "Visitor id"
+    },
+    {
+     "name": "ordered_at",
+     "type": "TIMESTAMP",
+     "description": "Order timestamp"
+    },
+    {
+     "name": "order_date",
+     "type": "DATE",
+     "description": "Order date"
+    },
+    {
+     "name": "primary_product_id",
+     "type": "BIGINT",
+     "description": "First product added to the cart"
+    },
+    {
+     "name": "items_purchased",
+     "type": "BIGINT",
+     "description": "1 or 2 (cross-sell launched Sep 2013)"
+    },
+    {
+     "name": "price_usd",
+     "type": "DOUBLE",
+     "description": "Order revenue in USD"
+    },
+    {
+     "name": "cogs_usd",
+     "type": "DOUBLE",
+     "description": "Cost of goods sold"
+    },
+    {
+     "name": "margin_usd",
+     "type": "DOUBLE",
+     "description": "price_usd - cogs_usd"
+    },
+    {
+     "name": "refund_usd",
+     "type": "DOUBLE",
+     "description": "Refunded amount"
+    },
+    {
+     "name": "has_refund",
+     "type": "BOOLEAN",
+     "description": "Any item refunded"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "ordered_at",
+    "min": "2012-03-19",
+    "max": "2015-03-19"
+   },
+   "name": "fct_order_items",
+   "file": "fct_order_items.parquet",
+   "description": "One row per item in an order, with refunds.",
+   "grain": "One row per item in an order, with refunds",
+   "primary_key": "order_item_id",
+   "rows": 40025,
+   "bytes": 334003,
+   "columns": [
+    {
+     "name": "order_item_id",
+     "type": "BIGINT",
+     "description": "Order item key"
+    },
+    {
+     "name": "order_id",
+     "type": "BIGINT",
+     "description": "Order key"
+    },
+    {
+     "name": "product_id",
+     "type": "BIGINT",
+     "description": "Product key"
+    },
+    {
+     "name": "ordered_at",
+     "type": "TIMESTAMP",
+     "description": "Order timestamp"
+    },
+    {
+     "name": "is_primary_item",
+     "type": "BOOLEAN",
+     "description": "First item added to the cart"
+    },
+    {
+     "name": "price_usd",
+     "type": "DOUBLE",
+     "description": "Item price"
+    },
+    {
+     "name": "cogs_usd",
+     "type": "DOUBLE",
+     "description": "Item cost"
+    },
+    {
+     "name": "refunded_at",
+     "type": "TIMESTAMP",
+     "description": "Refund timestamp, null if not refunded"
+    },
+    {
+     "name": "refund_usd",
+     "type": "DOUBLE",
+     "description": "Refund amount"
+    }
+   ]
+  }
+ ],
+ "tests": [
+  {
+   "table": "fct_sessions",
+   "test": "unique(session_id)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_orders",
+   "test": "relationships(session_id -> fct_sessions)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_order_items",
+   "test": "relationships(order_id -> fct_orders)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_pageviews",
+   "test": "relationships(session_id -> fct_sessions)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_sessions",
+   "test": "accepted_values(channel_group)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_orders",
+   "test": "order revenue = sum of item prices",
+   "status": "pass",
+   "failing_rows": 0
+  }
+ ],
+ "metrics": [
+  {
+   "name": "sessions",
+   "description": "Website sessions",
+   "sql": "SELECT COUNT(*) FROM toystore.fct_sessions",
+   "value": 472871.0,
+   "value_label": "all time"
+  },
+  {
+   "name": "conversion_rate",
+   "description": "Orders / sessions",
+   "sql": "SELECT AVG(has_order::INT) FROM toystore.fct_sessions",
+   "value": 0.0683,
+   "value_label": "all time"
+  },
+  {
+   "name": "revenue",
+   "description": "Order revenue in USD before refunds",
+   "sql": "SELECT SUM(price_usd) FROM toystore.fct_orders",
+   "value": 1938509.75,
+   "value_label": "all time"
+  },
+  {
+   "name": "net_revenue",
+   "description": "Revenue minus refunds",
+   "sql": "SELECT SUM(price_usd-refund_usd) FROM toystore.fct_orders",
+   "value": 1853171.06,
+   "value_label": "all time"
+  },
+  {
+   "name": "revenue_per_session",
+   "description": "Revenue / sessions",
+   "sql": "SELECT SUM(revenue_usd)/COUNT(*) FROM toystore.fct_sessions",
+   "value": 4.0994,
+   "value_label": "all time"
+  },
+  {
+   "name": "bounce_rate",
+   "description": "Single-page sessions / sessions, usually by landing_page",
+   "sql": "SELECT AVG(is_bounce::INT) FROM toystore.fct_sessions",
+   "value": 0.4476,
+   "value_label": "all time"
+  },
+  {
+   "name": "refund_rate",
+   "description": "Refunded items / items, by product",
+   "sql": "SELECT AVG((refund_usd>0)::INT) FROM toystore.fct_order_items",
+   "value": 0.0432,
+   "value_label": "all time"
+  }
+ ],
+ "caveats": [
+  "The raw data stored missing UTM values as the text 'NULL'; the warehouse converts them to real nulls.",
+  "channel_group is derived: no utm and no referer = direct; no utm with a referer = organic_search.",
+  "Funnel pages: landing (/home or /lander-N) -> /products -> product page -> /cart -> /shipping -> /billing or /billing-2 -> /thank-you-for-your-order.",
+  "Site tests ran over time: new landers (lander-1 to lander-5), billing-2, and a cross-sell launched Sep 2013."
+ ],
+ "questions": [
+  "Which channel has the best conversion rate, and how has it changed?",
+  "Did /billing-2 beat /billing? Test it.",
+  "Build the conversion funnel for gsearch nonbrand sessions.",
+  "Which product has the highest refund rate?"
+ ]
+}

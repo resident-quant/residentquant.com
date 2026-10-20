@@ -1,0 +1,1201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>ResidentQuant Live</title>
+<meta name="description" content="Ask a governed semantic-layer API questions in plain English. Runs in your browser with your own Anthropic key: governed queries, DuckDB SQL, pandas and Vega-Lite charts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: header, then thread (questions, agent work, answers) beside a workspace panel (tables, SQL, Python, catalog). Settings open as a modal. */
+:root{
+  --bg:#eef0f4; --app:#f7f8fa; --surface:#ffffff; --sunk:#f0f2f6; --ink:#0e1525; --muted:#586174; --faint:#8b93a3; --line:#e1e5ec;
+  --accent:#d7263d; --accent-bg:#fbe5e8; --navy:#0a3069; --navy-bg:#e6edf8; --teal:#0d9488; --teal-bg:#e0f3f0; --slate:#64748b; --amber:#b45309; --amber-bg:#fdf3e2;
+  --code-bg:#0e1525; --code-ink:#d7deea; --code-k:#8fb0ff; --code-s:#5fd3c2; --code-c:#7f8aa0;
+  --f-display:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 14.5px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--sunk);border-radius:4px;padding:1px 4px}
+[hidden]{display:none!important}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}}
+@keyframes pulse{from{opacity:.35}}
+
+.shell{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr)}
+header.top{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.logo{font:800 19px/1 var(--f-display);letter-spacing:-.03em} .logo .q{color:var(--accent)}
+.livebadge{display:inline-flex;align-items:center;gap:6px;font:600 10.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--teal);background:var(--teal-bg);border-radius:999px;padding:5px 8px}
+.livebadge i{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.chip{font:500 11.5px/1 var(--f-mono);border:1px solid var(--line);border-radius:999px;padding:6px 9px;color:var(--muted);background:var(--app);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+.chip.bad{color:var(--accent);border-color:var(--accent)}
+select.srcsel{appearance:none;-webkit-appearance:none;cursor:pointer;color:var(--ink);font-weight:600;padding-right:22px;background:var(--app) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 8px center;max-width:210px;text-overflow:ellipsis}
+.srcs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;max-width:760px;margin-top:6px}
+.srcs button{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;text-align:left;font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.srcs button b{color:var(--ink);font:600 13px/1.25 var(--f-body)}
+.srcs button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.srcs button:hover{border-color:var(--ink)}
+.credit{font:400 11px/1.5 var(--f-mono);color:var(--faint);max-width:760px}
+.credit a{color:inherit}
+.wcat{display:flex;flex-direction:column;gap:12px;font-size:12.5px}
+.wcat h5{margin:0 0 6px;font:500 10.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.wcat details{border:1px solid var(--line);border-radius:8px;background:var(--app);margin-bottom:5px}
+.wcat summary{cursor:pointer;padding:7px 9px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.wcat summary b{font:600 12px var(--f-mono)} .wcat summary span{color:var(--muted);font-size:11.5px}
+.wcat .cols{padding:0 9px 8px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;font-size:11.5px}
+.wcat .cols code{font:500 11px var(--f-mono)} .wcat .cols span{color:var(--muted)}
+.wcat .tb{border:0;background:none;padding:0 9px 8px;font:500 11px var(--f-mono);color:var(--accent);cursor:pointer}
+.wcat ul{margin:0;padding-left:16px;color:var(--muted)} .wcat li{margin:2px 0}
+.wcat .mt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;font-size:12px}
+.wcat .mt code{font:600 11.5px var(--f-mono);background:none;padding:0} .wcat .mt span{text-align:right;font:500 11.5px var(--f-mono)} .wcat .mt i{grid-column:1/-1;color:var(--muted);font-style:normal;font-size:11.5px;margin-bottom:4px}
+.tst{font:500 11px var(--f-mono);display:flex;gap:6px;align-items:baseline;margin:2px 0}
+.tst b{border-radius:4px;padding:1px 5px;font-weight:600;font-size:10px;text-transform:uppercase}
+.tst b.pass{background:var(--teal-bg);color:var(--teal)} .tst b.warn{background:var(--amber-bg);color:var(--amber)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 11px;font:600 13px/1 var(--f-body);white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.pri:hover{background:var(--accent);border-color:var(--accent)}
+.btn.red{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+
+.body{display:grid;grid-template-columns:minmax(0,1fr) 440px;min-height:0}
+.body.nows{grid-template-columns:minmax(0,1fr) 0}
+.main{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--app)}
+.thread{flex:1;overflow-y:auto;min-height:0}
+.tin{max-width:880px;margin:0 auto;padding:22px 18px 28px;display:flex;flex-direction:column;gap:16px}
+.empty{padding-top:min(9vh,70px);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty h1{margin:0;font:800 clamp(1.5rem,3vw,2.1rem)/1.1 var(--f-display);letter-spacing:-.03em;text-wrap:balance}
+.empty p{margin:0;color:var(--muted);max-width:56ch}
+.caps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px;width:100%;max-width:760px}
+.cap{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left;font-size:12.5px;color:var(--muted)}
+.cap b{display:block;color:var(--ink);font:600 13px/1.3 var(--f-body);margin-bottom:2px}
+.sugg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;max-width:760px}
+.sugg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--muted)}
+.sugg button:hover{border-color:var(--ink);color:var(--ink)}
+.umsg{align-self:flex-end;max-width:min(600px,90%);background:var(--navy);color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:15px;white-space:pre-wrap;animation:rise .3s ease}
+.amsg{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;animation:rise .3s ease}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--surface);font:800 13px/1 var(--f-display)}
+.abody{min-width:0;display:flex;flex-direction:column;gap:12px}
+.work{border:1px solid var(--line);background:var(--surface);border-radius:12px;overflow:hidden}
+.whead{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sunk);font:500 12.5px/1.3 var(--f-body);color:var(--muted)}
+.whead b{color:var(--ink);font-weight:600}
+.sp{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:none}
+.ok{width:16px;height:16px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font:700 10px/1 var(--f-mono);flex:none}
+.whead .wtog{margin-left:auto;border:0;background:none;padding:0;font:500 12px/1 var(--f-mono);color:var(--navy);text-decoration:underline;text-underline-offset:2px}
+.wlist{display:flex;flex-direction:column;padding:6px;border-top:1px solid var(--line)}
+.work.closed .wlist{display:none}
+.st{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px 10px;padding:8px;border-radius:9px;border:1px solid transparent;animation:rise .25s ease}
+.st>.ic{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font:600 10px/1 var(--f-mono);background:var(--sunk);color:var(--muted)}
+.st.run>.ic{background:none;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;width:18px;height:18px;margin:2px;animation:spin .8s linear infinite;font-size:0}
+.st.k-q>.ic{background:var(--navy-bg);color:var(--navy)} .st.k-sql>.ic{background:var(--navy-bg);color:var(--navy)} .st.k-py>.ic{background:var(--amber-bg);color:var(--amber)} .st.k-ch>.ic{background:var(--accent-bg);color:var(--accent)} .st.k-err>.ic{background:var(--accent-bg);color:var(--accent)}
+.st .tt{font-size:13.5px;font-weight:500;min-width:0}
+.st .tt small{font:400 11px/1 var(--f-mono);color:var(--faint);margin-left:6px;text-transform:uppercase;letter-spacing:.06em}
+.st.k-note .tt{font-weight:400;color:var(--muted)}
+.st .bd{grid-column:2;min-width:0;display:flex;flex-direction:column;gap:6px}
+.st.flash{background:var(--accent-bg);border-color:var(--accent)}
+.meta{font:400 11px/1.4 var(--f-mono);color:var(--faint);display:flex;gap:4px 10px;flex-wrap:wrap}
+.meta b{color:var(--teal);font-weight:600} .meta b.no{color:var(--accent)}
+.code{background:var(--code-bg);border-radius:9px;overflow:hidden}
+.code header{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;font:500 10.5px/1.2 var(--f-mono);color:var(--code-c);border-bottom:1px solid rgba(255,255,255,.07)}
+.code pre{margin:0;padding:9px 10px;font:400 11.5px/1.55 var(--f-mono);color:var(--code-ink);overflow:auto;max-height:240px;white-space:pre}
+.code pre .k{color:var(--code-k);font-weight:600} .code pre .s{color:var(--code-s)} .code pre .c{color:var(--code-c)}
+.out{background:var(--sunk);border-radius:8px;padding:8px 10px;font:400 11.5px/1.5 var(--f-mono);white-space:pre-wrap;overflow:auto;max-height:200px;margin:0}
+.out.err{background:var(--accent-bg);color:var(--accent)}
+.grid{overflow:auto;border:1px solid var(--line);border-radius:8px;max-height:280px}
+.grid table{border-collapse:collapse;width:100%;font:400 11.5px/1.3 var(--f-mono);font-variant-numeric:tabular-nums}
+.grid th{position:sticky;top:0;text-align:left;font-weight:500;color:var(--faint);padding:6px 9px;background:var(--sunk);border-bottom:1px solid var(--line);white-space:nowrap}
+.grid td{padding:5px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+.grid td.n,.grid th.n{text-align:right}
+.grid tr:last-child td{border-bottom:0}
+.gmore{font:400 11px/1 var(--f-mono);color:var(--faint);padding:6px 9px}
+.ans{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;min-width:0;animation:rise .35s ease}
+.md{font-size:14.5px;line-height:1.6;min-width:0}
+.md>*:first-child{margin-top:0} .md>*:last-child{margin-bottom:0}
+.md p{margin:0 0 10px} .md ul,.md ol{margin:0 0 10px;padding-left:20px} .md li{margin:3px 0}
+.md h2,.md h3,.md h4{font:700 15px/1.3 var(--f-display);margin:12px 0 6px}
+.md h1{font:800 1.35rem/1.15 var(--f-display);letter-spacing:-.02em;margin:0 0 8px}
+.md table{border-collapse:collapse;font-size:13px;margin:0 0 10px;font-variant-numeric:tabular-nums;display:block;overflow-x:auto}
+.md th,.md td{border-bottom:1px solid var(--line);padding:5px 12px 5px 0;text-align:left;white-space:nowrap}
+.md th{font:500 10.5px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ref{border:1px solid var(--line);background:var(--sunk);border-radius:5px;padding:0 5px;margin:0 1px;font:600 10.5px/1.5 var(--f-mono);color:var(--navy);vertical-align:1px}
+.ref:hover{border-color:var(--accent);color:var(--accent)}
+.chart{min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px 10px 6px;background:var(--surface)}
+.chart h4{margin:0 0 6px;font:700 13.5px/1.3 var(--f-display)}
+.chart .vg{width:100%;min-width:0}
+.md .chart{margin:4px 0 12px}.md .chart h4{margin:0 0 6px;font:700 13.5px/1.3 var(--f-display)}
+.usage{font:400 11px/1.4 var(--f-mono);color:var(--faint);display:flex;gap:4px 12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:8px}
+.errmsg{background:var(--accent-bg);color:var(--accent);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.comp{padding:10px 16px 12px;border-top:1px solid var(--line);background:var(--app)}
+.box{max-width:880px;margin:0 auto;display:flex;align-items:flex-end;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 8px 8px 14px;box-shadow:0 6px 20px -14px rgba(10,30,60,.4)}
+.box:focus-within{border-color:var(--navy)}
+.box textarea{flex:1;min-width:0;border:0;outline:0;background:none;resize:none;font-size:15px;line-height:1.5;padding:5px 0;max-height:180px}
+.send{flex:none;width:36px;height:36px;border-radius:10px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;font:700 16px/1 var(--f-mono)}
+.send.stop{background:var(--ink)}
+.send:disabled{background:var(--sunk);color:var(--faint);cursor:default}
+.hint{max-width:880px;margin:6px auto 0;font:400 11px/1.4 var(--f-mono);color:var(--faint);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* workspace */
+.ws{border-left:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.tabs{display:flex;gap:2px;padding:8px 10px;border-bottom:1px solid var(--line);align-items:center}
+.tabs button{border:0;background:none;border-radius:7px;padding:6px 10px;font:600 12.5px/1 var(--f-body);color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--sunk);color:var(--ink)}
+.tabs .cnt{font:500 10.5px/1 var(--f-mono);color:var(--faint);margin-left:4px}
+.pane{flex:1;overflow:auto;min-height:0;padding:12px;display:flex;flex-direction:column;gap:10px}
+.tbls{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tbls button{width:100%;text-align:left;border:1px solid var(--line);background:var(--app);border-radius:9px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.tbls button:hover{border-color:var(--ink)}
+.tbls b{font:600 12.5px/1.2 var(--f-mono)} .tbls span{font:400 11px/1.3 var(--f-mono);color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ed{width:100%;min-height:140px;border:1px solid var(--line);border-radius:9px;background:var(--code-bg);color:var(--code-ink);font:400 12px/1.55 var(--f-mono);padding:10px;resize:vertical}
+.edrow{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.edrow small{font:400 11px/1.3 var(--f-mono);color:var(--faint)}
+.mcat{display:flex;flex-direction:column;gap:12px}
+.mcat h5{margin:0 0 4px;font:500 10.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.mcat div{display:flex;flex-wrap:wrap;gap:5px}
+.mcat button{border:1px solid var(--line);background:var(--app);border-radius:6px;padding:4px 7px;font:500 11.5px/1 var(--f-mono)}
+.mcat button:hover{border-color:var(--accent);color:var(--accent)}
+.muted{color:var(--faint);font-size:12.5px}
+.status{font:400 11px/1.4 var(--f-mono);color:var(--faint);display:flex;flex-direction:column;gap:3px}
+.status i{font-style:normal;color:var(--teal)}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(8,12,20,.45);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{width:min(560px,100%);max-height:calc(100% - 32px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 30px 70px -30px rgba(0,0,0,.5);padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.modal h2{margin:0;font:800 1.3rem/1.15 var(--f-display);letter-spacing:-.02em}
+.modal p{margin:0;color:var(--muted);font-size:13.5px}
+.fs{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:11px;padding:12px}
+.fs legend{font:600 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 6px}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font:500 12px/1.2 var(--f-body);color:var(--muted)}
+.fld input,.fld select{border:1px solid var(--line);border-radius:8px;background:var(--app);padding:8px 10px;font:400 13px/1.3 var(--f-mono);width:100%}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted)}
+.mact{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.lnk{width:100%;border:1px solid var(--line);border-radius:8px;background:var(--app);padding:8px 10px;font:400 12px/1.3 var(--f-mono);color:var(--muted)}
+.banner{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;background:var(--navy-bg);color:var(--navy);border-radius:10px;padding:9px 12px;font-size:13px}
+.banner b{font-weight:600} .banner .btn{margin-left:auto}
+.pubok{color:var(--teal)} .pubno{color:var(--accent)}
+#hist button[aria-current="true"]{border-color:var(--ink)}
+.test{font:400 12px/1.4 var(--f-mono);color:var(--muted)} .test.ok2{color:var(--teal)} .test.bad{color:var(--accent)}
+
+@media (max-width:1000px){
+  .body,.body.nows{grid-template-columns:minmax(0,1fr)}
+  .ws{position:fixed;inset:auto 0 0 0;height:min(70vh,560px);z-index:40;border-left:0;border-top:1px solid var(--line);box-shadow:0 -20px 50px -30px rgba(0,0,0,.5)}
+  .body.nows .ws{display:none}
+  .caps{grid-template-columns:repeat(2,minmax(0,1fr))}.srcs{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+.btn .sm{display:none}
+@media (max-width:560px){.row2{grid-template-columns:minmax(0,1fr)}.chips .chip.opt,#cModel,.livebadge,.hint{display:none}
+  header.top{flex-wrap:nowrap;padding:8px 12px;gap:8px}.logo{font-size:17px}.chips{gap:5px;flex-wrap:nowrap}
+  .btn{padding:7px 9px;font-size:12.5px}.btn .lg{display:none}.btn .sm{display:inline}
+  .box textarea,.fld input,.fld select,.ed,.lnk,#pySave{font-size:16px}
+  .tin{padding:16px 12px 22px}.comp{padding:8px 10px 10px}.amsg{grid-template-columns:24px minmax(0,1fr);gap:8px}.av{width:24px;height:24px;font-size:11px}
+  .ans{padding:14px}.caps{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}select.srcsel,.empty .caps{display:none}.srcs{gap:6px}.srcs button{padding:8px 10px}}
+/* home */
+.tin.wide{max-width:1080px}
+.home{width:100%;min-width:0;display:flex;flex-direction:column;gap:26px;padding:8px 0 10px;animation:rise .35s ease}
+.home>*{min-width:0;max-width:100%}
+.hhead{display:flex;justify-content:space-between;align-items:end;gap:10px 24px;flex-wrap:wrap}
+.hhead h2{margin:0;font:800 clamp(1.7rem,3.4vw,2.5rem)/1.02 var(--f-display);letter-spacing:-.04em}
+.hhead p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.hhead .asof{font:400 11.5px/1.5 var(--f-mono);color:var(--faint);text-align:right}
+.home .srcs{max-width:none;margin:0}
+.hsec{display:flex;flex-direction:column;gap:12px}
+.hsec>header{display:flex;justify-content:space-between;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
+.hsec h3{margin:0;font:700 15px/1.2 var(--f-display);display:flex;gap:8px;align-items:center}
+.hsec h3 .cnt{font:600 11px/1 var(--f-mono);background:var(--accent);color:#fff;border-radius:999px;padding:3px 7px}
+.hsec header small{font:400 11.5px/1.4 var(--f-mono);color:var(--faint)}
+.flags{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.flag{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px;min-width:0;position:relative}
+.flag::before{content:"";position:absolute;left:14px;right:14px;top:0;height:2px;border-radius:0 0 2px 2px;background:var(--accent)}
+.flag.good::before{background:var(--teal)}.flag.am::before{background:var(--amber)}
+.flag.sk{min-height:150px;animation:pulse 1s ease-in-out infinite alternate}.flag.sk::before{background:var(--line)}
+.flag .fn{font:500 10.5px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.flag .fv{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.flag .fv b{font:800 1.55rem/1 var(--f-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.dl{font:600 11px/1 var(--f-mono);border-radius:6px;padding:3px 6px;white-space:nowrap}
+.dl.dn{background:var(--accent-bg);color:var(--accent)} .dl.up{background:var(--teal-bg);color:var(--teal)}
+.nr{font:400 11.5px/1 var(--f-mono);color:var(--faint)}
+.flag p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.4;flex:1}
+.flag .ff{display:flex;justify-content:space-between;align-items:end;gap:8px}
+.inv{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px;font:600 12px/1 var(--f-body);color:var(--ink);display:inline-flex;gap:5px;align-items:center;white-space:nowrap;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.inv:hover{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.spark{display:block;width:100%;max-width:110px;height:30px;overflow:visible;stroke:var(--slate);fill:var(--slate)}
+.spark polyline{fill:none}
+.spark.dn{stroke:var(--accent);fill:var(--accent)} .spark.up{stroke:var(--teal);fill:var(--teal)}
+.cont{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cc{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0;cursor:pointer;color:var(--ink);font:inherit}
+.cc:hover{border-color:var(--ink)}
+.cc .ct{display:flex;justify-content:space-between;gap:8px;font:500 11px/1 var(--f-mono);color:var(--faint)}
+.cc b{font:600 14px/1.3 var(--f-body)}
+.cc span.s{font-size:12.5px;color:var(--muted)}
+.tag{font:600 10px/1 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;border-radius:5px;padding:3px 5px}
+.tag.rep{background:var(--teal-bg);color:var(--teal)} .tag.an{background:var(--navy-bg);color:var(--navy)}
+.wbr{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+.wbr table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.wbr th{font:500 10px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.wbr td{padding:8px 14px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+.wbr tr:last-child td{border-bottom:0}
+.wbr td.n,.wbr th.n{text-align:right}
+.wbr td.nm{font-weight:600}
+.wbr td.nm small{display:block;font:400 11px/1.3 var(--f-mono);color:var(--faint)}
+.wbr .spark{width:110px}
+.wbr tr .inv{opacity:.4} .wbr tr:hover .inv{opacity:1}
+@media (max-width:1100px){.flags{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:820px){.cont{grid-template-columns:minmax(0,1fr)} .wbr tr .inv{opacity:1}}
+@media (max-width:560px){.flags{grid-template-columns:minmax(0,1fr)}.hhead .asof{text-align:left}.home{gap:20px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <span class="logo">Resident<span class="q">Quant</span></span>
+    <span class="livebadge"><i></i>live</span>
+    <div class="chips">
+      <span class="chip" id="cModel">model <b>not set</b></span>
+      <span class="chip opt" id="cRole">role <b>-</b></span>
+      <select class="chip srcsel" id="src" aria-label="Data source"><option value="api">Semantic layer API</option><option value="olist">Olist marketplace</option><option value="toystore">Toy store web</option><option value="saas">SaaS subscriptions</option><option value="orbit">Satellite autonomy ops</option></select>
+      <span class="chip opt" id="cApi">API <b>not connected</b></span>
+      <button class="btn" type="button" id="wsBtn"><span class="lg">Workspace</span><span class="sm">Data</span></button>
+      <button class="btn" type="button" id="shareBtn">Share</button>
+      <button class="btn" type="button" id="newBtn"><span class="lg">New chat</span><span class="sm">New</span></button>
+      <button class="btn pri" type="button" id="setBtn" aria-label="Settings"><span class="lg">Settings</span><span class="sm">⚙</span></button>
+    </div>
+  </header>
+  <div class="body" id="body">
+    <section class="main">
+      <div class="thread" id="thread"><div class="tin" id="tin"></div></div>
+      <div class="comp">
+        <form class="box" id="form"><textarea id="q" rows="1" placeholder="Ask a question about your data…" aria-label="Question"></textarea><button class="send" id="send" type="submit" aria-label="Send">↑</button></form>
+        <div class="hint"><span id="hintL">Enter to send · Shift+Enter for a new line</span><span id="hintR">Keys stay in this browser. Calls go only to api.anthropic.com and your API URL.</span></div>
+      </div>
+    </section>
+    <aside class="ws" id="ws" aria-label="Workspace">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" data-tab="tables" aria-selected="true">Tables<span class="cnt" id="tCnt">0</span></button>
+        <button type="button" role="tab" data-tab="hist" aria-selected="false">History<span class="cnt" id="hCnt">0</span></button>
+        <button type="button" role="tab" data-tab="sql" aria-selected="false">SQL</button>
+        <button type="button" role="tab" data-tab="py" aria-selected="false">Python</button>
+        <button type="button" role="tab" data-tab="cat" aria-selected="false">Catalog</button>
+      </div>
+      <div class="pane" data-pane="tables"><p class="muted">Every query result becomes a DuckDB table here. The agent and you can join, filter and reshape them with SQL or pandas.</p><ul class="tbls" id="tbls"></ul><div class="status" id="engines"></div></div>
+      <div class="pane" data-pane="hist" hidden><p class="muted">Every chat has its own link. Chats are saved in this browser; use Share to send one.</p><ul class="tbls" id="hist"></ul></div>
+      <div class="pane" data-pane="sql" hidden><textarea class="ed" id="sqlEd" spellcheck="false">-- DuckDB SQL over this session's tables and the sample warehouses (olist.*, toystore.*, saas.*, orbit.*)
+SELECT 42 AS answer</textarea><div class="edrow"><small>Cmd/Ctrl+Enter to run</small><button class="btn pri" type="button" id="sqlRun">Run SQL</button></div><div id="sqlOut"></div></div>
+      <div class="pane" data-pane="py" hidden><textarea class="ed" id="pyEd" spellcheck="false"># pandas: each table is a DataFrame with the same name
+# set result = <DataFrame> to save it as a table
+import pandas as pd
+print(pd.__version__)</textarea><div class="edrow"><small>Save result as <input id="pySave" placeholder="table name" style="width:110px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--app);font:400 11px var(--f-mono)"></small><button class="btn pri" type="button" id="pyRun">Run Python</button></div><div id="pyOut"></div></div>
+      <div class="pane" data-pane="cat" hidden><div id="catBox" class="mcat"><p class="muted">Connect an API in Settings to load its metrics and dimensions.</p></div><div id="wcatBox" class="wcat" hidden></div></div>
+    </aside>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" hidden>
+  <form class="modal" id="setForm" aria-labelledby="setH">
+    <h2 id="setH">Connect ResidentQuant</h2>
+    <p>Everything runs in this browser: the agent, DuckDB SQL, pandas and charts. Your keys are sent only to Anthropic and to the API you enter. The sample warehouses need only the Anthropic key.</p>
+    <div class="fld"><label for="uName">Your name <span style="color:var(--faint)">(optional, for the home page)</span></label><input id="uName" autocomplete="off" placeholder="First name"></div>
+    <fieldset class="fs"><legend>Model</legend>
+      <div class="fld"><label for="aKey">Anthropic API key</label><input id="aKey" type="password" autocomplete="off" placeholder="sk-ant-…"></div>
+      <div class="fld"><label for="wsId">Workspace ID <span style="color:var(--faint)">(only for keys starting sk-ant-usr)</span></label><input id="wsId" autocomplete="off" placeholder="wrkspc_…"></div>
+      <div class="fld"><label for="model">Model</label><select id="model"><option value="claude-opus-5-5">Claude Opus 5.5</option><option value="claude-fable-5-1">Claude Fable 5.1</option><option value="claude-sonnet-5-5">Claude Sonnet 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5</option></select></div>
+    </fieldset>
+    <fieldset class="fs"><legend>Semantic layer API <span style="color:var(--faint);font-weight:400">(only for that source)</span></legend>
+      <div class="fld"><label for="apiUrl">API URL</label><input id="apiUrl" type="url" autocomplete="off" placeholder="https://your-semantic-layer.example.com"></div>
+      <div class="row2"><div class="fld"><label for="apiKey">API key</label><input id="apiKey" type="password" autocomplete="off" placeholder="from the API owner"></div>
+      <div class="fld"><label for="role">Role</label><select id="role"><option value="analyst">analyst</option></select></div></div>
+    </fieldset>
+    <fieldset class="fs"><legend>Public links</legend>
+      <p>With a GitHub token that can write to resident-quant/residentquant.com, each chat is saved there after every answer, so its address opens for anyone without keys. The repo is public.</p>
+      <div class="fld"><label for="ghKey">GitHub token</label><input id="ghKey" type="password" autocomplete="off" placeholder="github_pat_…"></div>
+      <label class="chk"><input type="checkbox" id="autoPub"> Publish my chats so their links work for anyone</label>
+    </fieldset>
+    <label class="chk"><input type="checkbox" id="remember"> Remember on this device. Leave off on shared computers.</label>
+    <div class="mact"><span class="test" id="testOut">Not tested yet</span><span style="display:flex;gap:8px"><button class="btn" type="button" id="testBtn">Test connection</button><button class="btn pri" type="submit">Save</button></span></div>
+  </form>
+</div>
+
+<div class="scrim" id="shareScrim" hidden>
+  <div class="modal" role="dialog" aria-labelledby="shH">
+    <h2 id="shH">Share this chat</h2>
+    <p>The link shows the questions, every step with its SQL and code, result previews, charts and answers. Keys are never included, and viewers need no keys to read it.</p>
+    <fieldset class="fs"><legend>Link with the chat inside</legend><p>Nothing is uploaded. Works for anyone.</p><input class="lnk" id="longOut" readonly aria-label="Share link"><div class="edrow"><small id="longLen"></small><button class="btn pri" type="button" id="copyLong">Copy link</button></div></fieldset>
+    <fieldset class="fs" id="shortFs"><legend>Short permalink</legend><p id="shortTxt"></p><input class="lnk" id="ghTok" type="password" placeholder="github_pat_…" aria-label="GitHub token" hidden><input class="lnk" id="shortOut" readonly aria-label="Short link"><div class="edrow"><small id="shortMsg"></small><button class="btn" type="button" id="mkShort">Create short link</button></div></fieldset>
+    <div class="mact"><span></span><button class="btn" type="button" id="shareClose">Done</button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vega@5.30.0/build/vega.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.21.0/build/vega-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0/build/vega-embed.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-interpreter@1.2.0/build/vega-interpreter.min.js"></script>
+<script type="module">
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+
+/* ---------------- settings ---------------- */
+const DEFAULT_API="https://semantic-layer-poc.shivaram-dev.workers.dev";
+const S={aKey:"",wsId:"",model:"claude-opus-5-5",apiUrl:DEFAULT_API,apiKey:"",role:"analyst",remember:false,autoPub:true,source:""};
+const LS="rq-live-settings";
+try{const v=JSON.parse(localStorage.getItem(LS)||"null");if(v)Object.assign(S,v,{remember:true})}catch(e){}
+if(!S.apiUrl)S.apiUrl=DEFAULT_API;if(!S.model)S.model="claude-opus-5-5";if(!S.role)S.role="analyst";
+if(!S.source)S.source=lsGet("rq-src")||(S.apiKey?"api":"olist");
+function saveSettings(){try{if(S.remember)localStorage.setItem(LS,JSON.stringify(S));else localStorage.removeItem(LS)}catch(e){}}
+const api=p=>S.apiUrl.replace(/\/+$/,"")+p;
+async function apiFetch(path,body,role){
+  const r=await fetch(api(path),{method:body?"POST":"GET",headers:{"X-API-Key":S.apiKey,"X-User-Role":role||S.role,...(body?{"Content-Type":"application/json"}:{})},body:body?JSON.stringify(body):undefined,signal:busy?ctl?.signal:undefined});
+  let j=null;try{j=await r.json()}catch(e){}
+  if(!r.ok){const m=j?.error?.message||j?.detail?.[0]?.msg||j?.detail||`HTTP ${r.status}`;const err=new Error(typeof m==="string"?m:JSON.stringify(m));err.status=r.status;err.code=j?.error?.code;throw err}
+  return j}
+let CAT=null;
+function chips(){
+  $("#cModel").innerHTML=`model <b>${esc(S.model||"not set")}</b>`;$("#cModel").classList.toggle("bad",!S.aKey);
+  $("#cRole").innerHTML=`role <b>${esc(S.role)}</b>`;
+  $("#cApi").innerHTML=CAT?`API <b>${CAT.metrics.length} metrics</b>`:`API <b>not connected</b>`;$("#cApi").classList.toggle("bad",!CAT);
+  const wh=isWh();$("#cApi").hidden=wh;$("#cRole").hidden=wh;$("#src").value=S.source;
+  $("#hintR").textContent=wh?"Keys stay in this browser. Only api.anthropic.com is called; the warehouse loads from this site.":"Keys stay in this browser. Calls go only to api.anthropic.com and your API URL."}
+async function loadCatalog(){
+  CAT=null;if(!S.apiUrl||!S.apiKey){chips();return}
+  try{CAT=await apiFetch("/v1/catalog");renderCat()}catch(e){$("#catBox").innerHTML=`<p class="errmsg">${esc(e.message)}</p>`}
+  chips()}
+function renderCat(){
+  const by={};CAT.metrics.forEach(m=>{const d=m.domain||(m.name.startsWith("ad_")||["cpm","cpc","cpa","roas","arpa","conversions","conversion_value"].includes(m.name)?"ads":"other");(by[d]||=[]).push(m)});
+  const dims={};CAT.dimensions.forEach(d=>{const n=typeof d==="string"?d:d.name;const g=n.split(".")[0];(dims[g]||=[]).push(n)});
+  $("#catBox").innerHTML=`<p class="muted">Role <code>${esc(CAT.role)}</code>: ${CAT.metrics.length} metrics, ${CAT.dimensions.length} dimensions, grains ${esc((CAT.time_grains||[]).join(", "))}. Click a metric to ask about it.</p>`+
+   Object.entries(by).map(([d,ms])=>`<section><h5>${esc(d)} metrics</h5><div>${ms.map(m=>`<button type="button" data-ask="${esc(m.name)}" title="${esc(m.description||"")}">${esc(m.name)}</button>`).join("")}</div></section>`).join("")+
+   `<section><h5>Dimensions</h5>${Object.entries(dims).map(([g,ns])=>`<div style="margin-bottom:6px">${ns.map(n=>`<button type="button" data-dim="${esc(n)}">${esc(n)}</button>`).join("")}</div>`).join("")}</section>`}
+
+function openSettings(){
+  $("#ghKey").value="";$("#ghKey").placeholder=ghToken()?"saved in this browser":"github_pat_…";$("#autoPub").checked=S.autoPub!==false;
+  $("#uName").value=S.name||"";$("#aKey").value=S.aKey;$("#wsId").value=S.wsId||"";$("#model").value=S.model;$("#apiUrl").value=S.apiUrl;$("#apiKey").value=S.apiKey;$("#remember").checked=S.remember;
+  $("#role").innerHTML=`<option>${esc(S.role)}</option>`;$("#scrim").hidden=false;setTimeout(()=>$(S.aKey?"#apiUrl":"#aKey").focus(),30)}
+function readForm(){S.name=$("#uName").value.trim();const g=$("#ghKey").value.trim();if(g)lsSet("vlc:token",g);S.autoPub=$("#autoPub").checked;S.aKey=$("#aKey").value.trim();S.wsId=$("#wsId").value.trim();S.model=$("#model").value;S.apiUrl=$("#apiUrl").value.trim();S.apiKey=$("#apiKey").value.trim();S.role=$("#role").value||"analyst";S.remember=$("#remember").checked}
+$("#setBtn").onclick=openSettings;
+$("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim"&&S.aKey)$("#scrim").hidden=true});
+$("#testBtn").onclick=async()=>{
+  readForm();const t=$("#testOut");t.className="test";t.textContent="Testing…";const out=[];
+  try{
+    if(S.aKey){const r=await fetch("https://api.anthropic.com/v1/models?limit=50",{headers:aHeaders(false)});
+      const j=await r.json();if(!r.ok)throw new Error("Anthropic: "+aErr(j?.error?.message||String(r.status)));
+      const ids=(j.data||[]).map(m=>m.id);const cur=S.model;const order=ids.sort((a,b)=>(b.includes("opus")-a.includes("opus")));
+      if(order.length){$("#model").innerHTML=order.map(i=>`<option value="${esc(i)}">${esc((j.data.find(m=>m.id===i)||{}).display_name||i)}</option>`).join("");$("#model").value=order.includes(cur)?cur:(order.find(i=>i.includes("opus"))||order[0])}
+      out.push(`Anthropic ok, ${ids.length} models`)}
+    if(S.apiUrl){const h=await fetch(api("/health")).then(r=>r.json());out.push(`API ${h.status}, ${h.metrics} metrics`);
+      try{const roles=await apiFetch("/v1/roles");const list=Array.isArray(roles)?roles:roles.roles||[];if(list.length){$("#role").innerHTML=list.map(r=>`<option value="${esc(r.name)}" title="${esc(r.description||"")}">${esc(r.name)}</option>`).join("");$("#role").value=list.some(r=>r.name===S.role)?S.role:list[0].name}}catch(e){out.push("roles: "+e.message)}}
+    t.className="test ok2";t.textContent=out.join(" · ")||"Enter keys to test"}
+  catch(e){t.className="test bad";t.textContent=e.message}};
+$("#setForm").addEventListener("submit",async e=>{e.preventDefault();readForm();saveSettings();$("#scrim").hidden=true;for(const k in HOME_CACHE)delete HOME_CACHE[k];chips();if(!isWh())await loadCatalog();if(!location.hash)renderEmpty()});
+const needKeys=()=>!S.aKey||(!isWh()&&(!S.apiUrl||!S.apiKey));
+
+const aHeaders=(json)=>({"x-api-key":S.aKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true",...(S.wsId?{"anthropic-workspace-id":S.wsId}:{}),...(json?{"content-type":"application/json"}:{})});
+const aErr=m=>/workspace/i.test(m)&&!S.wsId?m+" Add your Workspace ID in Settings, or use a key created inside a workspace (sk-ant-api03-…).":m;
+/* ---------------- DuckDB ---------------- */
+let DB=null,CONN=null,dbLoading=null;
+const TABLES=new Map();
+function engine(name,state){const e=$("#engines");let r=e.querySelector(`[data-e="${name}"]`);if(!r){r=el("span");r.dataset.e=name;e.appendChild(r)}r.innerHTML=`${name}: <i>${esc(state)}</i>`}
+async function duck(){
+  if(CONN)return CONN;if(dbLoading)return dbLoading;
+  dbLoading=(async()=>{engine("DuckDB","loading…");
+    const duckdb=await import("https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/+esm");
+    const bundle=await duckdb.selectBundle(duckdb.getJsDelivrBundles());
+    const wurl=URL.createObjectURL(new Blob([`importScripts("${bundle.mainWorker}");`],{type:"text/javascript"}));
+    DB=new duckdb.AsyncDuckDB(new duckdb.VoidLogger(),new Worker(wurl));await DB.instantiate(bundle.mainModule,bundle.pthreadWorker);URL.revokeObjectURL(wurl);
+    CONN=await DB.connect();engine("DuckDB","ready");return CONN})();
+  return dbLoading}
+function arrowRows(t){
+  const fields=t.schema.fields.map(f=>({name:f.name,type:String(f.type)}));
+  const rows=t.toArray().map(r=>{const o=r.toJSON();const out={};fields.forEach(f=>{let v=o[f.name];
+    if(typeof v==="bigint")v=Number(v);
+    else if(v!=null&&f.type.startsWith("Date"))v=new Date(typeof v==="number"?v:Number(v)).toISOString().slice(0,10);
+    else if(v!=null&&f.type.startsWith("Timestamp"))v=new Date(Number(v)).toISOString().replace(".000Z","Z");
+    else if(v!=null&&f.type.startsWith("Decimal")){const sc=+(f.type.match(/,\s*(\d+)/)||[0,0])[1];v=Number(v.toString())/10**sc}
+    else if(v!=null&&typeof v==="object"&&!(v instanceof Array))v=String(v);
+    out[f.name]=v});return out});
+  return {cols:fields.map(f=>f.name),types:fields.map(f=>f.type),rows}}
+async function sqlQuery(sql){const c=await duck();await ensureWh(sql);return arrowRows(await c.query(sql))}
+const qid=s=>'"'+String(s).replace(/"/g,'""')+'"';
+const cleanName=s=>String(s||"").toLowerCase().replace(/[^a-z0-9_]+/g,"_").replace(/^([0-9])/,"t_$1").slice(0,48)||"t";
+async function tableFromRecords(name,records){
+  const c=await duck();const f=`${name}_${Date.now()}.json`;
+  await DB.registerFileText(f,JSON.stringify(records.length?records:[{}]));
+  await c.query(`DROP TABLE IF EXISTS ${qid(name)}`);
+  await c.insertJSONFromPath(f,{name});
+  if(!records.length)await c.query(`DELETE FROM ${qid(name)}`);
+  await DB.dropFile(f).catch(()=>{});await refreshTables()}
+async function refreshTables(){
+  const r=await sqlQuery(`SELECT table_name, estimated_size FROM duckdb_tables() WHERE schema_name='main' ORDER BY table_name`);
+  TABLES.clear();
+  for(const t of r.rows){const cols=await sqlQuery(`SELECT column_name, data_type FROM information_schema.columns WHERE table_schema='main' AND table_name='${t.table_name.replace(/'/g,"''")}' ORDER BY ordinal_position`);
+    const n=(await sqlQuery(`SELECT COUNT(*) AS n FROM ${qid(t.table_name)}`)).rows[0].n;
+    TABLES.set(t.table_name,{rows:n,cols:cols.rows.map(c=>`${c.column_name} ${c.data_type}`)})}
+  $("#tCnt").textContent=TABLES.size;
+  $("#tbls").innerHTML=[...TABLES].map(([n,t])=>`<li><button type="button" data-tbl="${esc(n)}"><b>${esc(n)}</b><span>${t.rows.toLocaleString("en-US")} rows · ${esc(t.cols.join(", "))}</span></button></li>`).join("")||`<li class="muted">No tables yet.</li>`}
+const tableSummary=()=>[...TABLES].map(([n,t])=>`${n} (${t.rows} rows): ${t.cols.join(", ")}`).join("\n");
+
+/* ---------------- sample warehouses ---------------- */
+const WHS={olist:"Olist marketplace",toystore:"Toy store web",saas:"SaaS subscriptions",orbit:"Satellite autonomy ops"};
+const isWh=()=>S.source in WHS;
+const WCATS={},WLOADED=new Set(),WLOADING=new Map();
+let WCAT=null;
+const whBase=id=>new URL(`data/${id}/`,location.href).href;
+async function loadWcat(id){
+  if(WCATS[id])return WCATS[id];
+  const r=await fetch(whBase(id)+"catalog.json");if(!r.ok)throw new Error(`Could not load the ${WHS[id]} catalog (HTTP ${r.status})`);
+  return WCATS[id]=await r.json()}
+const fmtMB=b=>(b/1e6).toFixed(b<1e6?2:1)+" MB";
+/* load the parquet files a query mentions (schema.table), once per page */
+async function ensureWh(sql){
+  const c=await duck();const loaded=[];
+  const refs=new Set();String(sql).replace(/\b(olist|toystore|saas|orbit)\s*\.\s*"?([a-z_]+)"?/gi,(m,w,tb)=>{refs.add(w.toLowerCase()+"."+tb.toLowerCase());return m});
+  for(const ref of refs){
+    if(WLOADED.has(ref))continue;
+    const [w,tb]=ref.split(".");const cat=await loadWcat(w).catch(()=>null);const sem=await loadSem(w).catch(()=>null);const meta=cat?.tables.find(x=>x.name===tb)||(sem?.sources[tb]?.kind==="aggregate"?sem.sources[tb]:null);if(!meta)continue;
+    if(!WLOADING.has(ref))WLOADING.set(ref,(async()=>{
+      engine("Warehouse",`loading ${ref} (${fmtMB(meta.bytes)})…`);
+      const r=await fetch(whBase(w)+meta.file);if(!r.ok)throw new Error(`Could not load ${ref} (HTTP ${r.status})`);
+      const buf=new Uint8Array(await r.arrayBuffer());const f=`${w}__${tb}.parquet`;
+      await DB.registerFileBuffer(f,buf);
+      await c.query(`CREATE SCHEMA IF NOT EXISTS ${w}`);await c.query(`CREATE OR REPLACE VIEW ${w}.${tb} AS SELECT * FROM read_parquet('${f}')`);
+      WLOADED.add(ref);engine("Warehouse",`${WLOADED.size} table${WLOADED.size===1?"":"s"} loaded`);return {table:ref,rows:meta.rows,bytes:meta.bytes}})().finally(()=>WLOADING.delete(ref)));
+    loaded.push(await WLOADING.get(ref))}
+  return loaded}
+function renderWcat(){
+  const box=$("#wcatBox");if(!WCAT){box.innerHTML="";return}const c=WCAT;
+  const sm=SEM&&SEM.id===c.id?SEM:null;
+  box.innerHTML=`<p class="muted">${esc(c.story)}</p>
+  ${sm?`<section><h5>Semantic model · ${sm.metrics.length} metrics</h5><div class="mt">${sm.metrics.map(m=>`<code>${esc(m.name)}</code><span>${esc(m.format)}${m.snapshot?" · snapshot":""}</span><i>${esc(m.description)} <span style="color:var(--faint)">from ${esc(m.source)}</span></i>`).join("")}</div></section>
+  <section><h5>Aggregate tables</h5>${Object.entries(sm.sources).filter(([,s])=>s.kind==="aggregate").map(([n,s])=>`<details><summary><b>${esc(c.id)}.${esc(n)}</b><span>${s.rows.toLocaleString("en-US")} rows · ${fmtMB(s.bytes)}</span></summary><p class="muted" style="margin:0 9px 6px">${esc(s.description)}</p><div class="cols">${Object.entries(s.dimensions).map(([k,v])=>`<code>${esc(k)}</code><span>dimension · ${esc(v)}</span>`).join("")}<code>${esc(s.time)}</code><span>time</span>${s.measures.map(x=>`<code>${esc(x)}</code><span>measure</span>`).join("")}</div><button type="button" class="tb" data-wtbl="${esc(c.id)}.${esc(n)}">Preview in SQL →</button></details>`).join("")}</section>
+  <section><h5>Reconciliation · semantic vs raw</h5>${sm.reconciliation.map(x=>`<div class="tst"><b class="${x.status==="pass"?"pass":"warn"}">${esc(x.status)}</b><span>${esc(x.metric)} ${fmtCell(x.semantic)} = ${fmtCell(x.raw)}</span></div>`).join("")}</section>`:""}
+  <section><h5>Raw tables · schema ${esc(c.id)}</h5>${c.tables.map(t=>`<details><summary><b>${esc(c.id)}.${esc(t.name)}</b><span>${t.rows.toLocaleString("en-US")} rows · ${fmtMB(t.bytes)}${t.date_range?` · ${esc(t.date_range.min)} to ${esc(t.date_range.max)}`:""}</span></summary><p class="muted" style="margin:0 9px 6px">${esc(t.description)} Key: <code>${esc(t.primary_key)}</code></p><div class="cols">${t.columns.map(x=>`<code>${esc(x.name)}</code><span>${esc(x.type.toLowerCase())} · ${esc(x.description)}</span>`).join("")}</div><button type="button" class="tb" data-wtbl="${esc(c.id)}.${esc(t.name)}">Preview in SQL →</button></details>`).join("")}</section>
+  <section><h5>Certified metrics (raw SQL)</h5><div class="mt">${c.metrics.map(m=>`<code>${esc(m.name)}</code><span>${fmtCell(m.value)} <small style="color:var(--faint)">${esc(m.value_label)}</small></span><i>${esc(m.description)}</i>`).join("")}</div></section>
+  <section><h5>Data tests</h5>${c.tests.map(x=>`<div class="tst"><b class="${x.status==="pass"?"pass":"warn"}">${esc(x.status)}</b><span>${esc(x.table)}.${esc(x.test)}${x.failing_rows?` · ${x.failing_rows.toLocaleString("en-US")} rows`:""}</span></div>`).join("")}</section>
+  <section><h5>Caveats</h5><ul>${c.caveats.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>
+  <p class="credit">${creditHTML(c)}</p>`}
+const creditHTML=c=>`Data: <a href="${esc(c.source.url)}" target="_blank" rel="noopener">${esc(c.source.title)}</a> by ${esc(c.source.credit)}, ${esc(c.source.license)}. Remodeled into a warehouse for this demo.`;
+async function setSource(id,{keepChat=false}={}){
+  if(!(id in WHS)&&id!=="api")id="api";
+  const changed=S.source!==id;S.source=id;lsSet("rq-src",id);saveSettings();
+  if(changed&&!keepChat&&SESSION?.turns?.length&&!busy)newChat();
+  WCAT=null;SEM=null;
+  if(isWh()){$("#catBox").hidden=true;$("#wcatBox").hidden=false;$("#wcatBox").innerHTML=`<p class="muted">Loading catalog…</p>`;
+    try{[WCAT,SEM]=await Promise.all([loadWcat(id),loadSem(id)])}catch(e){$("#wcatBox").innerHTML=`<p class="errmsg">${esc(e.message)}</p>`}
+    if(S.source!==id)return;renderWcat()}
+  else{$("#catBox").hidden=false;$("#wcatBox").hidden=true;if(!keepChat&&!CAT&&S.apiUrl&&S.apiKey)await loadCatalog()}
+  if(S.source!==id)return;chips();
+  if(!keepChat){if(!SESSION?.turns?.length){setHash("");renderEmpty()}}else if(!location.hash)renderEmpty()}
+$("#src").addEventListener("change",e=>setSource(e.target.value));
+
+/* ---------------- Pyodide ---------------- */
+let PY=null,pyLoading=null;
+async function py(){
+  if(PY)return PY;if(pyLoading)return pyLoading;
+  pyLoading=(async()=>{engine("Python","loading pandas (first run, ~15 MB)…");
+    if(!window.loadPyodide)await new Promise((res,rej)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";s.onload=res;s.onerror=()=>rej(new Error("Could not load Pyodide"));document.head.appendChild(s)});
+    PY=await loadPyodide({indexURL:"https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"});
+    await PY.loadPackage(["pandas","numpy"]);
+    PY.runPython(`import pandas as pd, numpy as np, json, io, sys\npd.set_option("display.width",160)\npd.set_option("display.max_columns",30)`);
+    engine("Python","ready (pandas, numpy)");return PY})();
+  return pyLoading}
+async function runPython(code,saveAs){
+  const p=await py();
+  try{await p.loadPackagesFromImports(code)}catch(e){}
+  const names=[...TABLES.keys()];
+  const skipped=[];
+  for(const n of names){if((TABLES.get(n)?.rows||0)>300000){skipped.push(n);continue}const d=await sqlQuery(`SELECT * FROM ${qid(n)}`);p.globals.set("__j",JSON.stringify(d.rows));p.runPython(`globals()[${JSON.stringify(n)}]=pd.DataFrame(json.loads(__j))`)}
+  p.runPython(`__buf=io.StringIO()\n__old=sys.stdout\nsys.stdout=__buf\nresult=None`);
+  let err=null;
+  try{await p.runPythonAsync(code)}catch(e){err=String(e.message||e).split("\n").filter(l=>l.trim()).slice(-6).join("\n")}
+  finally{p.runPython(`sys.stdout=__old`)}
+  const stdout=p.runPython(`__buf.getvalue()`);
+  let saved=null;
+  if(!err&&saveAs){
+    const isDf=p.runPython(`isinstance(result, (pd.DataFrame, pd.Series))`);
+    if(isDf){const j=p.runPython(`__r=result.to_frame() if isinstance(result,pd.Series) else result\n__r=__r.reset_index(drop=isinstance(__r.index,pd.RangeIndex))\n__r.columns=[str(c) for c in __r.columns]\n__r.to_json(orient="records",date_format="iso")`);
+      const recs=JSON.parse(j);await tableFromRecords(saveAs,recs);saved={name:saveAs,rows:recs.length}}
+    else err="save_as was set, but `result` is not a DataFrame. Assign the DataFrame you want to keep to `result`."}
+  if(err&&skipped.length&&/NameError/.test(err))err+=`\n(Tables over 300,000 rows are not loaded into pandas: ${skipped.join(", ")}. Aggregate with run_sql and save_as first.)`;
+  return {stdout:String(stdout).slice(0,6000),error:err,saved}}
+
+/* ---------------- charts ---------------- */
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+async function renderChart(target,spec,table){const d=await sqlQuery(`SELECT * FROM ${qid(table)} LIMIT 5000`);await renderSpec(target,spec,d.rows);return d.rows}
+async function renderSpec(target,spec,rows){
+  const s=JSON.parse(JSON.stringify(spec||{}));delete s.data;delete s.$schema;
+  s.data={values:rows};if(!s.width)s.width="container";
+  const yEnc=s.encoding?.y;if(!s.height&&yEnc&&(yEnc.type==="nominal"||yEnc.type==="ordinal")&&yEnc.field&&!s.facet){const n=new Set(rows.map(r=>r[yEnc.field])).size;s.height=Math.max(160,Math.min(n*20,900))}
+  if(!s.height&&!s.facet&&!s.concat&&!s.hconcat&&!s.vconcat)s.height=280;
+  s.autosize={type:"fit",contains:"padding"};s.background=null;
+  const ink=css("--ink"),muted=css("--muted"),line=css("--line");
+  s.config=Object.assign({font:"IBM Plex Sans",view:{stroke:null},range:{category:[css("--accent"),css("--navy"),css("--teal"),css("--slate"),css("--amber"),"#7c3aed","#db2777","#0891b2"]},
+    axis:{labelColor:muted,titleColor:muted,gridColor:line,domainColor:line,tickColor:line,labelFontSize:11,titleFontSize:11,titleFontWeight:500},
+    legend:{labelColor:muted,titleColor:muted,labelFontSize:11,titleFontSize:11,orient:"bottom",columns:Math.max(1,Math.floor((target.clientWidth||600)/120)),labelLimit:160},title:{color:ink,fontSize:13,anchor:"start"},
+    mark:{color:css("--accent")},line:{strokeWidth:2.2},bar:{cornerRadiusEnd:2}},s.config||{});
+  await vegaEmbed(target,s,{actions:{export:true,source:false,compiled:false,editor:false},renderer:"svg",ast:true,expr:vega.expressionInterpreter})}
+
+/* ---------------- semantic layer for the sample warehouses (compiled in the browser) ---------------- */
+const SEMS={};let SEM=null;
+async function loadSem(id){
+  if(SEMS[id])return SEMS[id];
+  const r=await fetch(whBase(id)+"semantic.json");if(!r.ok)throw new Error(`Could not load the ${WHS[id]} semantic model (HTTP ${r.status})`);
+  return SEMS[id]=await r.json()}
+const CUR={olist:"R$"};
+const semErr=m=>{const e=new Error(m);e.semantic=1;throw e};
+const sqlLit=v=>typeof v==="number"&&isFinite(v)?String(v):typeof v==="boolean"?String(v):`'${String(v).replace(/'/g,"''")}'`;
+const isIdent=s=>/^[a-z_][a-z0-9_]*$/.test(String(s||""));
+function compileMetrics(req,sem=SEM){
+  if(!sem)semErr("No semantic model loaded.");
+  const names=Array.isArray(req.metrics)?req.metrics:[];if(!names.length)semErr("Pass at least one metric.");
+  const ms=names.map(n=>sem.metrics.find(m=>m.name===n)||semErr(`Unknown metric "${n}". Available: ${sem.metrics.map(m=>m.name).join(", ")}`));
+  let grain=null;const dims=[];
+  for(const g of (req.group_by||[])){const t=String(g).match(/^metric_time__(day|week|month|quarter|year)$/);if(t){grain=t[1];continue}
+    if(!isIdent(g))semErr(`Bad dimension name "${g}".`);dims.push(g)}
+  const tkey=grain?`metric_time__${grain}`:null;
+  const filters=(req.filters||[]).map(f=>{const d=String(f.dimension||"");const op=String(f.op||"=").toLowerCase().trim();
+    if(!/^metric_time(__(day|week|month|quarter|year))?$/.test(d)&&!isIdent(d))semErr(`Bad filter dimension "${d}".`);
+    if(!["=","!=","<>",">",">=","<","<=","in","not in","between","like","not like","is null","is not null"].includes(op))semErr(`Unsupported filter op "${op}".`);
+    return {d,op,v:f.value}});
+  const bySrc=new Map();ms.forEach(m=>{if(!bySrc.has(m.source))bySrc.set(m.source,[]);bySrc.get(m.source).push(m)});
+  const ctes=[];let i=0;
+  for(const [src,list] of bySrc){
+    const s=sem.sources[src];const tbl=`${sem.id}.${src}`;const tcol=`CAST(${s.time} AS DATE)`;
+    for(const d of dims)if(!(d in s.dimensions))semErr(`Metric ${list.map(m=>m.name).join(", ")} cannot be grouped by "${d}". Its dimensions: ${Object.keys(s.dimensions).join(", ")||"(time only)"}.`);
+    const where=[];
+    if(req.time_range?.start)where.push(`${tcol} >= DATE ${sqlLit(String(req.time_range.start).slice(0,10))}`);
+    if(req.time_range?.end)where.push(`${tcol} <= DATE ${sqlLit(String(req.time_range.end).slice(0,10))}`);
+    for(const f of filters){
+      let col;if(f.d.startsWith("metric_time")){const g=f.d.split("__")[1];col=g?`DATE_TRUNC('${g}', ${tcol})::DATE`:tcol}
+      else{if(!(f.d in s.dimensions))semErr(`Filter dimension "${f.d}" does not apply to ${list.map(m=>m.name).join(", ")}. Its dimensions: ${Object.keys(s.dimensions).join(", ")}.`);col=f.d}
+      const lit=v=>f.d.startsWith("metric_time")?`DATE ${sqlLit(String(v).slice(0,10))}`:sqlLit(v);
+      if(f.op==="is null"||f.op==="is not null")where.push(`${col} ${f.op.toUpperCase()}`);
+      else if(f.op==="in"||f.op==="not in"){const arr=Array.isArray(f.v)?f.v:[f.v];where.push(`${col} ${f.op.toUpperCase()} (${arr.map(lit).join(", ")})`)}
+      else if(f.op==="between"){const arr=Array.isArray(f.v)?f.v:[];if(arr.length!==2)semErr("between needs a two-value list.");where.push(`${col} BETWEEN ${lit(arr[0])} AND ${lit(arr[1])}`)}
+      else where.push(`${col} ${f.op==="<>"?"!=":f.op.toUpperCase()} ${lit(f.v)}`)}
+    const snap=list.some(m=>m.snapshot);
+    if(snap){
+      if(grain==="day"||grain==="week")semErr(`${list.map(m=>m.name).join(", ")} is a month-end snapshot; use metric_time__month, __quarter or __year.`);
+      const w=where.length?` WHERE ${where.join(" AND ")}`:"";
+      where.push(grain?`${s.time} IN (SELECT MAX(${s.time}) FROM ${tbl}${w} GROUP BY DATE_TRUNC('${grain}', ${s.time}))`:`${s.time} = (SELECT MAX(${s.time}) FROM ${tbl}${w})`)}
+    const sel=[...(grain?[`DATE_TRUNC('${grain}', ${tcol})::DATE AS ${tkey}`]:[]),...dims,...list.map(m=>`${m.sql} AS ${m.name}`)];
+    ctes.push({name:`m${i++}`,sql:`SELECT ${sel.join(",\n    ")}\n  FROM ${tbl}${where.length?`\n  WHERE ${where.join("\n    AND ")}`:""}${grain||dims.length?"\n  GROUP BY ALL":""}`})}
+  const keys=[...(tkey?[tkey]:[]),...dims];
+  let sql;
+  if(ctes.length===1)sql=ctes[0].sql;
+  else sql=`WITH ${ctes.map(c=>`${c.name} AS (\n  ${c.sql}\n)`).join(",\n")}\nSELECT ${keys.length?keys.join(", ")+", ":""}${ms.map(m=>m.name).join(", ")}\nFROM ${ctes.map((c,j)=>j?`${keys.length?"FULL OUTER JOIN":"CROSS JOIN"} ${c.name}${keys.length?` USING (${keys.join(", ")})`:""}`:c.name).join("\n")}`;
+  const out=[...keys,...ms.map(m=>m.name)];
+  const ob=(req.order_by||[]).filter(o=>out.includes(o.field)).map(o=>`${o.field} ${o.desc?"DESC":"ASC"}`);
+  if(!ob.length&&tkey)ob.push(`${tkey} ASC`);
+  sql=`SELECT * FROM (\n${sql}\n) q${ob.length?`\nORDER BY ${ob.join(", ")}`:""}\nLIMIT ${Math.min(Math.max(parseInt(req.limit)||5000,1),5000)}`;
+  const columns=[...(tkey?[{name:tkey,kind:"dimension",label:grain[0].toUpperCase()+grain.slice(1),type:"time"}]:[]),...dims.map(d=>({name:d,kind:"dimension",label:d})),...ms.map(m=>({name:m.name,kind:"metric",label:m.label,format:m.format}))];
+  return {sql,columns,sources:[...bySrc.keys()]}}
+async function semQuery(req,sem=SEM){const t0=performance.now();const q=compileMetrics(req,sem);const d=await sqlQuery(q.sql);return {...q,rows:d.rows,cols:d.cols,elapsed_ms:Math.round(performance.now()-t0)}}
+
+/* ---------------- value formatting and sparklines ---------------- */
+function fmtVal(v,fmt,cur="$"){
+  if(v==null||!isFinite(v))return "–";const a=Math.abs(v);
+  const compact=x=>{const ax=Math.abs(x);return ax>=1e9?(x/1e9).toFixed(2)+"B":ax>=1e6?(x/1e6).toFixed(2)+"M":ax>=1e4?(x/1e3).toFixed(1)+"K":ax>=1e3?(x/1e3).toFixed(2)+"K":ax>=100?x.toFixed(0):ax>=10?x.toFixed(1):x.toFixed(2)};
+  if(fmt==="currency")return (v<0?"-":"")+cur+compact(a);
+  if(fmt==="percent")return (v*100).toFixed(a<0.1?2:1)+"%";
+  if(fmt==="ratio"||fmt==="score")return v.toFixed(2);
+  if(fmt==="days")return v.toFixed(1)+" d";if(fmt==="hours")return v.toFixed(1)+" h";
+  return Number.isInteger(v)&&a<1e4?v.toLocaleString("en-US"):compact(v)}
+const pct=x=>(x>0?"+":"")+(x*100).toFixed(Math.abs(x)<0.1?1:0)+"%";
+function sparkSVG(vals,cls){
+  const v=vals.map(x=>x==null||!isFinite(x)?null:+x);const ok=v.filter(x=>x!=null);if(ok.length<2)return `<svg class="spark" viewBox="0 0 110 30"></svg>`;
+  const lo=Math.min(...ok),hi=Math.max(...ok),rg=hi-lo||1,W=110,H=30,n=v.length;
+  const pts=v.map((x,i)=>x==null?null:[i*(W-4)/(n-1)+2,H-3-(x-lo)/rg*(H-6)]).filter(Boolean);
+  const last=pts[pts.length-1];
+  return `<svg class="spark ${cls||""}" viewBox="0 0 ${W} ${H}" aria-hidden="true"><polyline points="${pts.map(p=>p.map(z=>z.toFixed(1)).join(",")).join(" ")}" fill="none" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.6"/></svg>`}
+
+/* ---------------- home page: WBR, flags, continue, segments ---------------- */
+const HOME_CACHE={};
+const API_HOME={wbr:["ad_revenue","active_campaigns","roas","cpm","active_users","saves","save_rate","searches"],seg:{title:"Industries you own",note:"advertiser industries by ad revenue",dimension:"advertisers.industry",metric:"ad_revenue",extra:["roas"],top:6}};
+const DOWN_GOOD=new Set(["cpm","cpc","cpa"]);
+const addDays=(d,n)=>{const x=new Date(d+"T00:00:00Z");x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
+const addMonths=(d,n)=>{const x=new Date(d+"T00:00:00Z");x.setUTCDate(1);x.setUTCMonth(x.getUTCMonth()+n);return x.toISOString().slice(0,10)};
+const dlabel=(d,o={month:"short",day:"numeric"})=>new Date(d+"T00:00:00Z").toLocaleDateString("en-US",{...o,timeZone:"UTC"});
+function periodsEnding(asOf,grain,n=13){ /* period start dates of the last n complete periods ending on or before asOf */
+  let last;
+  if(grain==="week"){const dow=(new Date(asOf+"T00:00:00Z").getUTCDay()+6)%7;last=dow===6?addDays(asOf,-6):addDays(asOf,-dow-7)}
+  else{const nextDay=addDays(asOf,1);last=nextDay.slice(8)==="01"?asOf.slice(0,8)+"01":addMonths(asOf.slice(0,8)+"01",-1)}
+  const out=[];for(let k=n-1;k>=0;k--)out.push(grain==="week"?addDays(last,-7*k):addMonths(last,-k));return out}
+const periodEnd=(p,grain)=>grain==="week"?addDays(p,6):addDays(addMonths(p,1),-1);
+const periodName=(p,grain)=>grain==="week"?`${dlabel(p)} to ${periodEnd(p,grain).slice(5,7)===p.slice(5,7)?+periodEnd(p,grain).slice(8):dlabel(periodEnd(p,grain))}`:dlabel(p,{month:"long",year:"numeric"});
+function signal(vals,polarity){
+  const last=vals[vals.length-1],prev=vals[vals.length-2];const base=vals.slice(-9,-1).filter(x=>x!=null);
+  const mean=base.reduce((a,b)=>a+b,0)/(base.length||1);const sd=Math.sqrt(base.reduce((a,b)=>a+(b-mean)**2,0)/Math.max(base.length-1,1));
+  const z=sd>0&&last!=null?(last-mean)/sd:0;const delta=prev?((last-prev)/Math.abs(prev)):null;
+  const unusual=Math.abs(z)>=2;const dir=z<0?"drop":"rise";const bad=unusual&&((dir==="drop")===(polarity!=="down"));
+  return {last,prev,delta,z,unusual,dir,bad}}
+function sinceText(vals,periods,grain,dir){
+  const last=vals[vals.length-1];const unit=grain==="week"?"week":"month";
+  for(let i=vals.length-2;i>=0;i--){if(vals[i]!=null&&(dir==="drop"?vals[i]<=last:vals[i]>=last))return `${dir==="drop"?"Lowest":"Highest"} ${unit} since ${dlabel(periods[i],grain==="week"?{month:"short",day:"numeric"}:{month:"short",year:"numeric"})}.`}
+  return `${dir==="drop"?"Lowest":"Highest"} ${unit} in the last ${vals.length}.`}
+async function homeData(){
+  const key=S.source+(isWh()?"":`|${S.apiUrl}|${S.role}`);if(HOME_CACHE[key])return HOME_CACHE[key];
+  let out;
+  if(isWh()){
+    const sem=await loadSem(S.source);const h=sem.home;const periods=periodsEnding(sem.as_of,h.grain);
+    const tr={start:periods[0],end:periodEnd(periods[periods.length-1],h.grain)};const tk=`metric_time__${h.grain}`;
+    const r=await semQuery({metrics:h.wbr,group_by:[tk],time_range:tr},sem);
+    const series={};h.wbr.forEach(m=>series[m]=periods.map(p=>{const row=r.rows.find(x=>x[tk]===p);return row?row[m]:null}));
+    const sg=h.segments;const rs=await semQuery({metrics:[sg.metric,...sg.extra],group_by:[tk,sg.dimension],time_range:tr},sem);
+    out={periods,grain:h.grain,series,metrics:h.wbr.map(n=>sem.metrics.find(m=>m.name===n)),cur:CUR[S.source]||"$",
+      asOfLine:`${WHS[S.source]} data through ${dlabel(sem.sources[sem.metrics[0].source].date_max,{month:"short",day:"numeric",year:"numeric"})}`,note:sem.as_of_note,
+      seg:segRows(sg,rs.rows,periods,tk,sem.metrics),sourceLabel:"semantic layer · in browser"}}
+  else{
+    if(!CAT)await loadCatalog();if(!CAT)throw new Error("Connect the semantic layer API in Settings to see this home page.");
+    const have=n=>CAT.metrics.some(m=>m.name===n);const wbr=API_HOME.wbr.filter(have);if(!wbr.length)wbr.push(...CAT.metrics.slice(0,6).map(m=>m.name));
+    const dmax=await apiFetch("/v1/query",{metrics:[wbr[0]],group_by:["metric_time__day"],order_by:[{field:"metric_time__day",desc:true}],limit:1});
+    const asOf=String(dmax.rows?.[0]?.[0]||new Date().toISOString()).slice(0,10);const periods=periodsEnding(asOf,"week");
+    const tr={start:periods[0],end:periodEnd(periods[12],"week")};
+    const j=await apiFetch("/v1/query",{metrics:wbr,group_by:["metric_time__week"],time_range:tr});
+    const cols=j.columns.map(c=>c.name);const rows=j.rows.map(r=>Object.fromEntries(cols.map((c,i)=>[c,r[i]])));
+    const series={};wbr.forEach(m=>series[m]=periods.map(p=>{const row=rows.find(x=>String(x.metric_time__week).slice(0,10)===p);return row?row[m]:null}));
+    const metrics=wbr.map(n=>{const m=CAT.metrics.find(x=>x.name===n);return {name:n,label:m.label||n,format:m.format,polarity:DOWN_GOOD.has(n)?"down":"up",description:m.description||""}});
+    let seg=null;const sg=API_HOME.seg;
+    if(have(sg.metric)&&CAT.dimensions.some(d=>(d.name||d)===sg.dimension)){
+      const extra=sg.extra.filter(have);const js=await apiFetch("/v1/query",{metrics:[sg.metric,...extra],group_by:["metric_time__week",sg.dimension],time_range:tr});
+      const c2=js.columns.map(c=>c.name);const r2=js.rows.map(r=>Object.fromEntries(c2.map((c,i)=>[c,c==="metric_time__week"?String(r[i]).slice(0,10):r[i]])));
+      const mdefs=[sg.metric,...extra].map(n=>{const m=CAT.metrics.find(x=>x.name===n);return {name:n,label:m?.label||n,format:m?.format}});
+      seg=segRows({...sg,dimension:sg.dimension.replace(".","__"),extra},r2,periods,"metric_time__week",mdefs)}
+    out={periods,grain:"week",series,metrics,cur:"$",asOfLine:`API data through ${dlabel(asOf,{month:"short",day:"numeric",year:"numeric"})}`,note:"",seg,sourceLabel:"from your semantic layer API"}}
+  return HOME_CACHE[key]=out}
+function segRows(sg,rows,periods,tk,metricDefs){
+  const by=new Map();for(const r of rows){const k=r[sg.dimension]??"(none)";if(!by.has(k))by.set(k,[]);by.get(k).push(r)}
+  const md=n=>metricDefs.find(m=>m.name===n)||{name:n,label:n,format:"number"};
+  const items=[...by].map(([k,rs])=>{const ser=periods.map(p=>{const x=rs.find(r=>String(r[tk]).slice(0,10)===p);return x?x[sg.metric]:null});
+    const tot=md(sg.metric).snapshot?ser[ser.length-1]:ser.reduce((a,b)=>a+(b||0),0);
+    const lastRow=rs.find(r=>String(r[tk]).slice(0,10)===periods[periods.length-1])||{};
+    return {name:String(k),series:ser,total:tot,last:ser[ser.length-1],prev:ser[ser.length-2],extra:sg.extra.map(e=>({def:md(e),v:lastRow[e]}))}});
+  items.sort((a,b)=>(b.total||0)-(a.total||0));
+  return {title:sg.title,note:sg.note,dimension:sg.dimension,metric:md(sg.metric),extra:sg.extra.map(md),items:items.slice(0,sg.top||6)}}
+function greet(){const h=new Date().getHours();return h<12?"Good morning":h<18?"Good afternoon":"Good evening"}
+async function renderHome(){
+  const myToken=Symbol();renderHome.tok=myToken;
+  tin.classList.add("wide");
+  const srcName=isWh()?WHS[S.source]:"Semantic layer API";
+  const srcs=`<div class="srcs" role="group" aria-label="Data source">${[["api","Semantic layer API","governed metrics, needs an API key"],...Object.keys(WHS).map(k=>[k,WHS[k],{olist:"marketplace orders, sellers, reviews",toystore:"web sessions, funnels, A/B tests",saas:"MRR, churn, usage, support",orbit:"detections, conjunctions, maneuvers"}[k]])].map(([k,n,d])=>`<button type="button" data-src="${k}" aria-pressed="${S.source===k}"><b>${esc(n)}</b>${esc(d)}</button>`).join("")}</div>`;
+  const recent=sessIndex().filter(x=>(x.s||"api")===S.source).slice(0,3);
+  const cat=isWh()?WCAT:null;
+  const cont=recent.length?recent.map(x=>`<button type="button" class="cc" data-open="${esc(x.id)}"><span class="ct"><span class="tag an">analysis</span><span>${esc(new Date(x.u).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}</span></span><b>${esc(x.t)}</b><span class="s">${x.n} question${x.n===1?"":"s"} · ${esc(srcName)}</span></button>`).join("")
+    :((cat?cat.questions:(CAT?pickSugg():[])).slice(0,3).map(q=>`<button type="button" class="cc" data-q="${esc(q)}"><span class="ct"><span class="tag rep">start here</span><span>suggested</span></span><b>${esc(q)}</b><span class="s">Ask it and watch every step</span></button>`).join(""));
+  tin.innerHTML=`<div class="home"><div class="hhead"><div><h2>${greet()}${S.name?", "+esc(S.name.split(" ")[0]):""}.</h2><p id="hSub">Reading the latest numbers from ${esc(srcName)}…</p></div><div class="asof" id="hAsof"></div></div>
+   ${srcs}
+   ${cont?`<section class="hsec"><header><h3>${recent.length?"Continue where you left off":"Start here"}</h3><small>${recent.length?"your chats on this source":"questions this data answers well"}</small></header><div class="cont">${cont}</div></section>`:""}
+   <section class="hsec" id="hFlags"><header><h3>Needs your attention</h3><small>flagged when a metric moves well outside its last 8 periods</small></header><div class="flags">${'<div class="flag sk"></div>'.repeat(4)}</div></section>
+   <section class="hsec" id="hWbr"><header><h3>Business review</h3><small></small></header><div class="wbr"><p class="muted" style="padding:14px">Loading…</p></div></section>
+   <section class="hsec" id="hSeg" hidden></section>
+   ${cat?`<p class="credit">${creditHTML(cat)}</p>`:""}</div>`;
+  $("#q").placeholder=isWh()?`Ask about the ${WHS[S.source]} data…`:"Ask about ads, engagement, search or growth…";
+  let d;
+  try{if(!isWh()&&(!S.apiUrl||!S.apiKey))throw new Error("Add the semantic layer API key in Settings to load this home page, or pick a sample warehouse above.");d=await homeData()}
+  catch(e){if(renderHome.tok!==myToken)return;$("#hSub").textContent=e.message;$("#hFlags").remove();$("#hWbr").remove();return}
+  if(renderHome.tok!==myToken||!tin.querySelector(".home"))return;
+  const G=d.grain,unit=G==="week"?"week":"month",lastP=d.periods[d.periods.length-1];
+  const rows=d.metrics.map(m=>({m,vals:d.series[m.name],sig:signal(d.series[m.name],m.polarity)}));
+  const unus=rows.filter(r=>r.sig.unusual).sort((a,b)=>(b.sig.bad-a.sig.bad)||Math.abs(b.sig.z)-Math.abs(a.sig.z)).slice(0,4);
+  const watch=rows.filter(r=>!r.sig.unusual&&Math.abs(r.sig.z)>=1).sort((a,b)=>Math.abs(b.sig.z)-Math.abs(a.sig.z)).slice(0,4-unus.length);
+  watch.forEach(r=>r.watch=true);const flags=[...unus,...watch];
+  $("#hSub").textContent=(unus.length?`${unus.length} metric${unus.length===1?" needs":"s need"} a look`:`Nothing unusual`)+` in the ${unit} of ${periodName(lastP,G)}`+(watch.length?`; ${watch.length} more ${watch.length===1?"is":"are"} worth watching.`:".");
+  $("#hAsof").innerHTML=`${G==="week"?"WBR week":"Review month"} ${esc(periodName(lastP,G))}<br>${esc(d.asOfLine)}`;
+  const q=(m,s)=>`Why did ${m.label.toLowerCase()} ${s.dir==="drop"?"drop":"rise"} in the ${unit} of ${periodName(lastP,G)}? Break it down and show a chart.`;
+  const fl=$("#hFlags");
+  if(flags.length){fl.querySelector("h3").innerHTML=`Needs your attention${unus.length?` <span class="cnt">${unus.length}</span>`:""}`;fl.querySelector("small").textContent=`flagged when a metric moves well outside its last 8 ${unit}s${watch.length?"; amber = worth watching":""}`;
+    fl.querySelector(".flags").innerHTML=flags.map(({m,vals,sig,watch})=>{const worse=(sig.delta??0)<0===(m.polarity!=="down");const dc=watch?(worse?"dn":"up"):sig.bad?"dn":"up";
+      const prevTxt=sig.prev!=null?`${sig.dir==="drop"?"Down":"Up"} from ${fmtVal(sig.prev,m.format,d.cur)} the ${unit} before. `:"";
+      return `<div class="flag${watch?" am":sig.bad?"":" good"}"><span class="fn">${esc(m.label)}</span><div class="fv"><b>${fmtVal(sig.last,m.format,d.cur)}</b>${sig.delta!=null?`<span class="dl ${dc}">${pct(sig.delta)}</span>`:""}</div><p>${esc(prevTxt+sinceText(vals,d.periods,G,sig.dir))}</p><div class="ff">${sparkSVG(vals,dc)}<button type="button" class="inv" data-q="${esc(q(m,sig))}">Investigate →</button></div></div>`}).join("")}
+  else fl.querySelector(".flags").innerHTML=`<p class="muted" style="grid-column:1/-1;margin:0">Every metric is inside its usual range this ${unit}.</p>`;
+  const wb=$("#hWbr");wb.querySelector("small").textContent=`${unit} of ${periodName(lastP,G)} vs the ${unit} before · 13-${unit} trend · ${d.sourceLabel}`;
+  wb.querySelector(".wbr").innerHTML=`<table><thead><tr><th>Metric</th><th class="n">Last ${unit}</th><th class="n">vs prior</th><th>13 ${unit}s</th><th>Signal</th><th></th></tr></thead><tbody>${rows.map(({m,vals,sig})=>{
+    const good=sig.delta==null?null:(sig.delta>=0)===(m.polarity!=="down");
+    return `<tr><td class="nm">${esc(m.label)}<small>${esc(m.name)}</small></td><td class="n">${fmtVal(sig.last,m.format,d.cur)}</td><td class="n">${sig.delta==null?"–":`<span class="dl ${good?"up":"dn"}">${pct(sig.delta)}</span>`}</td><td>${sparkSVG(vals,sig.unusual?(sig.bad?"dn":"up"):"nt")}</td><td>${sig.unusual?`<span class="dl ${sig.bad?"dn":"up"}">unusual ${sig.dir}</span>`:`<span class="nr">normal range</span>`}</td><td class="n"><button type="button" class="inv" data-q="${esc(`How did ${m.label.toLowerCase()} trend over the last 13 ${unit}s, and what drove the ${unit} of ${periodName(lastP,G)}? Show a chart.`)}">Investigate</button></td></tr>`}).join("")}</tbody></table>`;
+  if(d.seg&&d.seg.items.length){const sg=d.seg,se=$("#hSeg");se.hidden=false;
+    se.innerHTML=`<header><h3>${esc(sg.title)}</h3><small>${esc(sg.note)} · 13 ${unit}s</small></header><div class="wbr"><table><thead><tr><th>${esc(sg.dimension.replace(/^.*__/,"").replace(/_/g," "))}</th><th class="n">Last ${unit}</th><th class="n">vs prior</th>${sg.extra.map(e=>`<th class="n">${esc(e.label)}</th>`).join("")}<th class="n">${sg.metric.snapshot?"Latest":"13 "+unit+"s"}</th><th>Trend</th><th></th></tr></thead><tbody>${sg.items.map(it=>{
+      const dl=it.prev?((it.last-it.prev)/Math.abs(it.prev)):null;
+      return `<tr><td class="nm">${esc(it.name)}<small>${esc(sg.metric.label)}</small></td><td class="n">${fmtVal(it.last,sg.metric.format,d.cur)}</td><td class="n">${dl==null?"–":`<span class="dl ${dl>=0?"up":"dn"}">${pct(dl)}</span>`}</td>${it.extra.map(e=>`<td class="n">${fmtVal(e.v,e.def.format,d.cur)}</td>`).join("")}<td class="n">${fmtVal(it.total,sg.metric.format,d.cur)}</td><td>${sparkSVG(it.series,"nt")}</td><td class="n"><button type="button" class="inv" data-q="${esc(`How is ${it.name} doing on ${sg.metric.label.toLowerCase()} over the last 13 ${unit}s compared with the others? Show a chart.`)}">Investigate</button></td></tr>`}).join("")}</tbody></table></div>`}}
+
+/* ---------------- agent tools ---------------- */
+const TOOLS=[
+ {name:"query_metrics",description:"Run a governed metric query against the semantic layer API (POST /v1/query). The API compiles the SQL from metric definitions and applies the role's row filters. The result is saved as a DuckDB table named save_as. Use catalog names exactly: metrics like ad_revenue, dimensions like advertisers.account_tier, time as metric_time__day|__week|__month|__quarter|__year. Result columns rename '.' to '__'.",
+  input_schema:{type:"object",properties:{
+   metrics:{type:"array",items:{type:"string"}},group_by:{type:"array",items:{type:"string"}},
+   filters:{type:"array",items:{type:"object",properties:{dimension:{type:"string"},op:{type:"string",description:"= != > >= < <= in, not in, between, like, is null, is not null"},value:{}},required:["dimension","op"]}},
+   time_range:{type:"object",properties:{start:{type:"string"},end:{type:"string"}}},
+   order_by:{type:"array",items:{type:"object",properties:{field:{type:"string"},desc:{type:"boolean"}},required:["field"]}},
+   limit:{type:"integer"},save_as:{type:"string",description:"snake_case DuckDB table name for the result"}},required:["metrics","save_as"]}},
+ {name:"dimension_values",description:"List the distinct values of one dimension (useful before filtering).",input_schema:{type:"object",properties:{dimension:{type:"string"}},required:["dimension"]}},
+ {name:"run_sql",description:"Run DuckDB SQL in the browser over this session's tables (results of query_metrics, run_sql and run_python). Use it for joins, window functions, ratios, ranking and reshaping. If save_as is set, the result is stored as a new table.",
+  input_schema:{type:"object",properties:{sql:{type:"string"},save_as:{type:"string"}},required:["sql"]}},
+ {name:"run_python",description:"Run Python with pandas and numpy (scipy and statsmodels load on import) in the browser. Every session table is preloaded as a DataFrame with the same name; date columns arrive as strings, so use pd.to_datetime. print() what you need to read. To keep a DataFrame as a table, assign it to `result` and set save_as.",
+  input_schema:{type:"object",properties:{code:{type:"string"},save_as:{type:"string"}},required:["code"]}},
+ {name:"make_chart",description:"Render a Vega-Lite v5 chart from one session table. Pass the spec without data; rows are injected from `table` (max 5000). Width fills the container. Pick the chart type that fits: line for trends, bars for comparisons, point for relationships. Use :T for dates (add timeUnit 'yearmonth' for monthly data and 'yearweek' for weekly, so ticks match the grain), :Q numbers, :N categories, and format axes (e.g. format '$,.0f' or '.1%').",
+  input_schema:{type:"object",properties:{table:{type:"string"},title:{type:"string"},spec:{type:"object"}},required:["table","title","spec"]}}];
+
+const WH_TOOLS=[
+ {name:"query_metrics",description:"Query certified metrics through the warehouse semantic layer. It compiles SQL over small pre-aggregated tables (or a fact table for distinct counts), joins metrics from different tables on the requested dimensions, and saves the result as a session table named save_as. Use metric and dimension names from the semantic model exactly. Time: metric_time__day|__week|__month|__quarter|__year in group_by, and time_range {start,end} as YYYY-MM-DD (inclusive). Filters: [{dimension, op, value}] with op = != > >= < <= in, not in, between, like, is null, is not null. Snapshot metrics (MRR and similar) need month or coarser grain.",
+  input_schema:{type:"object",properties:{
+   metrics:{type:"array",items:{type:"string"}},group_by:{type:"array",items:{type:"string"}},
+   filters:{type:"array",items:{type:"object",properties:{dimension:{type:"string"},op:{type:"string"},value:{}},required:["dimension","op"]}},
+   time_range:{type:"object",properties:{start:{type:"string"},end:{type:"string"}}},
+   order_by:{type:"array",items:{type:"object",properties:{field:{type:"string"},desc:{type:"boolean"}},required:["field"]}},
+   limit:{type:"integer"},save_as:{type:"string",description:"snake_case DuckDB table name for the result"}},required:["metrics","save_as"]}},
+ {name:"dimension_values",description:"List the distinct values of one semantic-model dimension, with row counts.",input_schema:{type:"object",properties:{dimension:{type:"string"}},required:["dimension"]}},
+ {name:"describe_table",description:"Show sample rows, null counts and distinct counts for one warehouse table (schema-qualified, e.g. olist.fct_orders). Column docs are already in the system prompt; use this to see real values before filtering or joining.",
+  input_schema:{type:"object",properties:{table:{type:"string",description:"schema.table"}},required:["table"]}},
+ {name:"run_sql",description:"Run DuckDB SQL in the browser. Use it after query_metrics to reshape results, or on raw tables when the semantic model cannot answer (per-customer, per-order or text analysis). Warehouse tables are read-only and must be schema-qualified (olist.fct_orders, toystore.fct_sessions, saas.fct_subscriptions, orbit.fct_detections); they load on first use. Session tables (earlier save_as results) have no schema. Aggregate in SQL before pulling rows. If save_as is set, the result is stored as a session table for later SQL, Python or charts.",
+  input_schema:{type:"object",properties:{sql:{type:"string"},save_as:{type:"string",description:"snake_case name for a session table"}},required:["sql"]}},
+ TOOLS[3],TOOLS[4]];
+const tools=()=>isWh()?WH_TOOLS:TOOLS;
+function whPrompt(){
+  const c=WCAT;const tb=c.tables.map(t=>`### ${c.id}.${t.name} (${t.rows.toLocaleString("en-US")} rows${t.date_range?`, ${t.date_range.column} ${t.date_range.min} to ${t.date_range.max}`:""})
+${t.description} Primary key: ${t.primary_key}.
+${t.columns.map(x=>`- ${x.name} ${x.type.toLowerCase()}: ${x.description}`).join("\n")}`).join("\n\n");
+  const sm=SEM;const semTxt=sm?`## Semantic layer (use this first)
+Metrics (query_metrics). Each lives on one source; metrics from different sources can be combined when the requested dimensions exist on both:
+${sm.metrics.map(m=>`- ${m.name} [${m.format}${m.snapshot?", snapshot":""}] from ${m.source}: ${m.description}`).join("\n")}
+
+Sources and their dimensions (plus metric_time__day|week|month|quarter|year):
+${Object.entries(sm.sources).map(([n,s])=>`- ${c.id}.${n} (${s.kind}${s.rows?`, ${s.rows.toLocaleString("en-US")} rows`:""}, time ${s.time}${s.date_min?` ${s.date_min} to ${s.date_max}`:""}): ${Object.keys(s.dimensions).join(", ")||"time only"}${s.measures?`. Measures: ${s.measures.join(", ")}`:""}`).join("\n")}
+
+Latest complete period for reviews: ${sm.as_of}. ${sm.as_of_note}
+`:"";
+  return `You are ResidentQuant, a careful data scientist working for the user. You answer questions about their data warehouse through its semantic layer, and with DuckDB SQL in the browser when you need raw rows.
+
+Today is ${new Date().toISOString().slice(0,10)}, but this warehouse is historical: treat the latest date in the data as "now" and say so when a question says "last month" or "recent".
+
+Warehouse: ${c.name} (schema ${c.id}). ${c.story}
+
+${semTxt}
+## Raw tables (for questions the semantic layer cannot answer)
+${tb}
+
+## Certified metrics (use these definitions when a question asks for one; your number should reconcile with the stated value)
+${c.metrics.map(m=>`- ${m.name}: ${m.description} Value ${m.value_label}: ${m.value}. SQL: ${m.sql}`).join("\n")}
+
+## Data tests (latest run)
+${c.tests.map(x=>`- ${x.status.toUpperCase()} ${x.table}.${x.test}${x.failing_rows?` (${x.failing_rows} failing rows)`:""}`).join("\n")}
+
+## Known caveats
+${c.caveats.map(x=>`- ${x}`).join("\n")}
+
+How to work:
+1. Start with query_metrics: it reads small aggregate tables and its numbers match the certified definitions. Use run_sql on raw tables only when you need per-entity rows, a dimension the semantic layer lacks, or text. Always schema-qualify warehouse tables. Never invent or estimate a number.
+2. Check grain before joining: join facts through their keys and watch for fan-out (for example items to orders). Count rows before and after a join when unsure.
+3. If a failing data test or caveat touches your answer, handle it (dedupe, filter, or pick the right source) and say what you did.
+4. Use run_python (pandas) for statistics, tests or reshaping SQL makes awkward. Save the needed rows with run_sql save_as first; tables over 300,000 rows are not loaded into pandas.
+5. Check that periods are complete before comparing them; the edges of the date range are often partial.
+6. Visuals first: before answering, call make_chart for any trend or any comparison of three or more values. One clear chart is usually enough.
+
+Answer format: the chart carries the detail, so keep the text short (under 90 words). Start with the direct answer in one sentence with the key number in bold. Then at most 3 short bullets or a small markdown table. Cite the step that produced each number as [n], where n is the step number shown to the user (steps are numbered in the order you call tools, starting at 1). End with one line of caveats if any. Write plainly, no em dashes, no hype.`}
+function systemPrompt(){
+  if(isWh()&&WCAT)return whPrompt();
+  const ms=CAT?CAT.metrics.map(m=>`- ${m.name} (${m.format||""}): ${m.label||""}. ${m.description||""}`).join("\n"):"(catalog not loaded)";
+  const ds=CAT?CAT.dimensions.map(d=>typeof d==="string"?d:d.name).join(", "):"";
+  return `You are ResidentQuant, a careful data scientist working for the user. You answer questions about their business data through a governed semantic layer.
+
+Today is ${new Date().toISOString().slice(0,10)}. Role: ${S.role}. Row filters and metric access are enforced by the API.
+
+Metrics:
+${ms}
+
+Dimensions: ${ds}
+Time grains: ${(CAT?.time_grains||[]).join(", ")} (use metric_time__<grain> in group_by and order_by)
+
+How to work:
+1. Pull numbers only with query_metrics. Never invent or estimate a number. Prefer one well-shaped query over many small ones.
+2. Use run_sql (DuckDB) to combine or reshape results, and run_python (pandas) for statistics, tests or anything SQL makes awkward.
+3. Before trusting a comparison, check that periods are complete (count days) and that totals reconcile.
+4. Visuals first: before answering, call make_chart for any trend or any comparison of three or more values. One clear chart is usually enough.
+5. If the API denies something, say what the role cannot see instead of working around it.
+
+Answer format: the chart carries the detail, so keep the text short (under 90 words). Start with the direct answer in one sentence with the key number in bold. Then at most 3 short bullets or a small markdown table. Cite the step that produced each number as [n], where n is the step number shown to the user (steps are numbered in the order you call tools, starting at 1). End with one line of caveats if any. Write plainly, no em dashes, no hype.`}
+
+/* ---------------- thread rendering ---------------- */
+const tin=$("#tin"),thread=$("#thread");
+const scrollEnd=()=>{thread.scrollTop=thread.scrollHeight};
+const history=[];let ctl=null,busy=false;
+function renderEmpty(){renderHome()}
+function renderEmptyOld(){
+  const srcs=`<div class="srcs">${[["api","Semantic layer API","governed metrics, needs an API key"],...Object.keys(WHS).map(k=>[k,WHS[k],WCATS[k]?`${WCATS[k].tables.length} tables · ${(WCATS[k].tables.reduce((a,t)=>a+t.rows,0)/1e6).toFixed(1)}M rows`:{olist:"orders, sellers, reviews",toystore:"sessions, funnels, A/B tests",saas:"MRR, churn, usage",orbit:"detections, conjunctions, maneuvers"}[k]])].map(([k,n,d])=>`<button type="button" data-src="${k}" aria-pressed="${S.source===k}"><b>${esc(n)}</b>${esc(d)}</button>`).join("")}</div>`;
+  if(isWh()){const c=WCAT;
+    tin.innerHTML=`<div class="empty"><h1>Ask the ${esc(c?c.name:WHS[S.source])} warehouse anything.</h1><p>${c?esc(c.story):"Loading the catalog…"}</p>${srcs}
+    <div class="caps"><div class="cap"><b>Documented models</b>facts, dimensions, grain and keys</div><div class="cap"><b>DuckDB SQL</b>Parquet loaded in your browser</div><div class="cap"><b>pandas</b>stats and reshaping with Pyodide</div><div class="cap"><b>Charts</b>Vega-Lite, drawn inline</div></div>
+    <div class="sugg">${(c?c.questions:[]).map(s=>`<button type="button" data-q="${esc(s)}">${esc(s)}</button>`).join("")}</div>${c?`<p class="credit">${creditHTML(c)}</p>`:""}</div>`;
+    $("#q").placeholder=`Ask about the ${WHS[S.source]} data…`;return}
+  $("#q").placeholder="Ask about ads, engagement, search or growth…";
+  const sugg=CAT?pickSugg():["Connect in Settings to start"];
+  tin.innerHTML=`<div class="empty"><h1>Ask your semantic layer anything.</h1><p>Plain English in, governed numbers out. ResidentQuant writes the queries, works the data in your browser, and shows every step.</p>
+  <div class="caps"><div class="cap"><b>Governed queries</b>metrics compiled to SQL by your API</div><div class="cap"><b>DuckDB SQL</b>joins and windows in the browser</div><div class="cap"><b>pandas</b>stats and reshaping with Pyodide</div><div class="cap"><b>Charts</b>Vega-Lite, drawn inline</div></div>
+  ${srcs}<div class="sugg">${sugg.map(s=>`<button type="button" data-q="${esc(s)}">${esc(s)}</button>`).join("")}</div></div>`}
+function pickSugg(){const has=n=>CAT.metrics.some(m=>m.name===n);const out=[];
+  if(has("ad_revenue"))out.push("What was ad revenue by account tier last quarter?","Why did ad revenue drop in September 2026?");
+  if(has("roas"))out.push("Top 5 industries by ROAS in 2026, with a chart");
+  if(has("save_rate"))out.push("Is save rate on iOS different from Android? Test it.");
+  if(has("active_users"))out.push("Monthly active users by user type, as a line chart");
+  if(!out.length)out.push(...CAT.metrics.slice(0,3).map(m=>`Show ${m.name} by month`));return out.slice(0,5)}
+function hl(t,lang){let s=esc(t);if(lang==="sql")s=s.replace(/\b(WITH|AS|SELECT|FROM|WHERE|GROUP BY|ORDER BY|LIMIT|LEFT JOIN|JOIN|ON|AND|OR|IN|SUM|COUNT|AVG|MIN|MAX|DISTINCT|FILTER|CAST|DATE_TRUNC|NULLIF|CASE|WHEN|THEN|ELSE|END|OVER|PARTITION BY|DESC|ASC|HAVING|UNION|ALL|CREATE|TABLE|REPLACE)\b/g,'<span class="k">$1</span>').replace(/('[^'\n]*')/g,'<span class="s">$1</span>').replace(/(--.*)$/gm,'<span class="c">$1</span>');
+  else s=s.replace(/(#.*)$/gm,'<span class="c">$1</span>').replace(/\b(def|return|import|from|for|in|if|else|elif|lambda|print|as|with)\b/g,'<span class="k">$1</span>');return s}
+const fmtCell=v=>v==null?'<span style="color:var(--faint)">null</span>':typeof v==="number"?(Number.isInteger(v)?v.toLocaleString("en-US"):Math.abs(v)>=1000?v.toLocaleString("en-US",{maximumFractionDigits:2}):String(+v.toPrecision(6))):esc(v);
+function gridHTML(cols,rows,max=50,total=0){if(!cols.length)return "";total=Math.max(total,rows.length);const sh=rows.slice(0,max);const num=cols.map(c=>sh.some(r=>typeof r[c]==="number"));
+  return `<div class="grid"><table><thead><tr>${cols.map((c,i)=>`<th class="${num[i]?"n":""}">${esc(c)}</th>`).join("")}</tr></thead><tbody>${sh.map(r=>`<tr>${cols.map((c,i)=>`<td class="${num[i]?"n":""}">${fmtCell(Array.isArray(r)?r[i]:r[c])}</td>`).join("")}</tr>`).join("")}</tbody></table>${total>sh.length?`<div class="gmore">showing ${sh.length} of ${total.toLocaleString("en-US")} rows</div>`:""}</div>`}
+function md(src){
+  const lines=String(src).replace(/\r/g,"").split("\n");let h="",i=0;
+  const inline=t=>esc(t).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*)\*/g,"$1<i>$2</i>").replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g,(m,g)=>g.split(/\s*,\s*/).map(n=>`<button type="button" class="ref" data-step="${n}">${n}</button>`).join(""));
+  while(i<lines.length){const l=lines[i];
+    if(/^\s*\|/.test(l)&&i+1<lines.length&&/^\s*\|?\s*:?-{2,}/.test(lines[i+1])){const row=s=>s.trim().replace(/^\||\|$/g,"").split("|").map(c=>c.trim());const hd=row(l);i+=2;const body=[];while(i<lines.length&&/^\s*\|/.test(lines[i])){body.push(row(lines[i]));i++}
+      h+=`<table><thead><tr>${hd.map(c=>`<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${body.map(r=>`<tr>${r.map(c=>`<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;continue}
+    if(/^\s*[-*]\s+/.test(l)){h+="<ul>";while(i<lines.length&&/^\s*[-*]\s+/.test(lines[i])){h+=`<li>${inline(lines[i].replace(/^\s*[-*]\s+/,""))}</li>`;i++}h+="</ul>";continue}
+    if(/^\s*\d+\.\s+/.test(l)){h+="<ol>";while(i<lines.length&&/^\s*\d+\.\s+/.test(lines[i])){h+=`<li>${inline(lines[i].replace(/^\s*\d+\.\s+/,""))}</li>`;i++}h+="</ol>";continue}
+    const hm=l.match(/^(#{1,4})\s+(.*)/);if(hm){h+=`<h${Math.min(hm[1].length+1,4)}>${inline(hm[2])}</h${Math.min(hm[1].length+1,4)}>`;i++;continue}
+    if(!l.trim()){i++;continue}
+    let p=[];while(i<lines.length&&lines[i].trim()&&!/^\s*([-*]|\d+\.)\s+|^#{1,4}\s|^\s*\|/.test(lines[i])){p.push(lines[i]);i++}
+    h+=`<p>${inline(p.join(" "))}</p>`}
+  return h}
+
+/* ---------------- agent loop ---------------- */
+async function claude(body){
+  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal:ctl.signal,headers:aHeaders(true),body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>null);
+  if(!r.ok)throw new Error(j?.error?.message?`Anthropic: ${aErr(j.error.message)}`:`Anthropic HTTP ${r.status}`);
+  return j}
+function trimRows(rows,n){return rows.slice(0,n)}
+/* ---------------- step records (live and replay share these renderers) ---------------- */
+const KINDS=["q","sql","py","ch","note","err"];
+const titleHTML=(t,tag)=>`${esc(t)}${tag?` <small>${esc(tag)}</small>`:""}`;
+function blockHTML(b){
+  if(!b||typeof b!=="object")return "";
+  if(b.t==="code")return `<div class="code"><header><span>${esc(b.l)}</span><span>${esc(b.r||"")}</span></header><pre${b.wrap?' style="white-space:pre-wrap"':""}>${b.lang==="sql"||b.lang==="py"?hl(String(b.text||""),b.lang):esc(b.text)}</pre></div>`;
+  if(b.t==="meta")return `<div class="meta">${(Array.isArray(b.parts)?b.parts:[]).map(p=>p&&p.ok?`<b>${esc(p.s)}</b>`:`<span>${esc(p&&p.s)}</span>`).join("")}</div>`;
+  if(b.t==="grid")return gridHTML(Array.isArray(b.cols)?b.cols.map(String):[],Array.isArray(b.rows)?b.rows:[],b.max||8,Number(b.total)||0);
+  if(b.t==="out")return `<pre class="out${b.err?" err":""}">${esc(b.text)}</pre>`;
+  return ""}
+async function execTool(name,inp,s,rec){
+  const body=s.querySelector(".bd");
+  const add=b=>{rec.blocks.push(b);body.insertAdjacentHTML("beforeend",blockHTML(b));scrollEnd()};
+  const title=(t,tag)=>{rec.title=t;rec.tag=tag;s.querySelector(".tt").innerHTML=titleHTML(t,tag)};
+  if(name==="query_metrics"&&isWh()){
+    const tname=cleanName(inp.save_as);const req={metrics:inp.metrics};["group_by","filters","time_range","order_by","limit"].forEach(k=>{if(inp[k]!=null&&!(Array.isArray(inp[k])&&!inp[k].length))req[k]=inp[k]});
+    title(`Query ${(inp.metrics||[]).join(", ")}${inp.group_by?.length?` by ${inp.group_by.join(", ")}`:""}`,"semantic layer");
+    add({t:"code",l:`query_metrics · ${S.source} semantic model`,r:`→ ${tname}`,wrap:1,text:JSON.stringify(req).replace(/,"/g,', "').replace(/":/g,'": ')});
+    const q=compileMetrics(req);const ld=await ensureWh(q.sql);if(ld.length)add({t:"meta",parts:ld.map(l=>({s:`loaded ${l.table} · ${l.rows.toLocaleString("en-US")} rows · ${fmtMB(l.bytes)}`,ok:1}))});
+    const t0=performance.now();await (await duck()).query(`CREATE OR REPLACE TABLE ${qid(tname)} AS ${q.sql}`);await refreshTables();const d=await sqlQuery(`SELECT * FROM ${qid(tname)}`);
+    add({t:"code",l:"SQL · compiled by the semantic layer",r:q.sources.join(" + "),lang:"sql",text:q.sql});
+    add({t:"meta",parts:[{s:`${d.rows.length} rows · ${Math.round(performance.now()-t0)} ms`},{s:`saved as ${tname}`,ok:1}]});add({t:"grid",cols:d.cols,rows:d.rows.slice(0,8),total:d.rows.length});
+    rec.table=tname;
+    return {table:tname,row_count:d.rows.length,columns:q.columns,sources:q.sources,sql:q.sql.slice(0,1500),rows:trimRows(d.rows,40)}}
+  if(name==="dimension_values"&&isWh()){
+    const dim=String(inp.dimension||"");const src=Object.entries(SEM.sources).find(([,s])=>s.kind==="aggregate"&&dim in s.dimensions);
+    if(!src||!isIdent(dim))throw new Error(`Unknown dimension "${dim}". Dimensions: ${[...new Set(Object.values(SEM.sources).flatMap(s=>Object.keys(s.dimensions)))].join(", ")}`);
+    title(`Values of ${dim}`,"semantic layer");
+    const d=await sqlQuery(`SELECT ${dim} AS value, COUNT(*) AS agg_rows FROM ${SEM.id}.${src[0]} GROUP BY 1 ORDER BY 2 DESC LIMIT 200`);
+    add({t:"grid",cols:d.cols,rows:d.rows.slice(0,12),total:d.rows.length});return {dimension:dim,source:src[0],values:d.rows.map(r=>r.value)}}
+  if(name==="query_metrics"){
+    const tname=cleanName(inp.save_as);const req={metrics:inp.metrics};["group_by","filters","time_range","order_by","limit"].forEach(k=>{if(inp[k]!=null&&!(Array.isArray(inp[k])&&!inp[k].length))req[k]=inp[k]});
+    title(`Query ${inp.metrics.join(", ")}${inp.group_by?.length?` by ${inp.group_by.join(", ")}`:""}`,"semantic layer");
+    add({t:"code",l:`POST /v1/query · role ${S.role}`,r:`→ ${tname}`,wrap:1,text:JSON.stringify(req).replace(/,"/g,', "').replace(/":/g,'": ')});
+    const j=await apiFetch("/v1/query",req);
+    const cols=j.columns.map(c=>c.name);const recs=j.rows.map(r=>Object.fromEntries(cols.map((c,i)=>[c,r[i]])));
+    await tableFromRecords(tname,recs);rec.table=tname;
+    add({t:"code",l:"SQL · compiled by the API",r:j.query_id||"",lang:"sql",text:j.sql||""});
+    const parts=[{s:`${j.row_count??recs.length} rows${j.truncated?" (truncated)":""} · ${j.elapsed_ms??"?"} ms`},{s:`saved as ${tname}`,ok:1}];
+    if(j.applied_row_filters?.length)parts.push({s:"row filter: "+j.applied_row_filters.map(f=>`${f.dimension} ${f.op} ${Array.isArray(f.value)?f.value.join(", "):f.value}`).join("; ")});
+    add({t:"meta",parts});add({t:"grid",cols,rows:recs.slice(0,8),total:recs.length});
+    return {table:tname,query_id:j.query_id,row_count:j.row_count??recs.length,truncated:!!j.truncated,columns:j.columns.map(c=>({name:c.name,label:c.label,format:c.format,kind:c.kind})),applied_row_filters:j.applied_row_filters||[],sql:(j.sql||"").slice(0,1500),rows:trimRows(recs,40)}}
+  if(name==="dimension_values"){
+    title(`Values of ${inp.dimension}`,"semantic layer");
+    const j=await apiFetch(`/v1/catalog/dimensions/${encodeURIComponent(inp.dimension)}/values`);
+    const vals=Array.isArray(j)?j:(j.values||j.data||j);add({t:"out",text:JSON.stringify(vals).slice(0,800)});return {dimension:inp.dimension,values:vals}}
+  if(name==="describe_table"){
+    const ref=String(inp.table||"").toLowerCase().replace(/"/g,"");const [w,tb]=ref.split(".");
+    const meta=WCAT&&w===WCAT.id?WCAT.tables.find(x=>x.name===tb):null;
+    if(!meta)throw new Error(`Unknown table ${inp.table}. Use one of: ${WCAT?WCAT.tables.map(x=>WCAT.id+"."+x.name).join(", "):"(no warehouse)"}`);
+    title(`Describe ${ref}`,"warehouse");
+    const ld=await ensureWh(ref);if(ld.length)add({t:"meta",parts:ld.map(l=>({s:`loaded ${l.table} · ${l.rows.toLocaleString("en-US")} rows · ${fmtMB(l.bytes)}`,ok:1}))});
+    const prof=await sqlQuery(`SELECT ${meta.columns.map(x=>`COUNT(*) FILTER (WHERE ${qid(x.name)} IS NULL) AS ${qid("n_"+x.name)}, APPROX_COUNT_DISTINCT(${qid(x.name)}) AS ${qid("d_"+x.name)}`).join(", ")} FROM ${ref}`);
+    const p=prof.rows[0]||{};const stats=meta.columns.map(x=>({column:x.name,type:x.type.toLowerCase(),nulls:p["n_"+x.name],distinct:p["d_"+x.name]}));
+    const smp=await sqlQuery(`SELECT * FROM ${ref} USING SAMPLE 5 ROWS`);
+    add({t:"code",l:"DuckDB",r:"profile",lang:"sql",text:`-- nulls and distinct values per column\nSELECT COUNT(*) FILTER (WHERE col IS NULL), APPROX_COUNT_DISTINCT(col), … FROM ${ref};\nSELECT * FROM ${ref} USING SAMPLE 5 ROWS;`});
+    add({t:"grid",cols:["column","type","nulls","distinct"],rows:stats,max:40});add({t:"grid",cols:smp.cols,rows:smp.rows,max:5});
+    return {table:ref,rows:meta.rows,description:meta.description,primary_key:meta.primary_key,columns:stats,sample_rows:smp.rows}}
+  if(name==="run_sql"){
+    const save=inp.save_as?cleanName(inp.save_as):null;
+    title(`SQL${save?` → ${save}`:""}`,isWh()?`DuckDB · ${S.source}`:"DuckDB in browser");
+    add({t:"code",l:"DuckDB",r:save?"create table "+save:"read only",lang:"sql",text:inp.sql});
+    const ld=await ensureWh(inp.sql);if(ld.length)add({t:"meta",parts:ld.map(l=>({s:`loaded ${l.table} · ${l.rows.toLocaleString("en-US")} rows · ${fmtMB(l.bytes)}`,ok:1}))});
+    let d;const sql=inp.sql.trim().replace(/;\s*$/,"");
+    if(save){await (await duck()).query(`CREATE OR REPLACE TABLE ${qid(save)} AS ${sql}`);await refreshTables();d=await sqlQuery(`SELECT * FROM ${qid(save)}`)}
+    else{d=await sqlQuery(sql);if(/^\s*(create|drop|insert|alter|update|delete)/i.test(sql))await refreshTables()}
+    if(save)rec.table=save;
+    add({t:"meta",parts:[{s:`${d.rows.length.toLocaleString("en-US")} rows`},...(save?[{s:`saved as ${save}`,ok:1}]:[])]});add({t:"grid",cols:d.cols,rows:d.rows.slice(0,10),total:d.rows.length});
+    return {saved_as:save,row_count:d.rows.length,columns:d.cols.map((c,i)=>`${c} ${d.types[i]}`),rows:trimRows(d.rows,60)}}
+  if(name==="run_python"){
+    const save=inp.save_as?cleanName(inp.save_as):null;
+    title(`Python${save?` → ${save}`:""}`,"pandas in browser");
+    add({t:"code",l:"Python · pandas",r:save?"result → "+save:"",lang:"py",text:inp.code});
+    const r=await runPython(inp.code,save);
+    if(r.stdout)add({t:"out",text:r.stdout.slice(0,3000)});
+    if(r.error){add({t:"out",err:1,text:r.error});return {error:r.error,stdout:r.stdout,_err:true}}
+    if(r.saved){rec.table=r.saved.name;const d=await sqlQuery(`SELECT * FROM ${qid(r.saved.name)}`);add({t:"meta",parts:[{s:`saved as ${r.saved.name}`,ok:1},{s:`${r.saved.rows} rows`}]});add({t:"grid",cols:d.cols,rows:d.rows.slice(0,8),total:d.rows.length});return {stdout:r.stdout,saved_as:r.saved.name,row_count:r.saved.rows,columns:d.cols,rows:trimRows(d.rows,30)}}
+    return {stdout:r.stdout||"(no output; use print())"}}
+  if(name==="make_chart"){
+    title(`Chart: ${inp.title}`,"Vega-Lite");
+    const box=el("div","chart",`<h4>${esc(inp.title)}</h4><div class="vg"></div>`);body.appendChild(box);
+    const rows=await renderChart(box.querySelector(".vg"),inp.spec,cleanName(inp.table));
+    rec.blocks.push({t:"chart",title:inp.title,spec:inp.spec,rows:rows.slice(0,1000)});scrollEnd();
+    return {rendered:true,rows_plotted:rows.length}}
+  throw new Error("Unknown tool "+name)}
+
+/* answers lead with the headline sentence, then the chart, then the detail */
+function placeChart(ans,box){const m=ans.querySelector(".md");const prev=[...m.querySelectorAll(":scope > .chart")].pop()||(m.firstElementChild?.tagName==="P"?m.firstElementChild:null);if(prev)prev.after(box);else m.appendChild(box)}
+/* draw a chart from the last result table when the model answered without one */
+async function autoChart(turn){
+  const recs=turn.steps.filter(s=>s.table&&TABLES.has(s.table)).reverse();
+  for(const r of recs){
+    const info=TABLES.get(r.table);if(info.rows<2||info.rows>2000)continue;
+    const cols=info.cols.map(c=>{const i=c.indexOf(" ");return {name:c.slice(0,i),type:c.slice(i+1).toUpperCase()}});
+    const num=cols.filter(c=>/INT|DOUBLE|DECIMAL|FLOAT|REAL|NUMERIC/.test(c.type)&&!/(^|_)(id|year|seq)$/.test(c.name));
+    const time=cols.find(c=>/^metric_time/.test(c.name)||/^(DATE|TIMESTAMP)/.test(c.type));
+    const cat=cols.find(c=>c.type.startsWith("VARCHAR")&&c!==time);
+    if(!num.length)continue;const y=num[0];
+    const mdef=(isWh()?SEM?.metrics:CAT?.metrics)?.find(m=>m.name===y.name);
+    const fmt=mdef?.format==="percent"?".1%":mdef?.format==="currency"?(CUR[S.source]==="R$"?",.3s":"$,.3s"):",.3~s";
+    const ylab=mdef?.label||y.name.replace(/_/g," ");
+    if(time){
+      const d=await sqlQuery(`SELECT * FROM ${qid(r.table)} ORDER BY ${qid(time.name)} LIMIT 2000`);
+      const nCat=cat?new Set(d.rows.map(x=>x[cat.name])).size:0;
+      const g=(time.name.match(/__(\w+)$/)||[])[1];
+      const spec={mark:{type:"line",point:d.rows.length<=40},encoding:{x:{field:time.name,type:"temporal",title:null,...(g==="month"?{timeUnit:"yearmonth"}:g==="week"?{timeUnit:"yearweek"}:{})},y:{field:y.name,type:"quantitative",title:ylab,axis:{format:fmt}},...(cat&&nCat>1&&nCat<=8?{color:{field:cat.name,type:"nominal",title:null}}:{})}};
+      return {title:`${ylab} over time${cat&&nCat>1&&nCat<=8?" by "+cat.name.replace(/^.*__/,"").replace(/_/g," "):""}`,spec,rows:d.rows.slice(0,1000),from:r.n}}
+    if(cat){
+      const d=await sqlQuery(`SELECT * FROM ${qid(r.table)} WHERE ${qid(y.name)} IS NOT NULL ORDER BY ${qid(y.name)} DESC LIMIT 15`);
+      const spec={mark:"bar",encoding:{y:{field:cat.name,type:"nominal",sort:"-x",title:null},x:{field:y.name,type:"quantitative",title:ylab,axis:{format:fmt}}}};
+      return {title:`${ylab} by ${cat.name.replace(/^.*__/,"").replace(/_/g," ")}`,spec,rows:d.rows,from:r.n}}}
+  return null}
+
+/* ---------------- sessions ---------------- */
+let SESSION=null,REOPENED=false,pubQ=Promise.resolve();
+const newId=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),b=>"abcdefghijkmnpqrstuvwxyz23456789"[b%32]).join("").slice(0,10);
+const IDX="rq-s-index",SK=id=>"rq-s:"+id;
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);return true}catch(e){return false}}
+function sessIndex(){try{return JSON.parse(lsGet(IDX)||"[]")}catch(e){return []}}
+function saveSession(){
+  if(!SESSION)return;SESSION.updated=new Date().toISOString();
+  const data=JSON.stringify({session:SESSION,messages:history});
+  let idx=sessIndex().filter(x=>x.id!==SESSION.id);idx.unshift({id:SESSION.id,t:SESSION.turns[0]?.q||"Untitled",u:SESSION.updated,n:SESSION.turns.length,s:SESSION.source||"api"});
+  for(let tries=0;tries<6;tries++){
+    if(lsSet(SK(SESSION.id),data)&&lsSet(IDX,JSON.stringify(idx.slice(0,40))))break;
+    const old=idx.pop();if(!old||old.id===SESSION.id){lsSet(SK(SESSION.id),JSON.stringify({session:SESSION,messages:[]}));break}lsSet(SK(old.id),null)}
+  renderHistory()}
+function renderHistory(){
+  const idx=sessIndex();$("#hCnt").textContent=idx.length;
+  $("#hist").innerHTML=idx.length?idx.map(x=>`<li><button type="button" data-open="${esc(x.id)}" aria-current="${SESSION?.id===x.id}"><b>${esc(x.t)}</b><span>${esc(new Date(x.u).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))} · ${x.n} question${x.n===1?"":"s"} · ${esc(WHS[x.s]||"API")}</span></button></li>`).join(""):`<li class="muted">Your chats appear here. They are saved in this browser only.</li>`}
+function shareCopy(){
+  if(!SESSION)return null;
+  const strip=o=>{if(Array.isArray(o))return o.map(strip);if(o&&typeof o==="object"){const r={};for(const[k,v]of Object.entries(o))if(!["href","url","usermeta"].includes(k))r[k]=strip(v);return r}return o};
+  return {v:1,id:SESSION.id,created:SESSION.created,model:SESSION.model,role:SESSION.role,source:SESSION.source||"api",
+    turns:SESSION.turns.map(t=>({...t,steps:t.steps.map(s=>({...s,blocks:(s.blocks||[]).map(b=>b.t==="chart"?{...b,spec:strip(b.spec),rows:b.rows.slice(0,1000)}:b)}))}))}}
+async function pack(obj){
+  const st=new Blob([JSON.stringify(obj)]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+  const buf=new Uint8Array(await new Response(st).arrayBuffer());let bin="";for(let i=0;i<buf.length;i+=0x8000)bin+=String.fromCharCode(...buf.subarray(i,i+0x8000));
+  return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+async function unpack(str){
+  const b=atob(str.replace(/-/g,"+").replace(/_/g,"/"));const u=Uint8Array.from(b,c=>c.charCodeAt(0));
+  const st=new Blob([u]).stream().pipeThrough(new DecompressionStream("deflate-raw"));return JSON.parse(await new Response(st).text())}
+const b64utf8=s=>{const u=new TextEncoder().encode(s);let bin="";for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)};
+const GH={repo:"resident-quant/residentquant.com",branch:"main",dir:"sessions"};
+const ghToken=()=>lsGet("vlc:token")||"";
+async function publishShort(obj){
+  const path=`${GH.dir}/${obj.id}.json`,url=`https://api.github.com/repos/${GH.repo}/contents/${path}`;
+  const h={Authorization:"Bearer "+ghToken(),Accept:"application/vnd.github+json"};
+  let sha;const g=await fetch(url+"?ref="+GH.branch,{headers:h});if(g.ok)sha=(await g.json()).sha;
+  const r=await fetch(url,{method:"PUT",headers:{...h,"Content-Type":"application/json"},body:JSON.stringify({message:`ResidentQuant session ${obj.id}`,content:b64utf8(JSON.stringify(obj)),branch:GH.branch,...(sha?{sha}:{})})});
+  if(!r.ok){const j=await r.json().catch(()=>({}));throw new Error(`GitHub ${r.status}: ${j.message||"could not save"}`)}
+  return location.origin+location.pathname+"#c="+obj.id}
+const pageUrl=h=>location.origin+location.pathname+"#"+h;
+function setHash(h){window.history.replaceState(null,"",h?"#"+h:location.pathname)}
+
+/* replay a saved or shared session (structured data only, every string escaped) */
+async function renderTurn(turn,ti){
+  tin.appendChild(el("div","umsg",esc(turn.q)));
+  const steps=Array.isArray(turn.steps)?turn.steps:[];const nSteps=steps.filter(s=>s.kind!=="note").length;
+  const m=el("div","amsg",`<span class="av">R</span><div class="abody"><div class="work closed"><div class="whead"><span class="ok">✓</span><span class="wt"><b>${turn.error?"Stopped":"Worked for "+esc(turn.secs)+"s"}</b> · ${nSteps} steps</span><button type="button" class="wtog">Show work</button></div><div class="wlist"></div></div></div>`);
+  tin.appendChild(m);const list=m.querySelector(".wlist"),abody=m.querySelector(".abody");const charts=[];
+  for(const st of steps){
+    const kind=KINDS.includes(st.kind)?st.kind:"q";
+    if(kind==="note"){list.appendChild(el("div","st k-note",`<span class="ic">·</span><span class="tt">${esc(st.text)}</span><div class="bd"></div>`));continue}
+    const s=el("div",`st k-${st.err?"err":kind}`,`<span class="ic">${Number(st.n)||""}</span><span class="tt">${titleHTML(st.title||"",st.tag||"")}</span><div class="bd"></div>`);s.dataset.n=Number(st.n)||0;
+    const bd=s.querySelector(".bd");
+    for(const b of (Array.isArray(st.blocks)?st.blocks:[])){if(b&&b.t==="chart"){const box=el("div","chart",`<h4>${esc(b.title)}</h4><div class="vg"></div>`);bd.appendChild(box);charts.push([box,b])}else bd.insertAdjacentHTML("beforeend",blockHTML(b))}
+    list.appendChild(s)}
+  if(turn.error)abody.appendChild(el("div","errmsg",esc(turn.error)));
+  if(turn.answer!=null){
+    const ans=el("div","ans",`<div class="md">${md(turn.answer||"(no answer)")}</div>`);abody.appendChild(ans);
+    for(const [,b] of charts.slice(-2)){const box=el("div","chart",`<h4>${esc(b.title)}</h4><div class="vg"></div>`);placeChart(ans,box);charts.push([box,b])}
+    if(turn.usage)ans.insertAdjacentHTML("beforeend",`<div class="usage"><span>${esc(turn.model||"")}</span><span>${nSteps} steps · ${esc(turn.secs)}s</span><span>${Number(turn.usage.in||0).toLocaleString("en-US")} in · ${Number(turn.usage.out||0).toLocaleString("en-US")} out tokens</span></div>`)}
+  for(const [box,b] of charts){try{await renderSpec(box.querySelector(".vg"),b.spec||{},Array.isArray(b.rows)?b.rows:[])}catch(e){box.querySelector(".vg").innerHTML=`<p class="muted">Chart could not be drawn: ${esc(e.message)}</p>`}}}
+async function showSession(sess,shared){
+  tin.innerHTML="";tin.classList.remove("wide");if(shared)$("#body").classList.add("nows");
+  if(shared)tin.appendChild(el("div","banner",`<b>Shared chat</b> · read only · ${esc(sess.model||"")} · ${sess.source&&WHS[sess.source]?esc(WHS[sess.source])+" warehouse":"role "+esc(sess.role||"")} · ${esc(new Date(sess.created||Date.now()).toLocaleDateString([], {month:"short",day:"numeric",year:"numeric"}))}<button type="button" class="btn" data-newchat>Ask your own question</button>`));
+  const turns=Array.isArray(sess.turns)?sess.turns:[];for(let i=0;i<turns.length;i++)await renderTurn(turns[i],i);
+  thread.scrollTop=0}
+async function fetchPublished(id){
+  tin.innerHTML=`<p class="muted">Loading chat…</p>`;
+  for(const u of [`https://raw.githubusercontent.com/${GH.repo}/${GH.branch}/${GH.dir}/${id}.json`,`../sessions/${id}.json`]){try{const r=await fetch(u,{cache:"no-store"});if(r.ok)return await r.json()}catch(e){}}
+  return null}
+async function route(){
+  const h=location.hash.slice(1);const [k,...rest]=h.split("=");const v=rest.join("=");
+  if(k==="c"&&/^[a-z0-9]{6,16}$/.test(v)){
+    let saved=null;try{saved=JSON.parse(lsGet(SK(v))||"null")}catch(e){}
+    if(saved?.session){if((saved.session.source||"api")!==S.source)await setSource(saved.session.source||"api",{keepChat:true});SESSION=saved.session;history.length=0;(saved.messages||[]).forEach(x=>history.push(x));REOPENED=true;await showSession(SESSION,false);renderHistory();return}
+    const sess=await fetchPublished(v);
+    if(sess){SESSION=null;history.length=0;await showSession(sess,true)}else tin.innerHTML=`<div class="errmsg">This chat is in someone else's browser and has not been made public. Ask them for a link from Share.</div>`;return}
+  if(k==="s"&&v){try{const sess=await unpack(v);SESSION=null;history.length=0;await showSession(sess,true)}catch(e){tin.innerHTML=`<div class="errmsg">This share link is damaged or incomplete (${esc(e.message)}).</div>`}return}
+  if(k==="p"&&/^[a-z0-9]{6,16}$/.test(v)){
+    tin.innerHTML=`<p class="muted">Loading shared chat…</p>`;
+    const sess=await fetchPublished(v);
+    if(sess){SESSION=null;history.length=0;await showSession(sess,true)}else tin.innerHTML=`<div class="errmsg">Shared chat ${esc(v)} was not found.</div>`;return}
+  SESSION=null;history.length=0;renderEmpty()}
+window.addEventListener("hashchange",route);
+
+/* share modal */
+async function openShare(){
+  const sc=$("#shareScrim");
+  if(!SESSION||!SESSION.turns.length){
+    if(/^#(s|p)=/.test(location.hash)){sc.hidden=false;$("#longOut").value=location.href;$("#longLen").textContent="This is already a shared link.";$("#shortFs").hidden=true;return}
+    return}
+  sc.hidden=false;$("#shortFs").hidden=false;
+  const obj=shareCopy();const link=pageUrl("s="+await pack(obj));
+  $("#longOut").value=link;$("#longLen").textContent=`${(link.length/1024).toFixed(1)} KB link${link.length>1.5e6?" · too long for some browsers":link.length>60000?" · long; some chat apps may cut it":""}`;
+  const tok=!!ghToken();$("#shortTxt").innerHTML=tok?`Saves this chat to <code>${GH.dir}/${esc(SESSION.id)}.json</code> in the public residentquant.com repo. Anyone with the link can read it.`:`Needs a GitHub token with write access to ${GH.repo} (the same one comment mode uses).`;
+  $("#ghTok").hidden=tok;$("#mkShort").textContent=tok?"Create short link":"Save token";$("#shortOut").value="";$("#shortMsg").textContent="";
+  if(SESSION.published){$("#shortOut").value=pageUrl("c="+SESSION.id);$("#shortMsg").textContent="Already public. This is the chat's own address.";$("#mkShort").textContent="Update"}}
+async function copyText(inp){try{await navigator.clipboard.writeText(inp.value);return true}catch(e){inp.focus();inp.select();return false}}
+
+async function ask(q){
+  if(busy)return;if(needKeys()){openSettings();return}
+  if(isWh()){if(!WCAT)await setSource(S.source,{keepChat:true});if(!WCAT)return}
+  else{if(!CAT)await loadCatalog();if(!CAT){openSettings();return}}
+  if(SESSION&&(SESSION.source||"api")!==S.source){SESSION=null;history.length=0}
+  tin.classList.remove("wide");tin.querySelector(".home")?.remove();if(matchMedia("(min-width:1001px)").matches)$("#body").classList.remove("nows");
+  if(!SESSION){SESSION={v:1,id:newId(),created:new Date().toISOString(),model:S.model,role:S.role,source:S.source,turns:[]};history.length=0;tin.innerHTML="";setHash("c="+SESSION.id)}
+  SESSION.model=S.model;SESSION.role=S.role;
+  busy=true;ctl=new AbortController();setBusy(true);
+  const e=tin.querySelector(".empty");if(e)e.remove();
+  const turn={q,steps:[],answer:null,model:S.model,role:S.role,source:S.source,at:new Date().toISOString(),secs:0};
+  tin.appendChild(el("div","umsg",esc(q)));
+  const m=el("div","amsg",`<span class="av">R</span><div class="abody"><div class="work"><div class="whead"><span class="sp"></span><span class="wt"><b>Working</b> · thinking</span><button type="button" class="wtog" hidden>Hide work</button></div><div class="wlist"></div></div></div>`);
+  tin.appendChild(m);scrollEnd();
+  const list=m.querySelector(".wlist"),wt=m.querySelector(".wt"),abody=m.querySelector(".abody");let n=0;const usage={in:0,out:0,cache:0};const t0=performance.now();
+  let ctx=TABLES.size?`\n\n[Tables already in this session]\n${tableSummary()}`:"";
+  if(REOPENED){ctx+="\n\n[This chat was reopened in a new page load. Tables from earlier turns are not loaded; re-run queries if you need their data.]";REOPENED=false}
+  history.push({role:"user",content:q+ctx});
+  try{
+    for(let turnN=0;turnN<30;turnN++){
+      wt.innerHTML=`<b>Working</b> · ${turnN?"reading results":"planning"}`;
+      const res=await claude({model:S.model,max_tokens:8000,system:[{type:"text",text:systemPrompt(),cache_control:{type:"ephemeral"}}],tools:tools(),messages:history});
+      usage.in+=res.usage?.input_tokens||0;usage.out+=res.usage?.output_tokens||0;usage.cache+=res.usage?.cache_read_input_tokens||0;
+      history.push({role:"assistant",content:res.content});
+      const uses=res.content.filter(b=>b.type==="tool_use");
+      const texts=res.content.filter(b=>b.type==="text"&&b.text.trim()).map(b=>b.text);
+      if(!uses.length){
+        turn.answer=texts.join("\n\n");const secs=Math.round((performance.now()-t0)/1000);turn.secs=secs;turn.usage=usage;
+        const ans=el("div","ans",`<div class="md">${md(turn.answer||"(no answer)")}</div>`);abody.appendChild(ans);
+        if(!turn.steps.some(s=>(s.blocks||[]).some(b=>b.t==="chart"))){try{const ac=await autoChart(turn);if(ac){n++;const rec={n,kind:"ch",title:`Chart: ${ac.title}`,tag:"auto, from step "+ac.from,blocks:[{t:"chart",title:ac.title,spec:ac.spec,rows:ac.rows}]};turn.steps.push(rec);
+          list.appendChild(el("div","st k-ch",`<span class="ic">${n}</span><span class="tt">${titleHTML(rec.title,rec.tag)}</span><div class="bd"></div>`))}}catch(e){}}
+        const cb=turn.steps.flatMap(s=>(s.blocks||[]).filter(b=>b.t==="chart")).slice(-2);
+        for(const c of cb){const box=el("div","chart",`<h4>${esc(c.title)}</h4><div class="vg"></div>`);placeChart(ans,box);try{await renderSpec(box.querySelector(".vg"),c.spec,c.rows)}catch(err){box.remove()}}
+        ans.insertAdjacentHTML("beforeend",`<div class="usage"><span>${esc(S.model)}</span><span>${n} steps · ${secs}s</span><span>${usage.in.toLocaleString("en-US")} in · ${usage.out.toLocaleString("en-US")} out${usage.cache?` · ${usage.cache.toLocaleString("en-US")} cached`:""} tokens</span></div>`);
+        m.querySelector(".sp").outerHTML=`<span class="ok">✓</span>`;wt.innerHTML=`<b>Worked for ${secs}s</b> · ${n} steps`;
+        const tg=m.querySelector(".wtog");tg.hidden=false;tg.textContent="Show work";m.querySelector(".work").classList.add("closed");scrollEnd();break}
+      for(const tx of texts){turn.steps.push({kind:"note",text:tx});list.appendChild(el("div","st k-note",`<span class="ic">·</span><span class="tt">${esc(tx)}</span><div class="bd"></div>`))}
+      const results=[];
+      for(const u of uses){
+        n++;const kind={query_metrics:"q",dimension_values:"q",describe_table:"q",run_sql:"sql",run_python:"py",make_chart:"ch"}[u.name]||"q";
+        const rec={n,kind,title:u.name,tag:"",blocks:[]};turn.steps.push(rec);
+        const s=el("div",`st k-${kind} run`,`<span class="ic">${n}</span><span class="tt">${esc(u.name)}…</span><div class="bd"></div>`);s.dataset.n=n;list.appendChild(s);scrollEnd();
+        wt.innerHTML=`<b>Working</b> · ${({q:isWh()?"reading the warehouse":"querying the API",sql:"running SQL",py:"running Python",ch:"drawing a chart"})[kind]}`;
+        try{const out=await execTool(u.name,u.input,s,rec);const isErr=!!out?._err;if(out)delete out._err;
+          results.push({type:"tool_result",tool_use_id:u.id,content:JSON.stringify(out).slice(0,24000),...(isErr?{is_error:true}:{})});if(isErr){s.className="st k-err";rec.err=1}}
+        catch(err){if(err.name==="AbortError")throw err;
+          s.className="st k-err";rec.err=1;const b={t:"out",err:1,text:err.message};rec.blocks.push(b);s.querySelector(".bd").insertAdjacentHTML("beforeend",blockHTML(b));
+          results.push({type:"tool_result",tool_use_id:u.id,content:`Error: ${err.message}`,is_error:true})}
+        s.classList.remove("run")}
+      history.push({role:"user",content:results})}
+  }catch(err){
+    const msg=err.name==="AbortError"?"Stopped.":err.message;turn.error=msg;turn.secs=Math.round((performance.now()-t0)/1000);abody.appendChild(el("div","errmsg",esc(msg)));
+    m.querySelector(".sp")?.remove();wt.innerHTML=`<b>Stopped</b> · ${n} steps`;
+    while(history.length&&history[history.length-1].role==="assistant"&&history[history.length-1].content.some(b=>b.type==="tool_use"))history.pop();
+    if(history.length&&history[history.length-1].role==="user"&&typeof history[history.length-1].content==="string")history.pop()}
+  SESSION.turns.push(turn);saveSession();
+  if(S.autoPub!==false&&ghToken()){const sess=SESSION,u=abody.querySelector(".usage")||abody;
+    pubQ=pubQ.then(()=>publishShort(shareCopy()).then(()=>{sess.published=new Date().toISOString();saveSession();u.insertAdjacentHTML("beforeend",`<span class="pubok">public link ✓</span>`)}).catch(err=>u.insertAdjacentHTML("beforeend",`<span class="pubno">not published: ${esc(err.message)}</span>`)))}
+  busy=false;setBusy(false)}
+function setBusy(b){const s=$("#send");s.classList.toggle("stop",b);s.textContent=b?"■":"↑";s.setAttribute("aria-label",b?"Stop":"Send");$("#q").disabled=b}
+
+/* ---------------- events ---------------- */
+$("#form").addEventListener("submit",e=>{e.preventDefault();if(busy){ctl?.abort();return}const q=$("#q").value.trim();if(!q)return;$("#q").value="";autoGrow();ask(q)});
+const autoGrow=()=>{const t=$("#q");t.style.height="auto";t.style.height=Math.min(t.scrollHeight,180)+"px"};
+$("#q").addEventListener("input",autoGrow);
+$("#q").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("#form").requestSubmit()}});
+document.addEventListener("click",e=>{
+  const sr=e.target.closest("[data-src]");if(sr&&!busy){setSource(sr.dataset.src);return}
+  const wt=e.target.closest("[data-wtbl]");if(wt){tab("sql");$("#sqlEd").value=`SELECT * FROM ${wt.dataset.wtbl} LIMIT 100`;runSqlPane();return}
+  const s=e.target.closest("[data-q]");if(s&&!busy){if(!isWh()&&!CAT){openSettings();return}ask(s.dataset.q);return}
+  const r=e.target.closest(".ref");if(r){const st=r.closest(".amsg")?.querySelector(`.st[data-n="${Number(r.dataset.step)}"]`);if(st){const w=st.closest(".work");w.classList.remove("closed");w.querySelector(".wtog").textContent="Hide work";st.scrollIntoView({behavior:"smooth",block:"center"});st.classList.remove("flash");void st.offsetWidth;st.classList.add("flash");setTimeout(()=>st.classList.remove("flash"),1800)}return}
+  const w=e.target.closest(".wtog");if(w){const k=w.closest(".work");k.classList.toggle("closed");w.textContent=k.classList.contains("closed")?"Show work":"Hide work";return}
+  const t=e.target.closest("[data-tbl]");if(t){tab("sql");$("#sqlEd").value=`SELECT * FROM ${qid(t.dataset.tbl)} LIMIT 100`;runSqlPane();return}
+  const a=e.target.closest("[data-ask]");if(a){$("#q").value=`Show ${a.dataset.ask} by month, with a chart`;$("#q").focus();autoGrow();return}
+  const d=e.target.closest("[data-dim]");if(d){$("#q").value+=($("#q").value?" ":"")+d.dataset.dim;$("#q").focus();return}
+  const tb=e.target.closest("[data-tab]");if(tb){tab(tb.dataset.tab);return}
+  const op=e.target.closest("[data-open]");if(op&&!busy){location.hash="c="+op.dataset.open;return}
+  const nc=e.target.closest("[data-newchat]");if(nc){newChat();return}});
+function tab(n){$$("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===n));$$("[data-pane]").forEach(p=>p.hidden=p.dataset.pane!==n);$("#body").classList.remove("nows")}
+async function runSqlPane(){const o=$("#sqlOut");o.innerHTML=`<p class="muted">Running…</p>`;
+  try{const sql=$("#sqlEd").value.trim().replace(/;\s*$/,"");const d=await sqlQuery(sql);if(/^\s*(create|drop|insert|alter|update|delete)/im.test(sql))await refreshTables();o.innerHTML=`<div class="meta"><span>${d.rows.length.toLocaleString("en-US")} rows</span></div>`+gridHTML(d.cols,d.rows,200)}
+  catch(e){o.innerHTML=`<pre class="out err">${esc(e.message)}</pre>`}}
+$("#sqlRun").onclick=runSqlPane;
+$("#sqlEd").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){e.preventDefault();runSqlPane()}});
+$("#pyRun").onclick=async()=>{const o=$("#pyOut");o.innerHTML=`<p class="muted">${PY?"Running…":"Loading Python and pandas (first run, about 15 MB)…"}</p>`;
+  try{const save=$("#pySave").value.trim()?cleanName($("#pySave").value):null;const r=await runPython($("#pyEd").value,save);
+    o.innerHTML=(r.stdout?`<pre class="out">${esc(r.stdout)}</pre>`:"")+(r.error?`<pre class="out err">${esc(r.error)}</pre>`:"")+(r.saved?`<div class="meta"><b>saved as ${esc(r.saved.name)}</b><span>${r.saved.rows} rows</span></div>`:"")||`<p class="muted">Done. No output.</p>`}
+  catch(e){o.innerHTML=`<pre class="out err">${esc(e.message)}</pre>`}};
+$("#pyEd").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)){e.preventDefault();$("#pyRun").click()}});
+$("#wsBtn").onclick=()=>$("#body").classList.toggle("nows");
+function newChat(){if(busy)ctl?.abort();SESSION=null;history.length=0;setHash("");renderEmpty();renderHistory()}
+$("#newBtn").onclick=newChat;
+$("#shareBtn").onclick=openShare;
+$("#shareClose").onclick=()=>$("#shareScrim").hidden=true;
+$("#shareScrim").addEventListener("click",e=>{if(e.target.id==="shareScrim")$("#shareScrim").hidden=true});
+$("#copyLong").onclick=async()=>{const ok=await copyText($("#longOut"));$("#longLen").textContent=ok?"Copied.":"Selected. Press Cmd/Ctrl+C to copy."};
+$("#mkShort").onclick=async()=>{
+  if(!ghToken()){const v=$("#ghTok").value.trim();if(!v){$("#shortMsg").textContent="Paste a token first.";return}lsSet("vlc:token",v);openShare();return}
+  $("#shortMsg").textContent="Saving…";
+  try{const link=await publishShort(shareCopy());$("#shortOut").value=link;const ok=await copyText($("#shortOut"));$("#shortMsg").textContent=(ok?"Copied. ":"")+"Live in about a minute."}
+  catch(e){$("#shortMsg").textContent=e.message}};
+
+/* ---------------- start ---------------- */
+$("#body").classList.add("nows");
+chips();renderHistory();route();
+duck().then(refreshTables).catch(e=>engine("DuckDB","failed: "+e.message));
+engine("Python","loads on first use");
+const ownView=!location.hash||(/^#c=/.test(location.hash)&&!!lsGet(SK(location.hash.slice(3))));
+setSource(S.source,{keepChat:true});
+if(needKeys()&&ownView)openSettings();else if(!isWh()&&S.apiUrl&&S.apiKey)loadCatalog().then(()=>{if(!location.hash)renderEmpty()});
+window.__rq={S,ask,sqlQuery,runPython,TABLES,setSource,WLOADED,compileMetrics,semQuery,homeData,get SESSION(){return SESSION}};
+</script>
+</body>
+</html>

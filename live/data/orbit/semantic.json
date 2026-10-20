@@ -1,0 +1,359 @@
+{
+ "id": "orbit",
+ "as_of": "2026-10-11",
+ "as_of_note": "Data ends Oct 11, 2026. The home page reviews complete weeks (Monday to Sunday).",
+ "time_grains": [
+  "day",
+  "week",
+  "month",
+  "quarter",
+  "year"
+ ],
+ "sources": {
+  "agg_detections_daily": {
+   "kind": "aggregate",
+   "file": "agg_detections_daily.parquet",
+   "time": "detection_date",
+   "description": "Onboard detections by day, mission, sensor, firmware and sun angle. fct_detections is the source of truth.",
+   "rows": 7632,
+   "bytes": 52753,
+   "date_min": "2025-06-16",
+   "date_max": "2026-10-11",
+   "dimensions": {
+    "customer_name": "Customer mission",
+    "orbit_class": "SSO dawn-dusk, SSO midday, LEO 53 deg or GEO",
+    "sensor": "HDR camera, ST-100 or ST-200 star tracker",
+    "firmware_version": "Era-Core firmware",
+    "sun_angle_band": "under 45 deg, 45 to 90 deg, 90 deg and over"
+   },
+   "measures": [
+    "detections",
+    "matched",
+    "unmatched",
+    "false_alarms",
+    "latency_ms_sum"
+   ]
+  },
+  "agg_conjunctions_daily": {
+   "kind": "aggregate",
+   "file": "agg_conjunctions_daily.parquet",
+   "time": "screened_date",
+   "description": "Conjunctions by screening day, repeats removed (first row per conjunction_id).",
+   "rows": 3183,
+   "bytes": 19644,
+   "date_min": "2025-06-17",
+   "date_max": "2026-10-11",
+   "dimensions": {
+    "customer_name": "Customer mission",
+    "orbit_class": "Orbit class",
+    "altitude_band": "under 525 km, 525 to 560 km, over 560 km, GEO",
+    "risk_tier": "high, medium, low",
+    "source": "onboard or ground_cdm",
+    "decision_mode": "autonomous, ground or none (low risk)",
+    "action": "maneuver, monitor, none",
+    "object_type": "payload, payload_inactive, rocket_body, debris or breakup fragment"
+   },
+   "measures": [
+    "conjunctions",
+    "high_risk",
+    "decisions",
+    "autonomous_decisions",
+    "maneuvers_triggered",
+    "decision_latency_min_sum"
+   ]
+  },
+  "agg_maneuvers_daily": {
+   "kind": "aggregate",
+   "file": "agg_maneuvers_daily.parquet",
+   "time": "maneuver_date",
+   "description": "Thruster burns by day, mission and purpose.",
+   "rows": 1386,
+   "bytes": 27732,
+   "date_min": "2025-06-16",
+   "date_max": "2026-10-11",
+   "dimensions": {
+    "customer_name": "Customer mission",
+    "orbit_class": "Orbit class",
+    "purpose": "collision_avoidance, station_keeping, formation_keeping, rpo_approach",
+    "autonomous": "Planned and executed onboard"
+   },
+   "measures": [
+    "maneuvers",
+    "delta_v_mps",
+    "propellant_g",
+    "dv_error_sum"
+   ]
+  },
+  "agg_nav_daily": {
+   "kind": "aggregate",
+   "file": "agg_nav_daily.parquet",
+   "time": "nav_date",
+   "description": "Navigation health by day and mission; one spacecraft-day per spacecraft per day.",
+   "rows": 2604,
+   "bytes": 30955,
+   "date_min": "2025-06-16",
+   "date_max": "2026-10-11",
+   "dimensions": {
+    "customer_name": "Customer mission",
+    "orbit_class": "Orbit class",
+    "altpnt_enabled": "Alternative navigation turned on"
+   },
+   "measures": [
+    "spacecraft_days",
+    "jamming_minutes",
+    "gnss_outage_minutes",
+    "altpnt_minutes",
+    "pos_error_p95_sum",
+    "uptime_sum"
+   ]
+  }
+ },
+ "metrics": [
+  {
+   "name": "detections",
+   "label": "Detections",
+   "format": "number",
+   "source": "agg_detections_daily",
+   "sql": "SUM(detections)",
+   "description": "Objects detected onboard.",
+   "polarity": "up",
+   "value_all_time": 155096.0
+  },
+  {
+   "name": "catalog_match_rate",
+   "label": "Catalog match rate",
+   "format": "percent",
+   "source": "agg_detections_daily",
+   "sql": "SUM(matched)/NULLIF(SUM(detections),0)",
+   "description": "Detections identified against the onboard catalog / detections.",
+   "polarity": "up",
+   "value_all_time": 0.7955
+  },
+  {
+   "name": "false_alarm_rate",
+   "label": "False alarm rate",
+   "format": "percent",
+   "source": "agg_detections_daily",
+   "sql": "SUM(false_alarms)/NULLIF(SUM(detections),0)",
+   "description": "Detections with no real object / detections.",
+   "polarity": "down",
+   "value_all_time": 0.026
+  },
+  {
+   "name": "unmatched_rate",
+   "label": "Unmatched rate",
+   "format": "percent",
+   "source": "agg_detections_daily",
+   "sql": "SUM(unmatched)/NULLIF(SUM(detections),0)",
+   "description": "Real objects missing from the onboard catalog / detections.",
+   "polarity": "down",
+   "value_all_time": 0.1785
+  },
+  {
+   "name": "onboard_latency_ms",
+   "label": "Onboard ID latency (ms)",
+   "format": "number",
+   "source": "agg_detections_daily",
+   "sql": "SUM(latency_ms_sum)/NULLIF(SUM(detections),0)",
+   "description": "Average ms from image to identification.",
+   "polarity": "down",
+   "value_all_time": 238.2199
+  },
+  {
+   "name": "conjunctions",
+   "label": "Conjunctions",
+   "format": "number",
+   "source": "agg_conjunctions_daily",
+   "sql": "SUM(conjunctions)",
+   "description": "Close approaches screened, repeats removed.",
+   "polarity": "down",
+   "value_all_time": 3865.0
+  },
+  {
+   "name": "high_risk_conjunctions",
+   "label": "High-risk conjunctions",
+   "format": "number",
+   "source": "agg_conjunctions_daily",
+   "sql": "SUM(high_risk)",
+   "description": "Conjunctions with Pc >= 1e-4.",
+   "polarity": "down",
+   "value_all_time": 271.0
+  },
+  {
+   "name": "autonomous_decision_share",
+   "label": "Autonomous decision share",
+   "format": "percent",
+   "source": "agg_conjunctions_daily",
+   "sql": "SUM(autonomous_decisions)/NULLIF(SUM(decisions),0)",
+   "description": "Medium and high risk conjunctions decided onboard / all medium and high risk.",
+   "polarity": "up",
+   "value_all_time": 0.715
+  },
+  {
+   "name": "decision_latency_min",
+   "label": "Decision latency (min)",
+   "format": "number",
+   "source": "agg_conjunctions_daily",
+   "sql": "SUM(decision_latency_min_sum)/NULLIF(SUM(decisions),0)",
+   "description": "Average minutes from screening to decision.",
+   "polarity": "down",
+   "value_all_time": 107.346
+  },
+  {
+   "name": "maneuvers",
+   "label": "Maneuvers",
+   "format": "number",
+   "source": "agg_maneuvers_daily",
+   "sql": "SUM(maneuvers)",
+   "description": "Thruster burns.",
+   "polarity": "down",
+   "value_all_time": 2194.0
+  },
+  {
+   "name": "avoidance_maneuvers",
+   "label": "Avoidance maneuvers",
+   "format": "number",
+   "source": "agg_maneuvers_daily",
+   "sql": "SUM(maneuvers) FILTER (WHERE purpose='collision_avoidance')",
+   "description": "Collision avoidance burns.",
+   "polarity": "down",
+   "value_all_time": 282.0
+  },
+  {
+   "name": "delta_v_mps",
+   "label": "Delta-v (m/s)",
+   "format": "number",
+   "source": "agg_maneuvers_daily",
+   "sql": "SUM(delta_v_mps)",
+   "description": "Executed delta-v, m/s.",
+   "polarity": "down",
+   "value_all_time": 175.9229
+  },
+  {
+   "name": "propellant_kg",
+   "label": "Propellant (kg)",
+   "format": "number",
+   "source": "agg_maneuvers_daily",
+   "sql": "SUM(propellant_g)/1000",
+   "description": "Propellant used, kg.",
+   "polarity": "down",
+   "value_all_time": 33.1505
+  },
+  {
+   "name": "dv_execution_error",
+   "label": "Delta-v execution error",
+   "format": "percent",
+   "source": "agg_maneuvers_daily",
+   "sql": "SUM(dv_error_sum)/NULLIF(SUM(maneuvers),0)",
+   "description": "Average |executed - planned| / planned.",
+   "polarity": "down",
+   "value_all_time": 0.0137
+  },
+  {
+   "name": "active_spacecraft",
+   "label": "Active spacecraft",
+   "format": "number",
+   "source": "agg_nav_daily",
+   "sql": "SUM(spacecraft_days)/NULLIF(COUNT(DISTINCT nav_date),0)",
+   "description": "Average spacecraft operating per day.",
+   "polarity": "up",
+   "value_all_time": 25.9689
+  },
+  {
+   "name": "jamming_minutes",
+   "label": "GNSS jamming minutes",
+   "format": "number",
+   "source": "agg_nav_daily",
+   "sql": "SUM(jamming_minutes)",
+   "description": "Minutes with GNSS jamming detected, summed over spacecraft.",
+   "polarity": "down",
+   "value_all_time": 58402.0
+  },
+  {
+   "name": "altpnt_hours",
+   "label": "Alt-PNT hours",
+   "format": "number",
+   "source": "agg_nav_daily",
+   "sql": "SUM(altpnt_minutes)/60",
+   "description": "Hours navigating without GNSS on alt-PNT.",
+   "polarity": "up",
+   "value_all_time": 10353.15
+  },
+  {
+   "name": "nav_error_p95_m",
+   "label": "Nav error p95 (m)",
+   "format": "number",
+   "source": "agg_nav_daily",
+   "sql": "SUM(pos_error_p95_sum)/NULLIF(SUM(spacecraft_days),0)",
+   "description": "Mean daily p95 position error, m.",
+   "polarity": "down",
+   "value_all_time": 17.3445
+  },
+  {
+   "name": "uptime",
+   "label": "Uptime",
+   "format": "percent",
+   "source": "agg_nav_daily",
+   "sql": "SUM(uptime_sum)/NULLIF(SUM(spacecraft_days),0)",
+   "description": "Share of spacecraft-time in nominal mode.",
+   "polarity": "up",
+   "value_all_time": 0.994
+  }
+ ],
+ "home": {
+  "grain": "week",
+  "wbr": [
+   "detections",
+   "catalog_match_rate",
+   "false_alarm_rate",
+   "conjunctions",
+   "autonomous_decision_share",
+   "avoidance_maneuvers",
+   "jamming_minutes",
+   "nav_error_p95_m"
+  ],
+  "segments": {
+   "title": "Missions you own",
+   "note": "by conjunctions in the week",
+   "dimension": "customer_name",
+   "metric": "conjunctions",
+   "extra": [
+    "catalog_match_rate",
+    "nav_error_p95_m"
+   ],
+   "top": 6
+  }
+ },
+ "reconciliation": [
+  {
+   "metric": "detections",
+   "semantic": 155096.0,
+   "raw": 155096.0,
+   "status": "pass"
+  },
+  {
+   "metric": "false_alarm_rate",
+   "semantic": 0.026,
+   "raw": 0.026,
+   "status": "pass"
+  },
+  {
+   "metric": "conjunctions",
+   "semantic": 3865.0,
+   "raw": 3865.0,
+   "status": "pass"
+  },
+  {
+   "metric": "delta_v_mps",
+   "semantic": 175.9229,
+   "raw": 175.9229,
+   "status": "pass"
+  },
+  {
+   "metric": "nav_error_p95_m",
+   "semantic": 17.3445,
+   "raw": 17.3445,
+   "status": "pass"
+  }
+ ]
+}

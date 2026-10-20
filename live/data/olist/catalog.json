@@ -1,0 +1,528 @@
+{
+ "id": "olist",
+ "name": "Olist marketplace",
+ "story": "A Brazilian online marketplace where independent sellers list products and Olist handles orders, payments and delivery. About 99k orders from Sep 2016 to Oct 2018.",
+ "source": {
+  "title": "Brazilian E-Commerce Public Dataset by Olist",
+  "url": "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce",
+  "license": "CC BY-NC-SA 4.0",
+  "credit": "Olist"
+ },
+ "tables": [
+  {
+   "date_range": null,
+   "name": "dim_customers",
+   "file": "dim_customers.parquet",
+   "description": "One row per order-level customer record. customer_id is created per order; customer_unique_id identifies the person.",
+   "grain": "One row per order-level customer record",
+   "primary_key": "customer_id",
+   "rows": 99441,
+   "bytes": 4111253,
+   "columns": [
+    {
+     "name": "customer_id",
+     "type": "VARCHAR",
+     "description": "Key used by fct_orders. One per order, so it is not a person."
+    },
+    {
+     "name": "customer_unique_id",
+     "type": "VARCHAR",
+     "description": "The real customer. Use COUNT(DISTINCT customer_unique_id) for customers and repeat purchase."
+    },
+    {
+     "name": "zip_code_prefix",
+     "type": "VARCHAR",
+     "description": "First 5 digits of the customer zip code"
+    },
+    {
+     "name": "city",
+     "type": "VARCHAR",
+     "description": "Customer city, lowercase"
+    },
+    {
+     "name": "state",
+     "type": "VARCHAR",
+     "description": "Two-letter Brazilian state code (SP, RJ, MG, ...)"
+    }
+   ]
+  },
+  {
+   "date_range": null,
+   "name": "dim_products",
+   "file": "dim_products.parquet",
+   "description": "One row per product listed by a seller.",
+   "grain": "One row per product listed by a seller",
+   "primary_key": "product_id",
+   "rows": 32951,
+   "bytes": 880219,
+   "columns": [
+    {
+     "name": "product_id",
+     "type": "VARCHAR",
+     "description": "Product key"
+    },
+    {
+     "name": "category_pt",
+     "type": "VARCHAR",
+     "description": "Original Portuguese category name, null for 610 products"
+    },
+    {
+     "name": "category",
+     "type": "VARCHAR",
+     "description": "English category name; 'unknown' when missing, Portuguese when no translation exists"
+    },
+    {
+     "name": "name_length",
+     "type": "BIGINT",
+     "description": "Characters in the product name"
+    },
+    {
+     "name": "description_length",
+     "type": "BIGINT",
+     "description": "Characters in the product description"
+    },
+    {
+     "name": "photos",
+     "type": "BIGINT",
+     "description": "Number of product photos"
+    },
+    {
+     "name": "weight_g",
+     "type": "BIGINT",
+     "description": "Package weight in grams"
+    },
+    {
+     "name": "length_cm",
+     "type": "BIGINT",
+     "description": "Package length"
+    },
+    {
+     "name": "height_cm",
+     "type": "BIGINT",
+     "description": "Package height"
+    },
+    {
+     "name": "width_cm",
+     "type": "BIGINT",
+     "description": "Package width"
+    }
+   ]
+  },
+  {
+   "date_range": null,
+   "name": "dim_sellers",
+   "file": "dim_sellers.parquet",
+   "description": "One row per seller on the marketplace.",
+   "grain": "One row per seller on the marketplace",
+   "primary_key": "seller_id",
+   "rows": 3095,
+   "bytes": 75040,
+   "columns": [
+    {
+     "name": "seller_id",
+     "type": "VARCHAR",
+     "description": "Seller key"
+    },
+    {
+     "name": "zip_code_prefix",
+     "type": "VARCHAR",
+     "description": "First 5 digits of the seller zip code"
+    },
+    {
+     "name": "city",
+     "type": "VARCHAR",
+     "description": "Seller city (a few values are dirty)"
+    },
+    {
+     "name": "state",
+     "type": "VARCHAR",
+     "description": "Two-letter state code"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "purchased_at",
+    "min": "2016-09-04",
+    "max": "2018-09-03"
+   },
+   "name": "fct_order_items",
+   "file": "fct_order_items.parquet",
+   "description": "One row per item in an order. An order with two units of a product has two rows.",
+   "grain": "One row per item in an order",
+   "primary_key": "order_id, item_seq",
+   "rows": 112650,
+   "bytes": 4749727,
+   "columns": [
+    {
+     "name": "order_id",
+     "type": "VARCHAR",
+     "description": "Order key"
+    },
+    {
+     "name": "item_seq",
+     "type": "BIGINT",
+     "description": "Item number within the order, starting at 1"
+    },
+    {
+     "name": "product_id",
+     "type": "VARCHAR",
+     "description": "Product sold"
+    },
+    {
+     "name": "seller_id",
+     "type": "VARCHAR",
+     "description": "Seller who fulfilled the item"
+    },
+    {
+     "name": "purchased_at",
+     "type": "TIMESTAMP",
+     "description": "Order purchase time (copied from the order)"
+    },
+    {
+     "name": "order_status",
+     "type": "VARCHAR",
+     "description": "Order status (copied from the order)"
+    },
+    {
+     "name": "shipping_limit_at",
+     "type": "TIMESTAMP",
+     "description": "Deadline for the seller to hand the item to the carrier"
+    },
+    {
+     "name": "price",
+     "type": "DOUBLE",
+     "description": "Item price in BRL, excluding freight"
+    },
+    {
+     "name": "freight_value",
+     "type": "DOUBLE",
+     "description": "Freight charged for this item in BRL"
+    }
+   ]
+  },
+  {
+   "date_range": null,
+   "name": "fct_payments",
+   "file": "fct_payments.parquet",
+   "description": "One row per payment method used on an order. Orders paid with a voucher plus a card have several rows.",
+   "grain": "One row per payment method used on an order",
+   "primary_key": "order_id, payment_seq",
+   "rows": 103886,
+   "bytes": 2288108,
+   "columns": [
+    {
+     "name": "order_id",
+     "type": "VARCHAR",
+     "description": "Order key"
+    },
+    {
+     "name": "payment_seq",
+     "type": "BIGINT",
+     "description": "Sequence of the payment within the order"
+    },
+    {
+     "name": "payment_type",
+     "type": "VARCHAR",
+     "description": "credit_card, boleto (bank slip), voucher, debit_card, not_defined"
+    },
+    {
+     "name": "installments",
+     "type": "BIGINT",
+     "description": "Number of installments chosen (credit card)"
+    },
+    {
+     "name": "payment_value",
+     "type": "DOUBLE",
+     "description": "Amount paid with this method in BRL"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "sent_at",
+    "min": "2016-10-02",
+    "max": "2018-08-31"
+   },
+   "name": "fct_reviews",
+   "file": "fct_reviews.parquet",
+   "description": "One row per review response. Customers rate the order 1 to 5 after delivery; comments are in Portuguese.",
+   "grain": "One row per review response",
+   "primary_key": "review_id (not unique, see tests)",
+   "rows": 99224,
+   "bytes": 5527924,
+   "columns": [
+    {
+     "name": "review_id",
+     "type": "VARCHAR",
+     "description": "Review key; 814 ids repeat across orders"
+    },
+    {
+     "name": "order_id",
+     "type": "VARCHAR",
+     "description": "Order reviewed; a few orders have more than one review"
+    },
+    {
+     "name": "review_score",
+     "type": "BIGINT",
+     "description": "1 to 5 stars"
+    },
+    {
+     "name": "has_comment",
+     "type": "BOOLEAN",
+     "description": "True when a title or message was written"
+    },
+    {
+     "name": "comment_title",
+     "type": "VARCHAR",
+     "description": "Optional title (Portuguese)"
+    },
+    {
+     "name": "comment_message",
+     "type": "VARCHAR",
+     "description": "Optional message (Portuguese)"
+    },
+    {
+     "name": "sent_at",
+     "type": "TIMESTAMP",
+     "description": "When the satisfaction survey was sent"
+    },
+    {
+     "name": "answered_at",
+     "type": "TIMESTAMP",
+     "description": "When the customer answered"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "purchase_date",
+    "min": "2016-09-04",
+    "max": "2018-10-17"
+   },
+   "name": "fct_orders",
+   "file": "fct_orders.parquet",
+   "description": "One row per order, with item, payment, delivery and review rollups.",
+   "grain": "One row per order, with item, payment, delivery and review rollups",
+   "primary_key": "order_id",
+   "rows": 99441,
+   "bytes": 9025989,
+   "columns": [
+    {
+     "name": "order_id",
+     "type": "VARCHAR",
+     "description": "Order key"
+    },
+    {
+     "name": "customer_id",
+     "type": "VARCHAR",
+     "description": "Order-level customer key (joins dim_customers)"
+    },
+    {
+     "name": "customer_unique_id",
+     "type": "VARCHAR",
+     "description": "The real customer, copied for convenience"
+    },
+    {
+     "name": "customer_state",
+     "type": "VARCHAR",
+     "description": "Customer state, copied for convenience"
+    },
+    {
+     "name": "order_status",
+     "type": "VARCHAR",
+     "description": "delivered, shipped, canceled, unavailable, invoiced, processing, created, approved"
+    },
+    {
+     "name": "purchased_at",
+     "type": "TIMESTAMP",
+     "description": "Purchase timestamp"
+    },
+    {
+     "name": "purchase_date",
+     "type": "DATE",
+     "description": "Purchase date"
+    },
+    {
+     "name": "approved_at",
+     "type": "TIMESTAMP",
+     "description": "Payment approved"
+    },
+    {
+     "name": "shipped_at",
+     "type": "TIMESTAMP",
+     "description": "Handed to the carrier"
+    },
+    {
+     "name": "delivered_at",
+     "type": "TIMESTAMP",
+     "description": "Delivered to the customer"
+    },
+    {
+     "name": "estimated_delivery_at",
+     "type": "TIMESTAMP",
+     "description": "Delivery date promised at purchase"
+    },
+    {
+     "name": "items",
+     "type": "BIGINT",
+     "description": "Number of items"
+    },
+    {
+     "name": "items_value",
+     "type": "DOUBLE",
+     "description": "Sum of item prices in BRL (gross merchandise value, GMV)"
+    },
+    {
+     "name": "freight_value",
+     "type": "DOUBLE",
+     "description": "Sum of freight in BRL"
+    },
+    {
+     "name": "sellers",
+     "type": "BIGINT",
+     "description": "Distinct sellers in the order"
+    },
+    {
+     "name": "payment_value",
+     "type": "DOUBLE",
+     "description": "Sum of payments in BRL (items plus freight, sometimes plus interest)"
+    },
+    {
+     "name": "delivery_days",
+     "type": "BIGINT",
+     "description": "Days from purchase to delivery"
+    },
+    {
+     "name": "is_late",
+     "type": "BOOLEAN",
+     "description": "Delivered more than one day after the estimated date; null if not delivered"
+    },
+    {
+     "name": "review_score",
+     "type": "DOUBLE",
+     "description": "Average review score for the order (1 to 5), null if no review"
+    }
+   ]
+  }
+ ],
+ "tests": [
+  {
+   "table": "fct_orders",
+   "test": "unique(order_id)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_orders",
+   "test": "relationships(customer_id -> dim_customers)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_order_items",
+   "test": "unique(order_id, item_seq)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_order_items",
+   "test": "relationships(product_id -> dim_products)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_order_items",
+   "test": "relationships(seller_id -> dim_sellers)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_reviews",
+   "test": "unique(review_id)",
+   "status": "warn",
+   "failing_rows": 814
+  },
+  {
+   "table": "dim_products",
+   "test": "not_null(category_pt)",
+   "status": "warn",
+   "failing_rows": 610
+  },
+  {
+   "table": "fct_orders",
+   "test": "not_null(delivered_at) where status = delivered",
+   "status": "warn",
+   "failing_rows": 8
+  },
+  {
+   "table": "fct_orders",
+   "test": "payment_value matches items + freight (within 1 BRL)",
+   "status": "warn",
+   "failing_rows": 249
+  }
+ ],
+ "metrics": [
+  {
+   "name": "gmv",
+   "description": "Gross merchandise value: item prices, excluding freight. Exclude canceled and unavailable orders.",
+   "sql": "SELECT SUM(items_value) FROM olist.fct_orders WHERE order_status NOT IN ('canceled','unavailable')",
+   "value": 13494400.74,
+   "value_label": "all time"
+  },
+  {
+   "name": "orders",
+   "description": "Orders placed, excluding canceled and unavailable",
+   "sql": "SELECT COUNT(*) FROM olist.fct_orders WHERE order_status NOT IN ('canceled','unavailable')",
+   "value": 98207.0,
+   "value_label": "all time"
+  },
+  {
+   "name": "aov",
+   "description": "Average order value: GMV / orders",
+   "sql": "SELECT SUM(items_value)/COUNT(*) FROM olist.fct_orders WHERE order_status NOT IN ('canceled','unavailable')",
+   "value": 137.4077,
+   "value_label": "all time"
+  },
+  {
+   "name": "customers",
+   "description": "Distinct people who ordered",
+   "sql": "SELECT COUNT(DISTINCT customer_unique_id) FROM olist.fct_orders",
+   "value": 96096.0,
+   "value_label": "all time"
+  },
+  {
+   "name": "repeat_rate",
+   "description": "Share of customers with 2+ orders",
+   "sql": "SELECT AVG((n>1)::INT) FROM (SELECT customer_unique_id, COUNT(*) n FROM olist.fct_orders GROUP BY 1)",
+   "value": 0.0312,
+   "value_label": "all time"
+  },
+  {
+   "name": "late_delivery_rate",
+   "description": "Share of delivered orders that arrived late",
+   "sql": "SELECT AVG(is_late::INT) FROM olist.fct_orders WHERE order_status='delivered' AND is_late IS NOT NULL",
+   "value": 0.0677,
+   "value_label": "all time"
+  },
+  {
+   "name": "avg_review_score",
+   "description": "Average review score per order",
+   "sql": "SELECT AVG(review_score) FROM olist.fct_orders",
+   "value": 4.0868,
+   "value_label": "all time"
+  }
+ ],
+ "caveats": [
+  "Data collection tapers off after Aug 2018; Sep and Oct 2018 have only a handful of orders, so exclude them from trends.",
+  "customer_id is one per order. Count people with customer_unique_id.",
+  "Money is in Brazilian reais (BRL).",
+  "Geolocation (lat/long by zip) is not loaded to keep the warehouse small."
+ ],
+ "questions": [
+  "Which product categories grew fastest in 2018?",
+  "Does late delivery lower review scores? Show it.",
+  "What share of customers buy twice, and how long until they return?",
+  "Which states have the worst late-delivery rate?"
+ ]
+}

@@ -1,0 +1,264 @@
+{
+ "id": "olist",
+ "as_of": "2018-08-19",
+ "as_of_note": "Orders taper off after Aug 2018, so the home page treats the week ending Aug 19, 2018 as the latest complete week.",
+ "time_grains": [
+  "day",
+  "week",
+  "month",
+  "quarter",
+  "year"
+ ],
+ "sources": {
+  "agg_orders_daily": {
+   "kind": "aggregate",
+   "file": "agg_orders_daily.parquet",
+   "time": "order_date",
+   "description": "Orders rolled up by day, customer state and status. Additive counts and sums.",
+   "rows": 13059,
+   "bytes": 235095,
+   "date_min": "2016-09-04",
+   "date_max": "2018-10-17",
+   "dimensions": {
+    "customer_state": "Customer state code (SP, RJ, MG, ...)",
+    "customer_region": "Brazilian macro-region of the customer",
+    "order_status": "Order status"
+   },
+   "measures": [
+    "orders",
+    "valid_orders",
+    "canceled_orders",
+    "gmv",
+    "freight",
+    "payment_value",
+    "delivered_orders",
+    "late_orders",
+    "delivery_days_sum",
+    "reviewed_orders",
+    "review_score_sum",
+    "new_customers"
+   ]
+  },
+  "agg_items_daily": {
+   "kind": "aggregate",
+   "file": "agg_items_daily.parquet",
+   "time": "order_date",
+   "description": "Order items rolled up by day, product category, seller state and customer state (canceled and unavailable orders excluded).",
+   "rows": 69038,
+   "bytes": 510770,
+   "date_min": "2016-09-04",
+   "date_max": "2018-09-03",
+   "dimensions": {
+    "product_category": "English product category",
+    "seller_state": "Seller state code",
+    "customer_state": "Customer state code"
+   },
+   "measures": [
+    "items",
+    "item_gmv",
+    "item_freight",
+    "orders_with_category"
+   ]
+  },
+  "fct_orders": {
+   "kind": "fact",
+   "file": "fct_orders.parquet",
+   "time": "purchase_date",
+   "description": "Raw fact table, used for distinct counts.",
+   "dimensions": {
+    "customer_state": "Customer state code",
+    "order_status": "Order status"
+   }
+  },
+  "fct_order_items": {
+   "kind": "fact",
+   "file": "fct_order_items.parquet",
+   "time": "purchased_at",
+   "description": "Raw fact table, used for distinct counts.",
+   "dimensions": {
+    "seller_id": "Seller key"
+   }
+  }
+ },
+ "metrics": [
+  {
+   "name": "gmv",
+   "label": "GMV",
+   "format": "currency",
+   "source": "agg_orders_daily",
+   "sql": "SUM(gmv)",
+   "description": "Gross merchandise value in BRL: item prices excluding freight, canceled and unavailable orders excluded.",
+   "polarity": "up",
+   "value_all_time": 13494400.74
+  },
+  {
+   "name": "orders",
+   "label": "Orders",
+   "format": "number",
+   "source": "agg_orders_daily",
+   "sql": "SUM(valid_orders)",
+   "description": "Orders placed, excluding canceled and unavailable.",
+   "polarity": "up",
+   "value_all_time": 98207.0
+  },
+  {
+   "name": "aov",
+   "label": "Average order value",
+   "format": "currency",
+   "source": "agg_orders_daily",
+   "sql": "SUM(gmv)/NULLIF(SUM(valid_orders),0)",
+   "description": "GMV / orders.",
+   "polarity": "up",
+   "value_all_time": 137.4077
+  },
+  {
+   "name": "new_customers",
+   "label": "New customers",
+   "format": "number",
+   "source": "agg_orders_daily",
+   "sql": "SUM(new_customers)",
+   "description": "People placing their first valid order.",
+   "polarity": "up",
+   "value_all_time": 94944.0
+  },
+  {
+   "name": "late_delivery_rate",
+   "label": "Late delivery rate",
+   "format": "percent",
+   "source": "agg_orders_daily",
+   "sql": "SUM(late_orders)/NULLIF(SUM(delivered_orders),0)",
+   "description": "Share of delivered orders that arrived more than a day after the promised date.",
+   "polarity": "down",
+   "value_all_time": 0.0677
+  },
+  {
+   "name": "avg_delivery_days",
+   "label": "Days to deliver",
+   "format": "days",
+   "source": "agg_orders_daily",
+   "sql": "SUM(delivery_days_sum)/NULLIF(SUM(delivered_orders),0)",
+   "description": "Average days from purchase to delivery, delivered orders only.",
+   "polarity": "down",
+   "value_all_time": 12.4968
+  },
+  {
+   "name": "avg_review_score",
+   "label": "Review score",
+   "format": "score",
+   "source": "agg_orders_daily",
+   "sql": "SUM(review_score_sum)/NULLIF(SUM(reviewed_orders),0)",
+   "description": "Average review score (1 to 5) of reviewed orders, by purchase date.",
+   "polarity": "up",
+   "value_all_time": 4.0868
+  },
+  {
+   "name": "cancel_rate",
+   "label": "Cancel rate",
+   "format": "percent",
+   "source": "agg_orders_daily",
+   "sql": "SUM(canceled_orders)/NULLIF(SUM(orders),0)",
+   "description": "Share of orders canceled or unavailable.",
+   "polarity": "down",
+   "value_all_time": 0.0124
+  },
+  {
+   "name": "freight_ratio",
+   "label": "Freight / GMV",
+   "format": "percent",
+   "source": "agg_orders_daily",
+   "sql": "SUM(freight)/NULLIF(SUM(gmv),0)",
+   "description": "Freight charged as a share of GMV.",
+   "polarity": "down",
+   "value_all_time": 0.1661
+  },
+  {
+   "name": "items_sold",
+   "label": "Items sold",
+   "format": "number",
+   "source": "agg_items_daily",
+   "sql": "SUM(items)",
+   "description": "Items sold in valid orders.",
+   "polarity": "up",
+   "value_all_time": 112101.0
+  },
+  {
+   "name": "category_gmv",
+   "label": "Item GMV",
+   "format": "currency",
+   "source": "agg_items_daily",
+   "sql": "SUM(item_gmv)",
+   "description": "Item prices in BRL; use this (not gmv) when grouping by product_category or seller_state.",
+   "polarity": "up",
+   "value_all_time": 13494400.74
+  },
+  {
+   "name": "active_customers",
+   "label": "Active customers",
+   "format": "number",
+   "source": "fct_orders",
+   "sql": "COUNT(DISTINCT customer_unique_id) FILTER (WHERE order_status NOT IN ('canceled','unavailable'))",
+   "description": "Distinct people with a valid order in the period. Not additive across periods.",
+   "polarity": "up",
+   "value_all_time": 94990.0
+  },
+  {
+   "name": "active_sellers",
+   "label": "Active sellers",
+   "format": "number",
+   "source": "fct_order_items",
+   "sql": "COUNT(DISTINCT seller_id) FILTER (WHERE order_status NOT IN ('canceled','unavailable'))",
+   "description": "Distinct sellers with a valid item sold in the period.",
+   "polarity": "up",
+   "value_all_time": 3053.0
+  }
+ ],
+ "home": {
+  "grain": "week",
+  "wbr": [
+   "gmv",
+   "orders",
+   "aov",
+   "new_customers",
+   "late_delivery_rate",
+   "avg_delivery_days",
+   "avg_review_score",
+   "cancel_rate"
+  ],
+  "segments": {
+   "title": "Categories you own",
+   "note": "top categories by item GMV",
+   "dimension": "product_category",
+   "metric": "category_gmv",
+   "extra": [
+    "items_sold"
+   ],
+   "top": 6
+  }
+ },
+ "reconciliation": [
+  {
+   "metric": "gmv",
+   "semantic": 13494400.74,
+   "raw": 13494400.74,
+   "status": "pass"
+  },
+  {
+   "metric": "orders",
+   "semantic": 98207.0,
+   "raw": 98207.0,
+   "status": "pass"
+  },
+  {
+   "metric": "category_gmv",
+   "semantic": 13494400.74,
+   "raw": 13494400.74,
+   "status": "pass"
+  },
+  {
+   "metric": "late_delivery_rate",
+   "semantic": 0.0677,
+   "raw": 0.0677,
+   "status": "pass"
+  }
+ ]
+}

@@ -1,0 +1,462 @@
+{
+ "id": "saas",
+ "name": "SaaS subscriptions",
+ "story": "RavenStack, a B2B SaaS startup selling AI team tools on Basic, Pro and Enterprise plans. Accounts, subscriptions, product usage, support and churn from 2023 to 2024. Fully synthetic.",
+ "source": {
+  "title": "SaaS Subscription & Churn Analytics Dataset (RavenStack)",
+  "url": "https://www.kaggle.com/datasets/rivalytics/saas-subscription-and-churn-analytics-dataset",
+  "license": "MIT",
+  "credit": "River @ Rivalytics"
+ },
+ "tables": [
+  {
+   "date_range": {
+    "column": "signup_date",
+    "min": "2023-01-02",
+    "max": "2024-12-31"
+   },
+   "name": "dim_accounts",
+   "file": "dim_accounts.parquet",
+   "description": "One row per customer account.",
+   "grain": "One row per customer account",
+   "primary_key": "account_id",
+   "rows": 500,
+   "bytes": 6917,
+   "columns": [
+    {
+     "name": "account_id",
+     "type": "VARCHAR",
+     "description": "Account key"
+    },
+    {
+     "name": "account_name",
+     "type": "VARCHAR",
+     "description": "Company name (synthetic)"
+    },
+    {
+     "name": "industry",
+     "type": "VARCHAR",
+     "description": "Customer industry"
+    },
+    {
+     "name": "country",
+     "type": "VARCHAR",
+     "description": "Two-letter country code"
+    },
+    {
+     "name": "signup_date",
+     "type": "DATE",
+     "description": "Account signup date"
+    },
+    {
+     "name": "referral_source",
+     "type": "VARCHAR",
+     "description": "How the account found the product"
+    },
+    {
+     "name": "signup_plan_tier",
+     "type": "VARCHAR",
+     "description": "Plan at signup"
+    },
+    {
+     "name": "signup_seats",
+     "type": "BIGINT",
+     "description": "Seats at signup"
+    },
+    {
+     "name": "signup_is_trial",
+     "type": "BOOLEAN",
+     "description": "Started on a trial"
+    },
+    {
+     "name": "has_churned",
+     "type": "BOOLEAN",
+     "description": "Account has churned at least once"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "start_date",
+    "min": "2023-01-09",
+    "max": "2024-12-31"
+   },
+   "name": "fct_subscriptions",
+   "file": "fct_subscriptions.parquet",
+   "description": "One row per subscription period. A plan change starts a new subscription row.",
+   "grain": "One row per subscription period",
+   "primary_key": "subscription_id",
+   "rows": 5000,
+   "bytes": 63948,
+   "columns": [
+    {
+     "name": "subscription_id",
+     "type": "VARCHAR",
+     "description": "Subscription key"
+    },
+    {
+     "name": "account_id",
+     "type": "VARCHAR",
+     "description": "Account key"
+    },
+    {
+     "name": "start_date",
+     "type": "DATE",
+     "description": "Start date"
+    },
+    {
+     "name": "end_date",
+     "type": "DATE",
+     "description": "End date; null while active"
+    },
+    {
+     "name": "is_active",
+     "type": "BOOLEAN",
+     "description": "No end date"
+    },
+    {
+     "name": "plan_tier",
+     "type": "VARCHAR",
+     "description": "Basic, Pro or Enterprise"
+    },
+    {
+     "name": "seats",
+     "type": "BIGINT",
+     "description": "Licensed seats"
+    },
+    {
+     "name": "mrr_amount",
+     "type": "BIGINT",
+     "description": "Monthly recurring revenue in USD (0 for trials)"
+    },
+    {
+     "name": "arr_amount",
+     "type": "BIGINT",
+     "description": "Annual recurring revenue = 12 x MRR"
+    },
+    {
+     "name": "is_trial",
+     "type": "BOOLEAN",
+     "description": "Trial subscription"
+    },
+    {
+     "name": "is_upgrade",
+     "type": "BOOLEAN",
+     "description": "Started as an upgrade"
+    },
+    {
+     "name": "is_downgrade",
+     "type": "BOOLEAN",
+     "description": "Started as a downgrade"
+    },
+    {
+     "name": "is_churned",
+     "type": "BOOLEAN",
+     "description": "Ended in churn"
+    },
+    {
+     "name": "billing_frequency",
+     "type": "VARCHAR",
+     "description": "monthly or annual"
+    },
+    {
+     "name": "auto_renew",
+     "type": "BOOLEAN",
+     "description": "Auto-renew on"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "usage_date",
+    "min": "2023-01-01",
+    "max": "2024-12-31"
+   },
+   "name": "fct_feature_usage",
+   "file": "fct_feature_usage.parquet",
+   "description": "One row per feature per subscription per day of use.",
+   "grain": "One row per feature per subscription per day of use",
+   "primary_key": "usage_id (not unique, see tests)",
+   "rows": 25000,
+   "bytes": 334814,
+   "columns": [
+    {
+     "name": "usage_id",
+     "type": "VARCHAR",
+     "description": "Usage record id; 21 ids repeat"
+    },
+    {
+     "name": "subscription_id",
+     "type": "VARCHAR",
+     "description": "Subscription key"
+    },
+    {
+     "name": "account_id",
+     "type": "VARCHAR",
+     "description": "Account key (from the subscription)"
+    },
+    {
+     "name": "usage_date",
+     "type": "DATE",
+     "description": "Day of use"
+    },
+    {
+     "name": "feature_name",
+     "type": "VARCHAR",
+     "description": "feature_1 to feature_40"
+    },
+    {
+     "name": "usage_count",
+     "type": "BIGINT",
+     "description": "Times used that day"
+    },
+    {
+     "name": "usage_duration_secs",
+     "type": "BIGINT",
+     "description": "Seconds of use"
+    },
+    {
+     "name": "error_count",
+     "type": "BIGINT",
+     "description": "Errors hit"
+    },
+    {
+     "name": "is_beta_feature",
+     "type": "BOOLEAN",
+     "description": "Feature was in beta"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "submitted_date",
+    "min": "2023-01-02",
+    "max": "2024-12-31"
+   },
+   "name": "fct_support_tickets",
+   "file": "fct_support_tickets.parquet",
+   "description": "One row per support ticket.",
+   "grain": "One row per support ticket",
+   "primary_key": "ticket_id",
+   "rows": 2000,
+   "bytes": 35338,
+   "columns": [
+    {
+     "name": "ticket_id",
+     "type": "VARCHAR",
+     "description": "Ticket key"
+    },
+    {
+     "name": "account_id",
+     "type": "VARCHAR",
+     "description": "Account key"
+    },
+    {
+     "name": "submitted_date",
+     "type": "DATE",
+     "description": "Date opened"
+    },
+    {
+     "name": "closed_at",
+     "type": "TIMESTAMP",
+     "description": "Closed timestamp"
+    },
+    {
+     "name": "resolution_time_hours",
+     "type": "DOUBLE",
+     "description": "Hours to resolve"
+    },
+    {
+     "name": "priority",
+     "type": "VARCHAR",
+     "description": "low, medium, high, urgent"
+    },
+    {
+     "name": "first_response_time_minutes",
+     "type": "BIGINT",
+     "description": "Minutes to first response"
+    },
+    {
+     "name": "satisfaction_score",
+     "type": "DOUBLE",
+     "description": "CSAT 1 to 5; null when not answered (41%)"
+    },
+    {
+     "name": "is_escalated",
+     "type": "BOOLEAN",
+     "description": "Escalated"
+    }
+   ]
+  },
+  {
+   "date_range": {
+    "column": "churn_date",
+    "min": "2023-01-25",
+    "max": "2024-12-31"
+   },
+   "name": "fct_churn_events",
+   "file": "fct_churn_events.parquet",
+   "description": "One row per churn event. An account can churn, come back and churn again.",
+   "grain": "One row per churn event",
+   "primary_key": "churn_event_id",
+   "rows": 600,
+   "bytes": 8717,
+   "columns": [
+    {
+     "name": "churn_event_id",
+     "type": "VARCHAR",
+     "description": "Churn event key"
+    },
+    {
+     "name": "account_id",
+     "type": "VARCHAR",
+     "description": "Account key"
+    },
+    {
+     "name": "churn_date",
+     "type": "DATE",
+     "description": "Date of churn"
+    },
+    {
+     "name": "reason_code",
+     "type": "VARCHAR",
+     "description": "budget, competitor, features, pricing, support, unknown"
+    },
+    {
+     "name": "refund_amount_usd",
+     "type": "DOUBLE",
+     "description": "Refund issued"
+    },
+    {
+     "name": "after_upgrade",
+     "type": "BOOLEAN",
+     "description": "Upgrade shortly before churn"
+    },
+    {
+     "name": "after_downgrade",
+     "type": "BOOLEAN",
+     "description": "Downgrade shortly before churn"
+    },
+    {
+     "name": "is_reactivation",
+     "type": "BOOLEAN",
+     "description": "The account had come back before this churn"
+    },
+    {
+     "name": "feedback_text",
+     "type": "VARCHAR",
+     "description": "Short exit feedback; null when not given"
+    }
+   ]
+  }
+ ],
+ "tests": [
+  {
+   "table": "dim_accounts",
+   "test": "unique(account_id)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_subscriptions",
+   "test": "relationships(account_id -> dim_accounts)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_subscriptions",
+   "test": "arr_amount = 12 x mrr_amount",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_subscriptions",
+   "test": "end_date >= start_date",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_feature_usage",
+   "test": "unique(usage_id)",
+   "status": "warn",
+   "failing_rows": 21
+  },
+  {
+   "table": "fct_feature_usage",
+   "test": "relationships(subscription_id -> fct_subscriptions)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "fct_churn_events",
+   "test": "relationships(account_id -> dim_accounts)",
+   "status": "pass",
+   "failing_rows": 0
+  },
+  {
+   "table": "dim_accounts",
+   "test": "has_churned agrees with fct_churn_events",
+   "status": "warn",
+   "failing_rows": 312
+  },
+  {
+   "table": "fct_churn_events",
+   "test": "churned accounts have no open subscription",
+   "status": "warn",
+   "failing_rows": 333
+  }
+ ],
+ "metrics": [
+  {
+   "name": "mrr",
+   "description": "MRR on a date: sum mrr_amount of paid subscriptions active that day (start_date <= d and (end_date is null or end_date > d)). Value shown is for 2024-12-31.",
+   "sql": "SELECT SUM(mrr_amount) FROM saas.fct_subscriptions WHERE NOT is_trial AND start_date <= DATE '2024-12-31' AND (end_date IS NULL OR end_date > DATE '2024-12-31')",
+   "value": 10159608.0,
+   "value_label": "on 2024-12-31"
+  },
+  {
+   "name": "active_accounts",
+   "description": "Accounts with at least one active paid subscription on a date. Value shown is for 2024-12-31.",
+   "sql": "SELECT COUNT(DISTINCT account_id) FROM saas.fct_subscriptions WHERE NOT is_trial AND start_date <= DATE '2024-12-31' AND (end_date IS NULL OR end_date > DATE '2024-12-31')",
+   "value": 500.0,
+   "value_label": "on 2024-12-31"
+  },
+  {
+   "name": "arpa",
+   "description": "Average MRR per active account = mrr / active_accounts on the same date.",
+   "sql": "SELECT SUM(mrr_amount)/COUNT(DISTINCT account_id) FROM saas.fct_subscriptions WHERE NOT is_trial AND start_date <= DATE '2024-12-31' AND (end_date IS NULL OR end_date > DATE '2024-12-31')",
+   "value": 20319.216,
+   "value_label": "on 2024-12-31"
+  },
+  {
+   "name": "churn_events",
+   "description": "Count of rows in fct_churn_events in a period. The churn source of truth (see caveats).",
+   "sql": "SELECT COUNT(*) FROM saas.fct_churn_events WHERE churn_date BETWEEN DATE '2024-01-01' AND DATE '2024-12-31'",
+   "value": 527.0,
+   "value_label": "in 2024"
+  },
+  {
+   "name": "csat",
+   "description": "Average satisfaction_score of answered tickets (nulls excluded).",
+   "sql": "SELECT AVG(satisfaction_score) FROM saas.fct_support_tickets",
+   "value": 3.9813,
+   "value_label": "all time"
+  }
+ ],
+ "caveats": [
+  "Fully synthetic data, generated to look like a real SaaS business.",
+  "A plan change creates a new subscription row; sum MRR over subscriptions active on a date, never across all rows.",
+  "Accounts can churn more than once (is_reactivation).",
+  "satisfaction_score is missing for 41% of tickets.",
+  "The three churn signals disagree: dim_accounts.has_churned, fct_subscriptions.is_churned and fct_churn_events. Use fct_churn_events for churn counts and say so.",
+  "A churn event does not close the account's subscriptions: most churned accounts still have open subscriptions, so 'active' overstates retained revenue.",
+  "Subscription starts grow steeply through 2024, so most rows are recent."
+ ],
+ "questions": [
+  "What was MRR at the end of each month in 2024?",
+  "Which churn reasons lead to the biggest refunds?",
+  "Do accounts that hit more errors churn more? Test it.",
+  "Do our three churn flags agree? Which should we trust?",
+  "Which features do Enterprise accounts use most?"
+ ]
+}

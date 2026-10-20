@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Pricing · ResidentQuant</title>
+<meta name="description" content="ResidentQuant pricing. One price per company, unlimited users, your own model key.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='17' width='6' height='11' rx='1.5' fill='%230e1525'/%3E%3Crect x='13' y='10' width='6' height='18' rx='1.5' fill='%230e1525'/%3E%3Crect x='22' y='3' width='6' height='25' rx='1.5' fill='%23d7263d'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f7f8fa; --surface:#ffffff; --sunk:#f0f2f6; --ink:#0e1525; --muted:#586174; --faint:#6b7486; --line:#e1e5ec;
+  --accent:#d7263d; --accent-bg:#fde6ea; --navy:#0a3069; --navy-bg:#e6edf8; --teal:#0d9488; --teal-ink:#5fd3c2;
+  --inv-muted:#9aa3b5; --inv-line:#232b3b;
+  --f-display:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+nav{display:flex;align-items:center;gap:20px;padding:18px 0}
+.logo{font:800 20px/1 var(--f-display);letter-spacing:-.03em;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--accent)}
+nav .links{margin-left:auto;display:flex;gap:18px;font-size:14px}
+nav .links a{text-decoration:none;color:var(--muted)}
+nav .links a:hover,nav .links a[aria-current]{color:var(--ink)}
+main{display:flex;flex-direction:column;gap:52px;padding-block:40px 80px}
+header{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+.pill{font:600 11.5px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-bg);padding:6px 10px;border-radius:999px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance}
+h1{font-size:clamp(34px,5vw,54px);font-weight:800;line-height:1.04;letter-spacing:-.035em;max-width:900px}
+.lede{margin:0;font-size:18px;color:var(--muted);max-width:700px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.chips span{font:600 11.5px var(--f-mono);padding:6px 10px;border-radius:999px;color:var(--muted);background:var(--sunk);border:1px solid var(--line)}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;align-items:stretch}
+.tier{border:1px solid var(--line);border-radius:12px;padding:24px 20px;display:flex;flex-direction:column;gap:18px;background:var(--surface);min-width:0}
+.tier.hero{background:var(--ink);border-color:var(--ink);color:#e7ebf2;box-shadow:0 14px 34px -18px rgba(14,21,37,.55)}
+.tier h2{font-size:20px;font-weight:700;letter-spacing:-.02em}
+.tier.hero h2{color:#ffffff}
+.tier .sub{margin:0;font-size:14px;color:var(--muted)}
+.tier.hero .sub,.tier.hero .note{color:var(--inv-muted)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.badge{font:600 10.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:var(--accent);color:#ffffff}
+.price{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.price .n{font:600 34px/1.1 var(--f-mono);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tier.hero .price .n{color:#ffffff}
+.price .u{font-size:14px;color:var(--muted)}
+.tier.hero .price .u{color:var(--inv-muted)}
+.note{font-size:13px;color:var(--muted)}
+.btn{display:block;text-align:center;text-decoration:none;font-size:14px;font-weight:600;padding:12px 14px;border-radius:9px;border:1px solid var(--ink);background:var(--ink);color:#ffffff}
+.btn.ghost{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.btn.red{background:var(--accent);border-color:var(--accent)}
+ul.ck{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px;font-size:14px;line-height:1.45}
+ul.ck li{display:flex;gap:10px;align-items:flex-start}
+ul.ck li svg{flex:none;margin-top:2px}
+ul.ck li.lead{font:400 11.5px var(--f-mono);color:var(--faint)}
+.tier.hero ul.ck{color:#d7deea}
+.tier.hero ul.ck li.lead{color:#8b93a3}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{padding:22px;display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.card h3{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.card p{margin:0;font-size:14px;color:var(--muted)}
+.band{display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between;padding:26px 30px;border-radius:12px;background:var(--navy-bg);border:1px solid #d3deef}
+.band h3{font-size:21px;font-weight:700;letter-spacing:-.02em;color:var(--navy)}
+.band p{margin:6px 0 0;font-size:15px;color:#33415c;max-width:520px}
+.stats{display:flex;gap:28px;flex-wrap:wrap}
+.stats div{display:flex;flex-direction:column;gap:2px}
+.stats b{font:600 28px var(--f-mono);color:var(--navy)}
+.stats span{font-size:13px;color:#33415c}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.who{padding:22px;border-radius:12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.who h3{font-size:17px;font-weight:700}
+.who .k{font:600 11.5px var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
+.who ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:4px}
+.faq{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));column-gap:40px}
+details{border-top:1px solid var(--line);padding:18px 0}
+summary{cursor:pointer;font-size:15px;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+details p{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.cta{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;padding:34px 38px;border-radius:14px;background:var(--ink);color:#e7ebf2}
+.cta h3{font-size:28px;font-weight:800;letter-spacing:-.03em;color:#ffffff}
+.cta p{margin:8px 0 0;font-size:15px;color:var(--inv-muted);max-width:520px}
+.cta .row{display:flex;gap:12px;flex-wrap:wrap}
+.cta .btn.ghost{background:transparent;color:#ffffff;border-color:var(--inv-line)}
+footer{padding:0 0 40px;color:var(--faint);font-size:13px}
+@media (max-width:640px){nav .links .hide-s{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="logo" href="../">Resident<span>Quant</span></a>
+  <div class="links">
+    <a href="../#how" class="hide-s">How it works</a>
+    <a href="./" aria-current="page">Pricing</a>
+    <a href="../live/">Live demo</a>
+  </div>
+</nav>
+
+<main>
+<header>
+  <span class="pill">Pricing</span>
+  <h1>Your end to end analytics layer, built for you.</h1>
+  <p class="lede">We build your tables, metrics and semantic layer, then everyone asks questions on top. One price per company, and you bring your own model key.</p>
+  <div class="chips"><span>One price per company</span><span>Unlimited users</span><span>Your Anthropic or OpenAI key</span><span>Pilot credited to year one</span></div>
+</header>
+
+<section class="tiers" aria-label="Plans">
+  <article class="tier">
+    <div><h2>Pilot</h2><p class="sub">We build your analytics layer in six weeks.</p></div>
+    <div><div class="price"><span class="n">$20,000</span><span class="u">once</span></div><span class="note">Credited in full to your first year</span></div>
+    <a class="btn" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant%20pilot">Book a pilot</a>
+    <ul class="ck">
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Connect your sources, including app databases on AWS or GCP</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Raw tables, aggregates and the pipeline DAG built for you</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your first 100 governed metrics</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Three investigation playbooks for the questions you ask most</span></li>
+    </ul>
+  </article>
+
+  <article class="tier hero">
+    <div><div class="top"><h2>Startup</h2><span class="badge">Most teams</span></div><p class="sub">The full layer, handed over to your team.</p></div>
+    <div><div class="price"><span class="n">$5,000</span><span class="u">/ month</span></div><span class="note">Billed annually. Unlimited users.</span></div>
+    <a class="btn red" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant%20pilot">Start with a pilot</a>
+    <ul class="ck">
+      <li class="lead">Everything in Pilot, plus:</li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Up to 5 data sources, unlimited governed metrics</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Metrics editor: describe a metric and the agent drafts it</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A personal dashboard for each person, built from what they check</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Same question, same answer, from tested and cached queries</span></li>
+    </ul>
+  </article>
+
+  <article class="tier">
+    <div><h2>Scale</h2><p class="sub">More data, more teams, more owners.</p></div>
+    <div><div class="price"><span class="n">$10,000</span><span class="u">/ month</span></div><span class="note">Billed annually. Unlimited users.</span></div>
+    <a class="btn" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant%20pilot">Book a pilot</a>
+    <ul class="ck">
+      <li class="lead">Everything in Startup, plus:</li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Up to 15 data sources</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Metric owners, versions and history</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Roles and row-level security</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Usage reports: which metrics and tables people query</span></li>
+    </ul>
+  </article>
+
+  <article class="tier">
+    <div><h2>Enterprise</h2><p class="sub">For many business units and owners.</p></div>
+    <div><div class="price"><span class="n">Custom</span></div><span class="note">From $150,000 per year</span></div>
+    <a class="btn ghost" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant%20enterprise">Talk to us</a>
+    <ul class="ck">
+      <li class="lead">Everything in Scale, plus:</li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sources sized to your stack</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Business hierarchy for every table, metric and dashboard</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SSO and audit logs</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Security review and custom contract terms</span></li>
+    </ul>
+  </article>
+</section>
+
+<section class="split" aria-label="Who does what">
+  <div class="who"><span class="k" style="color:var(--accent)">We do</span><h3>Build the layer</h3><ul><li>Connect sources and build the pipeline DAG</li><li>Build raw tables, aggregates and the semantic layer</li><li>Define and test every metric with your team</li><li>Hand it over, documented</li></ul></div>
+  <div class="who"><span class="k" style="color:var(--navy)">You do</span><h3>Keep the data flowing</h3><ul><li>Own the systems that feed your sources</li><li>Run the pipelines we built, day to day</li><li>Approve new metrics in the editor</li></ul></div>
+  <div class="who"><span class="k" style="color:var(--teal)">Add-on</span><h3>Expert help</h3><ul><li>A data engineer or data scientist from our team</li><li>Billed per task, when you need one</li><li>Backfills, new sources, a stuck pipeline</li></ul></div>
+</section>
+
+<section class="band" aria-label="Pilot outcome">
+  <div><h3>What the first six weeks deliver</h3><p>Your sources are connected, raw tables and aggregates are built, and your team and the agent answer from one tested semantic layer.</p></div>
+  <div class="stats"><div><b>6 wks</b><span>kickoff to governed metrics</span></div><div><b>100</b><span>governed metrics</span></div><div><b>3</b><span>investigation playbooks</span></div></div>
+</section>
+
+<section class="grid3" aria-label="How pricing works">
+  <div class="card"><h3>One price per company</h3><p>Invite your whole team. We do not count seats, so nobody shares a login to save money.</p></div>
+  <div class="card"><h3>Your model key, your model bill</h3><p>Questions run against a tested semantic layer and cached queries instead of raw tables, so they use fewer tokens. You see it on your own provider bill.</p></div>
+  <div class="card"><h3>Priced on sources</h3><p>Tiers grow with the data sources we connect and build on. Asking more questions never costs more.</p></div>
+</section>
+
+<section aria-labelledby="q-h" style="display:flex;flex-direction:column;gap:14px">
+  <h2 id="q-h" style="font-size:26px;font-weight:800;letter-spacing:-.03em">Questions</h2>
+  <div class="faq">
+    <details open><summary>We do not have a warehouse yet. Can we still use it?</summary><p>Yes. Most startups we talk to only have their app database and logs. During the pilot we build the raw tables from your backend on AWS or GCP, then the aggregates and semantic layer on top.</p></details>
+    <details open><summary>What counts as a governed metric?</summary><p>A metric with one definition, an owner, tests, and a known date range and grain. Everyone sees the same list, and the agent answers from it.</p></details>
+    <details><summary>Do we need a data engineer?</summary><p>Not a full team. Someone on your side owns the systems that feed your data. For anything bigger, our experts help per task.</p></details>
+    <details><summary>What happens after the pilot?</summary><p>If you continue on Startup or Scale, the full $20,000 is credited to your first year. If you stop, you keep the tables and definitions we built.</p></details>
+  </div>
+</section>
+
+<section class="cta">
+  <div><h3>See it on a mock of your data first.</h3><p>Tell us your stack and the five questions you ask most. We will send back a working demo built for your business.</p></div>
+  <div class="row"><a class="btn red" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant">Book a 30-minute call</a><a class="btn ghost" href="../live/">Try the live demo</a></div>
+</section>
+</main>
+
+<footer>ResidentQuant · 2026 · rahul.chaudhary@outlook.com</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+[
+ {
+  "id": "olist",
+  "name": "Olist marketplace",
+  "story": "A Brazilian online marketplace where independent sellers list products and Olist handles orders, payments and delivery. About 99k orders from Sep 2016 to Oct 2018.",
+  "tables": 7,
+  "rows": 550688,
+  "bytes": 26658260,
+  "license": "CC BY-NC-SA 4.0"
+ },
+ {
+  "id": "toystore",
+  "name": "Toy store web analytics",
+  "story": "An online toy store (Maven Fuzzy Factory) selling four stuffed-animal products. Every website session, pageview, order and refund from Mar 2012 to Mar 2015, with paid search and social campaigns.",
+  "tables": 5,
+  "rows": 1733337,
+  "bytes": 14457456,
+  "license": "CC0: Public Domain"
+ },
+ {
+  "id": "saas",
+  "name": "SaaS subscriptions",
+  "story": "RavenStack, a B2B SaaS startup selling AI team tools on Basic, Pro and Enterprise plans. Accounts, subscriptions, product usage, support and churn from 2023 to 2024. Fully synthetic.",
+  "tables": 5,
+  "rows": 33100,
+  "bytes": 449734,
+  "license": "MIT"
+ },
+ {
+  "id": "orbit",
+  "name": "Satellite autonomy ops",
+  "story": "A 9-person spacecraft autonomy startup with 5 contracts; its onboard software and camera modules fly on 44 customer satellites, from a 4-cubesat swarm to GEO servicers. Onboard object detections, conjunctions, avoidance maneuvers and navigation health from Mar 2025 to Oct 2026. Fully synthetic.",
+  "tables": 7,
+  "rows": 180009,
+  "bytes": 2594643,
+  "license": "CC0"
+ }
+]
