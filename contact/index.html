@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Contact · ResidentQuant</title>
+<meta name="description" content="Book a demo or ask about a pilot with ResidentQuant.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='17' width='6' height='11' rx='1.5' fill='%230e1525'/%3E%3Crect x='13' y='10' width='6' height='18' rx='1.5' fill='%230e1525'/%3E%3Crect x='22' y='3' width='6' height='25' rx='1.5' fill='%23d7263d'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --soft:#f6f7f9; --surface:#ffffff; --sunk:#f0f2f6; --ink:#0e1525; --muted:#586174; --faint:#6b7486; --line:#e1e5ec;
+  --accent:#d7263d; --accent-bg:#fde6ea; --navy:#0a3069; --navy-bg:#e6edf8; --teal:#0d9488; --teal-bg:#e0f3f0;
+  --f-display:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+nav{display:flex;align-items:center;gap:20px;padding:18px 0}
+.logo{font:800 20px/1 var(--f-display);letter-spacing:-.03em;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--accent)}
+nav .links{margin-left:auto;display:flex;gap:18px;font-size:14px}
+nav .links a{text-decoration:none;color:var(--muted)}
+nav .links a:hover,nav .links a[aria-current]{color:var(--ink)}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:48px;padding-block:48px 80px;align-items:start}
+.k{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font:800 clamp(34px,5vw,52px)/1.04 var(--f-display);letter-spacing:-.035em;margin:14px 0 16px;text-wrap:balance}
+.lede{margin:0;font-size:17px;color:var(--muted);max-width:460px}
+.next{list-style:none;margin:30px 0 0;padding:0;display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
+.next li{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.next .n{font:600 12px var(--f-mono);color:var(--accent);padding-top:2px}
+.next b{display:block;font:700 16px/1.3 var(--f-display)}
+.next span{font-size:14px;color:var(--muted)}
+.addr{margin-top:26px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.addr code{font:500 15px var(--f-mono);background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:8px 12px;user-select:all}
+.addr button{font:600 13px var(--f-body);padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;min-height:40px}
+.addr button:hover{border-color:var(--ink)}
+form{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
+label small{font-weight:400;color:var(--faint)}
+input,select,textarea{font:400 15px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:11px 12px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+textarea{min-height:120px;resize:vertical}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+legend{font-size:13px;font-weight:600;padding:0;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{flex-direction:row;align-items:center;gap:8px;font-weight:500;font-size:13.5px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;min-height:40px}
+.chips input{width:auto;margin:0;accent-color:var(--accent)}
+.chips label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#ffffff}
+.send{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.send button{font:600 15px var(--f-body);padding:13px 22px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:#ffffff;cursor:pointer;min-height:44px}
+.send button:hover{background:var(--accent);border-color:var(--accent)}
+.send p{margin:0;font-size:13px;color:var(--faint)}
+.status{font-size:14px;padding:12px 14px;border-radius:10px;background:var(--teal-bg);color:var(--teal)}
+.err{font-size:13px;color:var(--accent)}
+footer{padding:0 0 40px;color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+footer a{color:var(--muted);text-decoration:none}
+@media (max-width:860px){main{grid-template-columns:1fr;gap:32px}}
+@media (max-width:560px){.row{grid-template-columns:1fr}form{padding:20px}nav .links .hide-s{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="logo" href="../">Resident<span>Quant</span></a>
+  <div class="links">
+    <a href="../#how" class="hide-s">How it works</a>
+    <a href="../pricing/">Pricing</a>
+    <a href="../live/" class="hide-s">Live demo</a>
+    <a href="./" aria-current="page">Contact</a>
+  </div>
+</nav>
+
+<main>
+  <div>
+    <div class="k">Contact</div>
+    <h1>See ResidentQuant on a mock of your data.</h1>
+    <p class="lede">Tell us your stack and the questions you ask most. We reply within one business day.</p>
+    <ol class="next">
+      <li><span class="n">01</span><div><b>30-minute call</b><span>Your sources, your top questions, where numbers disagree today.</span></div></li>
+      <li><span class="n">02</span><div><b>A demo built for you</b><span>A working layer on mock data shaped like yours.</span></div></li>
+      <li><span class="n">03</span><div><b>Six-week pilot</b><span>We build the real thing. The fee is credited to year one.</span></div></li>
+    </ol>
+    <div class="addr"><code id="email">hello@residentquant.com</code><button type="button" id="copy">Copy</button></div>
+  </div>
+
+  <form id="contact" novalidate>
+    <div class="row">
+      <label for="name">Name<input id="name" name="name" autocomplete="name" required></label>
+      <label for="work">Work email<input id="work" name="email" type="email" autocomplete="email" required></label>
+    </div>
+    <div class="row">
+      <label for="company">Company<input id="company" name="company" autocomplete="organization"></label>
+      <label for="size">Team size<select id="size" name="size"><option value="">Choose one</option><option>1 to 10</option><option>11 to 50</option><option>51 to 200</option><option>201 to 1,000</option><option>More than 1,000</option></select></label>
+    </div>
+    <fieldset>
+      <legend>Interested in</legend>
+      <div class="chips">
+        <label><input type="checkbox" name="interest" value="Demo" checked> Demo</label>
+        <label><input type="checkbox" name="interest" value="Pilot"> Pilot</label>
+        <label><input type="checkbox" name="interest" value="Pricing"> Pricing</label>
+        <label><input type="checkbox" name="interest" value="Enterprise"> Enterprise</label>
+      </div>
+    </fieldset>
+    <label for="stack">Your data today <small>Database, warehouse, BI tools</small><input id="stack" name="stack" placeholder="Postgres on AWS, no warehouse yet"></label>
+    <label for="msg">Questions you ask most<textarea id="msg" name="message" placeholder="Which channels drive repeat buyers? Why did revenue dip last month?"></textarea></label>
+    <p class="err" id="err" hidden></p>
+    <div class="send"><button type="submit">Send</button><p>Opens your email app with the details filled in.</p></div>
+    <p class="status" id="ok" hidden>Your email app should open with the message ready. If it didn't, copy hello@residentquant.com and write to us directly.</p>
+  </form>
+</main>
+
+<footer><span>ResidentQuant · 2026</span><a href="../">Home</a><a href="../pricing/">Pricing</a><a href="../live/">Live demo</a></footer>
+</div>
+
+<script>
+(function(){
+  var TO = 'hello@residentquant.com';
+  var f = document.getElementById('contact'), err = document.getElementById('err'), ok = document.getElementById('ok');
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = f.name.value.trim(), email = f.email.value.trim();
+    if(!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      err.textContent = !name ? 'Add your name.' : 'Add a work email we can reply to.';
+      err.hidden = false; (name ? f.email : f.name).focus(); return;
+    }
+    err.hidden = true;
+    var interests = [].slice.call(f.querySelectorAll('input[name=interest]:checked')).map(function(i){return i.value}).join(', ');
+    var body = ['Name: ' + name, 'Email: ' + email, 'Company: ' + f.company.value.trim(), 'Team size: ' + f.size.value,
+      'Interested in: ' + interests, 'Data today: ' + f.stack.value.trim(), '', f.message.value.trim()].join('\n');
+    var subj = 'ResidentQuant: ' + (interests || 'Contact') + (f.company.value.trim() ? ' from ' + f.company.value.trim() : '');
+    window.location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+    ok.hidden = false;
+  });
+  document.getElementById('copy').addEventListener('click', function(){
+    var b = this;
+    function done(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy' }, 1600) }
+    function fallback(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('email')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(TO).then(done, fallback) } else { fallback() }
+  });
+})();
+</script>
+</body>
+</html>
