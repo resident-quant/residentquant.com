@@ -169,16 +169,6 @@ h2{font:800 clamp(26px,3.4vw,36px)/1.1 var(--f-display);letter-spacing:-.03em;ma
 .three .k{font:600 12px/1 var(--f-mono);color:var(--accent)}
 .three h3{font:700 18px/1.25 var(--f-display);margin:10px 0 6px}
 .three p{margin:0;color:var(--muted);font-size:14.5px}
-.four{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--line)}
-.four div{padding:22px 24px 22px 0;border-bottom:1px solid var(--line)}
-.four div:nth-child(odd){border-right:1px solid var(--line)}
-.four div:nth-child(even){padding-left:24px}
-.four h3{font:700 18px/1.25 var(--f-display);margin:0 0 6px}
-.four p{margin:0;color:var(--muted);font-size:14.5px}
-.team{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
-.person h3{font:700 19px/1.2 var(--f-display);margin:0}
-.person .role{font:500 12px/1 var(--f-mono);color:var(--accent);margin:8px 0 10px}
-.person p{margin:0;color:var(--muted);font-size:14.5px}
 .end{margin:72px 0 0;padding:44px 0 56px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
 .end h2{margin:0}
 footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
@@ -221,11 +211,7 @@ footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
 .lane .ln{font:700 26px/1 var(--f-mono);font-variant-numeric:tabular-nums}
 .lane .ld{font-size:12.5px;color:var(--muted);line-height:1.35}
 .lane.raw .ln{color:var(--raw)} .lane.mart .ln{color:var(--navy)} .lane.sem .ln{color:var(--teal)} .lane.met{background:var(--accent-bg)} .lane.met .ln{color:var(--accent)}
-.wire{position:absolute;left:4%;right:4%;top:50%;height:2px;background:var(--line);z-index:0}
-.wire i{position:absolute;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.85;animation:ride 4.8s linear infinite}
-.wire i:nth-child(2){animation-delay:1.6s;background:var(--teal)}
-.wire i:nth-child(3){animation-delay:3.2s;background:var(--navy)}
-@keyframes ride{from{left:0}to{left:100%}}
+to{left:100%}}
 .flowcap{margin:12px 0 0;font:400 12px var(--f-mono);color:var(--faint)}
 .rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
 .rule{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--surface);display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -240,12 +226,6 @@ footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
 .ver div{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:6px;background:var(--sunk);color:var(--muted)}
 .ver div.on{background:var(--navy-bg);color:var(--navy)}
 
-/* scope */
-.scope{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.sc2{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
-.sc2 .k{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
-.sc2 h3{font:700 17px/1.25 var(--f-display);margin:0}
-.sc2 ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:4px}
 
 /* pricing teaser */
 .ptiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -258,7 +238,6 @@ footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
 .pt.hero .u{color:#9aa3b5}
 .pmore{margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:14px;color:var(--muted)}
 .pmore a{font-weight:600;color:var(--accent);text-decoration:none}
-.mail{font:500 14px var(--f-mono);color:var(--muted);user-select:all}
 footer .fl{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}
 footer .fl a{color:var(--muted);text-decoration:none}
 
@@ -277,11 +256,7 @@ footer .fl a{color:var(--muted);text-decoration:none}
   .dash,.rules,.scope{grid-template-columns:1fr}
   .ptiers{grid-template-columns:repeat(2,minmax(0,1fr))}
   .rawgrid,.buildgrid{grid-template-columns:minmax(0,1fr)}
-  .three,.team{grid-template-columns:1fr}
-  .four{grid-template-columns:1fr}
-  .four div,.four div:nth-child(even){padding:20px 0;border-right:0}
-  .four div:nth-child(odd){border-right:0}
-  .stage{min-height:0;padding:16px}
+  .three,        .stage{min-height:0;padding:16px}
 }
 @media (max-width:560px){
   .wrap{padding:0 16px}
@@ -292,8 +267,34 @@ footer .fl a{color:var(--muted);text-decoration:none}
   .hero{padding-top:32px}
   .ptiers,.tiles{grid-template-columns:1fr}
 }
-@media (prefers-reduced-motion: reduce){.r,.chat .r.in{transition:none;animation:none}.wire i{animation:none;display:none}}
+@media (prefers-reduced-motion: reduce){.r,.chat .r.in{transition:none;animation:none}}
 .logo{display:inline-flex;align-items:center}.logo .mk{width:1.15em;height:1.2em;flex:none;margin-right:.4em;color:var(--ink)}
+
+/* type scale: 12 / 13 / 14 / 16 / 18 / 32 / 56 (one size per role) */
+.lane .lk,.home .av2,.tile .s,.home .ex,.step .n,.shot .chrome span,.note b,.flowcap{font-size:12px}
+.tbl table,.tbl .hd{font-size:12px}
+.after,.after a,.replay,.lane .ld,.totals,.note,.sameline,.pt .u{font-size:13px}
+.tile .t,.home .who,.shot figcaption,.shot figcaption b,.pmore,nav .links{font-size:14px}
+.step .t{font-size:16px}
+.rule h3,.pt h3,.cap h3{font-size:18px}
+.lane .ln,.pt .n{font-size:28px}
+h2,.sh h2{font-size:clamp(24px,3vw,32px)}
+h1{font-size:clamp(36px,5.2vw,56px)}
+.note b{width:20px;height:20px}
+.box h4,.layerhd h4,.m .nm span,.msg .av,.dec th,.chip,.m code,details.sql pre{font-size:12px}
+.job code,.m .nm{font-size:13px}
+.bubble,.ans p,.bubble p{font-size:14px}
+h1,h2{text-wrap:balance}
+.stage{min-height:470px}
+@media (max-width:860px){.stage{min-height:0}}
+/* spacing: same gap under every section heading, same gap between sections */
+section{padding-top:88px}
+.sh{margin:0 0 24px}
+#how{margin:72px 0 24px}
+/* trust row: names set large, in the display face */
+.trust{margin:34px 0 0;gap:10px 34px;align-items:baseline}
+.trust span{font:500 13px/1 var(--f-mono);color:var(--muted)}
+.trust b{font:700 20px/1 var(--f-display);letter-spacing:-.02em;color:#6b7280}
 </style>
 </head>
 <body>
@@ -314,7 +315,6 @@ footer .fl a{color:var(--muted);text-decoration:none}
   <header class="hero">
     <div class="eyebrow">Data layer · AI analyst · Personal dashboards</div>
     <h1>Your end to end analytics layer, built for you.</h1>
-    <p class="lede">ResidentQuant turns your production database into clean tables and governed metrics, then gives everyone an AI analyst and a dashboard of their own. Same question, same answer, every time.</p>
     <div class="ctas">
       <a class="btn primary" href="contact/">Book a demo</a>
       <a class="btn" href="live/">Try it on sample data</a>
@@ -322,7 +322,7 @@ footer .fl a{color:var(--muted);text-decoration:none}
   </header>
   <div class="trust"><span>Built by people from</span><b>Meta</b><b>Pinterest</b><b>Amazon</b><b>Airbnb</b><b>Grammarly</b></div>
 
-  <div class="sh" id="how" style="margin:0 0 6px"><div class="k">How it works</div><h2>From database to answer in three steps</h2></div>
+  <div class="sh" id="how"><div class="k">How it works</div><h2>From database to answer in three steps</h2></div>
   <div class="demo" id="demo">
     <div class="steps" role="tablist">
       <button class="step" data-p="0" role="tab"><span class="n">01</span><span class="t">Your database today</span><span class="bar"></span></button>
@@ -334,7 +334,7 @@ footer .fl a{color:var(--muted);text-decoration:none}
       <!-- PANEL 1 -->
       <div class="panel" data-panel="0">
         <div class="cap">
-          <div><h3>An online toy store's production tables</h3><p>What the app writes. Nobody has agreed yet what "revenue" or "a paid visit" means.</p></div>
+          <div><h3>An online toy store's production tables</h3></div>
           <button class="replay">Replay</button>
         </div>
         <div class="rawgrid">
@@ -395,7 +395,7 @@ footer .fl a{color:var(--muted);text-decoration:none}
       <!-- PANEL 2 -->
       <div class="panel" data-panel="1">
         <div class="cap">
-          <div><h3>Clean tables, tested, with every metric defined once</h3><p>Our data engineering agent builds and tests the pipeline. The definitions are agreed with your team.</p></div>
+          <div><h3>Clean tables, tested, with every metric defined once</h3></div>
           <button class="replay">Replay</button>
         </div>
         <div class="buildgrid">
@@ -435,7 +435,7 @@ footer .fl a{color:var(--muted);text-decoration:none}
       <!-- PANEL 3 -->
       <div class="panel" data-panel="2">
         <div class="cap">
-          <div><h3>Ask in plain English</h3><p>The agent answers from the layer, so it shows its metric and its SQL, and it tells you when the data can't answer.</p></div>
+          <div><h3>Ask in plain English</h3></div>
           <button class="replay">Replay</button>
         </div>
         <div class="chat">
@@ -481,7 +481,7 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 
 
   <section id="dashboards">
-    <div class="sh"><div class="k">Personal dashboards</div><h2>Same numbers. A different home page for each person.</h2><p>Every home page starts from the shared metrics, then pins what that person asks about most.</p></div>
+    <div class="sh"><div class="k">Personal dashboards</div><h2>Same numbers. A different home page for each person.</h2></div>
     <div class="dash">
       <div class="home">
         <div class="bar"><div class="av2">CF</div><div class="who">Founder<small>home page</small></div><span class="ex">Example</span></div>
@@ -506,10 +506,9 @@ GROUP BY 1 ORDER BY 1;</pre></details>
   </section>
 
   <section id="layer">
-    <div class="sh"><div class="k">The governed layer</div><h2>Raw tables in. One set of metrics out.</h2><p>The agent never reads raw tables. It answers from metrics your team has agreed on.</p></div>
+    <div class="sh"><div class="k">The governed layer</div><h2>Raw tables in. One set of metrics out.</h2></div>
     <div class="flow" tabindex="0" aria-label="Pipeline from raw sources to governed metrics">
       <div class="lanes">
-        <div class="wire" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="lane raw"><span class="lk">Raw sources</span><span class="ln">9</span><span class="ld">App database, events, ad platforms</span></div>
         <div class="lane"><span class="lk">Staging</span><span class="ln">9</span><span class="ld">Typed, deduplicated, tested</span></div>
         <div class="lane mart"><span class="lk">Marts</span><span class="ln">10</span><span class="ld">Facts and dimensions</span></div>
@@ -519,35 +518,19 @@ GROUP BY 1 ORDER BY 1;</pre></details>
       <p class="flowcap">Counts from our demo warehouse: a social app with posts, engagement, search and ads.</p>
     </div>
     <div class="shots">
-      <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Metrics editor</span></div><img src="img/metrics-editor.webp" width="1600" height="922" loading="lazy" alt="Metrics editor showing governed ad metrics as tiles, each with its latest value, change over 7 days, a 28-day sparkline and its definition."><figcaption><b>Every metric, one place.</b> Value, trend, definition and who can see it.</figcaption></figure>
-      <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Ad revenue</span></div><img src="img/metric-detail.webp" width="1600" height="1009" loading="lazy" alt="Ad revenue metric opened in the editor: latest value, 7-day change, the definition sum of spend, roles that can see it, a 28-day chart and the form that defines it."><figcaption><b>Defined once.</b> Edit the definition and every answer changes with it.</figcaption></figure>
+      <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Metrics editor</span></div><img src="img/metrics-editor.webp" width="1600" height="922" loading="lazy" alt="Metrics editor showing governed ad metrics as tiles, each with its latest value, change over 7 days, a 28-day sparkline and its definition."><figcaption><b>Every metric, one place.</b></figcaption></figure>
+      <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Ad revenue</span></div><img src="img/metric-detail.webp" width="1600" height="1009" loading="lazy" alt="Ad revenue metric opened in the editor: latest value, 7-day change, the definition sum of spend, roles that can see it, a 28-day chart and the form that defines it."><figcaption><b>Defined once.</b></figcaption></figure>
     </div>
     <div class="rules">
-      <div class="rule"><h3>Any name finds the right metric</h3><div class="syn"><span>ad spend</span><span>advertiser revenue</span><span>ads money</span><span>→</span><b>ad_revenue</b></div><p>People ask in their own words. The layer maps each name to one definition.</p></div>
-      <div class="rule"><h3>Math that can't add up wrong</h3><div class="agg"><span class="ok">sum</span><span>daily spend, any date range</span><span class="no">never sum</span><span>daily active users across days</span></div><p>Each metric knows how it can be rolled up, so the agent never adds distinct counts.</p></div>
-      <div class="rule"><h3>Every change has a version</h3><div class="ver"><div class="on"><span>arr v2</span><span>live</span></div><div><span>arr v1</span><span>kept, one click back</span></div></div><p>Change a definition and the old one stays in history, ready to restore.</p></div>
+      <div class="rule"><h3>Any name finds the right metric</h3><div class="syn"><span>ad spend</span><span>advertiser revenue</span><span>ads money</span><span>→</span><b>ad_revenue</b></div></div>
+      <div class="rule"><h3>Math that can't add up wrong</h3><div class="agg"><span class="ok">sum</span><span>daily spend, any date range</span><span class="no">never sum</span><span>daily active users across days</span></div></div>
+      <div class="rule"><h3>Every change has a version</h3><div class="ver"><div class="on"><span>arr v2</span><span>live</span></div><div><span>arr v1</span><span>kept, one click back</span></div></div></div>
     </div>
   </section>
 
 
-  <section id="trust">
-    <div class="sh"><div class="k">Why the answers hold up</div><h2>Answers you can put in a board deck.</h2></div>
-    <div class="three">
-      <div><div class="k">Honest</div><h3>It says when it can't answer</h3><p>Missing data gets named, not guessed.</p></div>
-      <div><div class="k">Checked</div><h3>Reconciled to the source</h3><p>Every metric is tested against raw tables, again on each pipeline run.</p></div>
-      <div><div class="k">Yours</div><h3>Your model, your key</h3><p>Bring Anthropic or OpenAI. Each new model makes RQ better.</p></div>
-    </div>
-  </section>
 
 
-  <section id="scope">
-    <div class="sh"><div class="k">Who does what</div><h2>We build the layer. Your team runs it.</h2></div>
-    <div class="scope">
-      <div class="sc2"><span class="k" style="color:var(--accent)">We do</span><h3>Build</h3><ul><li>Connect sources, build the pipeline</li><li>Raw tables, aggregates, semantic layer</li><li>Define and test metrics with you</li></ul></div>
-      <div class="sc2"><span class="k" style="color:var(--navy)">You do</span><h3>Run</h3><ul><li>Own the systems that feed your data</li><li>Run the pipelines day to day</li><li>Approve new metrics in the editor</li></ul></div>
-      <div class="sc2"><span class="k" style="color:var(--teal)">When you need it</span><h3>Expert help</h3><ul><li>A data engineer or scientist from our team</li><li>Billed per task</li><li>New sources, backfills, a stuck pipeline</li></ul></div>
-    </div>
-  </section>
 
   <section id="pricing">
     <div class="sh"><div class="k">Pricing</div><h2>One price per company. Unlimited users.</h2></div>
@@ -560,16 +543,9 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     <div class="pmore"><span>Billed annually. You bring your own Anthropic or OpenAI key.</span><a href="pricing/">See full pricing →</a></div>
   </section>
 
-  <section id="team">
-    <div class="sh"><div class="k">Team</div><h2>More than a decade of data work at large tech companies.</h2></div>
-    <div class="team">
-      <div class="person"><h3>Data science</h3><div class="role">13 years · Pinterest, Meta, Amazon, Airbnb, Grammarly</div><p>Built an agentic data science tool used inside a large tech company.</p></div>
-      <div class="person"><h3>Data engineering</h3><div class="role">Staff engineer · Meta, Amazon</div><p>Built data infrastructure at trillion-event scale, and the semantic layer ResidentQuant runs on.</p></div>
-    </div>
-  </section>
 
   <div class="end">
-    <div style="display:flex;flex-direction:column;gap:10px"><h2>See it on a mock of your data</h2><span class="mail">Tell us your stack. We reply within one business day.</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><h2>See it on a mock of your data</h2></div>
     <div class="ctas" style="margin:0">
       <a class="btn primary" href="contact/">Book a demo</a>
       <a class="btn" href="live/">Try the live demo</a>
