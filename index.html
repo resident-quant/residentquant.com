@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>ResidentQuant</title>
-<meta name="description" content="Your end to end analytics layer, built and run for you. ResidentQuant turns your production database into clean tables and defined metrics, with an AI analyst and a personal dashboard for each person on top.">
+<meta name="description" content="Your end to end analytics layer, built for you. ResidentQuant turns your production database into clean tables and defined metrics, with an AI analyst and a personal dashboard for each person on top.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -171,7 +171,88 @@ h2{font:800 clamp(26px,3.4vw,36px)/1.1 var(--f-display);letter-spacing:-.03em;ma
 .end h2{margin:0}
 footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
 
+
+/* trust strip */
+.trust{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin:6px 0 34px;font:500 13px/1 var(--f-mono);color:var(--faint)}
+.trust b{font-weight:600;color:var(--muted)}
+
+/* section heads */
+.sh{display:flex;flex-direction:column;gap:10px;margin:0 0 26px;max-width:760px}
+.sh .k{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.sh h2{margin:0}
+.sh p{margin:0;color:var(--muted);font-size:16px}
+
+/* personal dashboards */
+.dash{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.home{border:1px solid var(--line);border-radius:14px;background:var(--soft);overflow:hidden}
+.home .bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+.home .av2{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 11px/1 var(--f-mono);background:var(--navy-bg);color:var(--navy)}
+.home .who{font:600 14px/1.2 var(--f-body)}
+.home .who small{display:block;font:400 12px var(--f-mono);color:var(--faint)}
+.home .ex{margin-left:auto;font:500 11px var(--f-mono);color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:3px 8px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tile .t{font:600 13px/1.25 var(--f-body)}
+.tile .s{font:400 11px var(--f-mono);color:var(--faint)}
+.tile svg{width:100%;height:46px;display:block}
+.tile svg path.l{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tile.pin{border-color:var(--accent)}
+.tile.pin .s{color:var(--accent)}
+.sameline{margin:16px 0 0;font:500 13px var(--f-mono);color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sameline span{padding:4px 9px;border-radius:999px;background:var(--teal-bg);color:var(--teal)}
+
+/* governed layer flow */
+.flow{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:22px;overflow-x:auto}
+.lanes{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px;min-width:640px;position:relative}
+.lane{border-radius:10px;padding:14px 12px;background:var(--sunk);display:flex;flex-direction:column;gap:6px;position:relative;z-index:1}
+.lane .lk{font:600 10.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.lane .ln{font:700 26px/1 var(--f-mono);font-variant-numeric:tabular-nums}
+.lane .ld{font-size:12.5px;color:var(--muted);line-height:1.35}
+.lane.raw .ln{color:var(--raw)} .lane.mart .ln{color:var(--navy)} .lane.sem .ln{color:var(--teal)} .lane.met{background:var(--accent-bg)} .lane.met .ln{color:var(--accent)}
+.wire{position:absolute;left:4%;right:4%;top:50%;height:2px;background:var(--line);z-index:0}
+.wire i{position:absolute;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.85;animation:ride 4.8s linear infinite}
+.wire i:nth-child(2){animation-delay:1.6s;background:var(--teal)}
+.wire i:nth-child(3){animation-delay:3.2s;background:var(--navy)}
+@keyframes ride{from{left:0}to{left:100%}}
+.flowcap{margin:12px 0 0;font:400 12px var(--f-mono);color:var(--faint)}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+.rule{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--surface);display:flex;flex-direction:column;gap:10px;min-width:0}
+.rule h3{font:700 16px/1.25 var(--f-display);margin:0}
+.rule p{margin:0;font-size:13.5px;color:var(--muted)}
+.syn{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:500 12px var(--f-mono)}
+.syn span{padding:4px 8px;border-radius:6px;background:var(--sunk);color:var(--muted)}
+.syn b{padding:4px 8px;border-radius:6px;background:var(--teal-bg);color:var(--teal);font-weight:600}
+.agg{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font:500 12px var(--f-mono);align-items:center}
+.agg .ok{color:var(--teal)} .agg .no{color:var(--accent)}
+.ver{display:flex;flex-direction:column;gap:6px;font:500 12px var(--f-mono)}
+.ver div{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:6px;background:var(--sunk);color:var(--muted)}
+.ver div.on{background:var(--navy-bg);color:var(--navy)}
+
+/* scope */
+.scope{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.sc2{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.sc2 .k{font:600 11.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
+.sc2 h3{font:700 17px/1.25 var(--f-display);margin:0}
+.sc2 ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:4px}
+
+/* pricing teaser */
+.ptiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.pt{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.pt.hero{background:var(--ink);border-color:var(--ink);color:#e7ebf2}
+.pt h3{font:700 17px/1.2 var(--f-display);margin:0}
+.pt .n{font:600 28px/1.1 var(--f-mono);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.pt.hero .n,.pt.hero h3{color:#ffffff}
+.pt .u{font-size:13px;color:var(--muted)}
+.pt.hero .u{color:#9aa3b5}
+.pmore{margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:14px;color:var(--muted)}
+.pmore a{font-weight:600;color:var(--accent);text-decoration:none}
+.mail{font:500 14px var(--f-mono);color:var(--muted);user-select:all}
+footer .fl{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+footer .fl a{color:var(--muted);text-decoration:none}
+
 @media (max-width:860px){
+  .dash,.rules,.scope{grid-template-columns:1fr}
+  .ptiers{grid-template-columns:repeat(2,minmax(0,1fr))}
   .rawgrid,.buildgrid{grid-template-columns:minmax(0,1fr)}
   .three,.team{grid-template-columns:1fr}
   .four{grid-template-columns:1fr}
@@ -186,8 +267,9 @@ footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
   .step{padding:12px 10px 14px}
   .metrics{grid-template-columns:1fr}
   .hero{padding-top:32px}
+  .ptiers,.tiles{grid-template-columns:1fr}
 }
-@media (prefers-reduced-motion: reduce){.r,.chat .r.in{transition:none;animation:none}}
+@media (prefers-reduced-motion: reduce){.r,.chat .r.in{transition:none;animation:none}.wire i{animation:none;display:none}}
 </style>
 </head>
 <body>
@@ -196,21 +278,24 @@ footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
     <a class="logo" href="./">Resident<span class="q">Quant</span></a>
     <div class="links">
       <a href="#how" class="hide-s">How it works</a>
-      <a href="#team" class="hide-s">Team</a>
-      <a href="pricing/" class="hide-s">Pricing</a>
+      <a href="#dashboards" class="hide-s">Dashboards</a>
+      <a href="#layer" class="hide-s">Semantic layer</a>
+      <a href="pricing/">Pricing</a>
       <a href="live/">Live demo</a>
     </div>
   </nav>
 
   <header class="hero">
     <div class="eyebrow">Data layer · AI analyst · Personal dashboards</div>
-    <h1>Your end to end analytics layer, built and run for you.</h1>
-    <p class="lede">ResidentQuant connects to your production database, builds the clean tables and metric definitions a data engineer would, and puts an AI data scientist on top. Anyone on your team can ask a question and get the same right answer every time.</p>
+    <h1>Your end to end analytics layer, built for you.</h1>
+    <p class="lede">ResidentQuant turns your production database into clean tables and governed metrics, then gives everyone an AI analyst and a dashboard of their own. Same question, same answer, every time.</p>
     <div class="ctas">
-      <a class="btn primary" href="#demo">See it work</a>
+      <a class="btn primary" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant%20demo">Book a demo</a>
       <a class="btn" href="live/">Try it on sample data</a>
+      <a class="btn" href="#demo">See it work</a>
     </div>
   </header>
+  <div class="trust"><span>Built by people from</span><b>Meta</b><b>Pinterest</b><b>Amazon</b><b>Airbnb</b><b>Grammarly</b></div>
 
   <div class="demo" id="demo">
     <div class="steps" role="tablist">
@@ -368,11 +453,57 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     <div class="after"><span>Demo data: Maven Fuzzy Factory, a public online toy store dataset (CC0). Every number above is a real query result.</span><a href="live/">Ask your own questions on this data →</a></div>
   </div>
 
+
+  <section id="dashboards">
+    <div class="sh"><div class="k">Personal dashboards</div><h2>Same numbers. A different home page for each person.</h2><p>Every home page starts from the shared metrics, then pins what that person asks about most.</p></div>
+    <div class="dash">
+      <div class="home">
+        <div class="bar"><div class="av2">CF</div><div class="who">Founder<small>home page</small></div><span class="ex">Example</span></div>
+        <div class="tiles">
+          <div class="tile pin"><div class="t">Monthly revenue</div><div class="s">Pinned from your questions</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 40 L20 36 L38 37 L56 28 L74 26 L92 16 L118 8" stroke="var(--accent)"/></svg></div>
+          <div class="tile"><div class="t">Paid conversion rate</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 26 L20 24 L38 27 L56 22 L74 25 L92 21 L118 22" stroke="var(--navy)"/></svg></div>
+          <div class="tile"><div class="t">Orders</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 40 L20 36 L38 37 L56 28 L74 26 L92 16 L118 8" stroke="var(--navy)"/></svg></div>
+          <div class="tile"><div class="t">Refund rate</div><div class="s">Alert: above target</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 14 L20 16 L38 22 L56 30 L74 26 L92 32 L118 36" stroke="var(--amber)"/></svg></div>
+        </div>
+      </div>
+      <div class="home">
+        <div class="bar"><div class="av2">GL</div><div class="who">Growth lead<small>home page</small></div><span class="ex">Example</span></div>
+        <div class="tiles">
+          <div class="tile pin"><div class="t">Sessions by channel</div><div class="s">Pinned from your questions</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 30 L18 20 L34 28 L50 16 L66 24 L82 12 L100 20 L118 10" stroke="var(--accent)"/></svg></div>
+          <div class="tile pin"><div class="t">Paid search CPA</div><div class="s">Pinned from your questions</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 14 L20 16 L38 22 L56 30 L74 26 L92 32 L118 36" stroke="var(--accent)"/></svg></div>
+          <div class="tile"><div class="t">Paid conversion rate</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 26 L20 24 L38 27 L56 22 L74 25 L92 21 L118 22" stroke="var(--navy)"/></svg></div>
+          <div class="tile"><div class="t">New vs repeat visitors</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 40 L20 36 L38 37 L56 28 L74 26 L92 16 L118 8" stroke="var(--navy)"/></svg></div>
+        </div>
+      </div>
+    </div>
+    <div class="sameline"><span>Paid conversion rate</span>is one definition, so it reads the same on both pages.</div>
+  </section>
+
+  <section id="layer">
+    <div class="sh"><div class="k">The governed layer</div><h2>Raw tables in. One set of metrics out.</h2><p>The agent never reads raw tables. It answers from metrics your team has agreed on.</p></div>
+    <div class="flow">
+      <div class="lanes">
+        <div class="wire" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="lane raw"><span class="lk">Raw sources</span><span class="ln">9</span><span class="ld">App database, events, ad platforms</span></div>
+        <div class="lane"><span class="lk">Staging</span><span class="ln">9</span><span class="ld">Typed, deduplicated, tested</span></div>
+        <div class="lane mart"><span class="lk">Marts</span><span class="ln">10</span><span class="ld">Facts and dimensions</span></div>
+        <div class="lane sem"><span class="lk">Semantic models</span><span class="ln">9</span><span class="ld">Measures, joins, time grain</span></div>
+        <div class="lane met"><span class="lk">Metrics</span><span class="ln">29</span><span class="ld">Governed, with owners and roles</span></div>
+      </div>
+      <p class="flowcap">Counts from our demo warehouse: a social app with posts, engagement, search and ads.</p>
+    </div>
+    <div class="rules">
+      <div class="rule"><h3>Any name finds the right metric</h3><div class="syn"><span>ad spend</span><span>advertiser revenue</span><span>ads money</span><span>→</span><b>ad_revenue</b></div><p>People ask in their own words. The layer maps each name to one definition.</p></div>
+      <div class="rule"><h3>Math that can't add up wrong</h3><div class="agg"><span class="ok">sum</span><span>daily spend, any date range</span><span class="no">never sum</span><span>daily active users across days</span></div><p>Each metric knows how it can be rolled up, so the agent never adds distinct counts.</p></div>
+      <div class="rule"><h3>Every change has a version</h3><div class="ver"><div class="on"><span>arr v2</span><span>live</span></div><div><span>arr v1</span><span>kept, one click back</span></div></div><p>Change a definition and the old one stays in history, ready to restore.</p></div>
+    </div>
+  </section>
+
   <section id="how">
     <h2>From database to answers in three steps</h2>
     <div class="three">
       <div><div class="k">01 Connect</div><h3>Read-only access</h3><p>Point us at your app database or your existing warehouse. Nothing in your product changes, and your team keeps shipping.</p></div>
-      <div><div class="k">02 Build</div><h3>We build the layer with you</h3><p>We work with your team for the first weeks to agree on what each metric means. Our data engineering agent builds the pipelines and tests, and keeps them running.</p></div>
+      <div><div class="k">02 Build</div><h3>We build the layer with you</h3><p>We work with your team for the first weeks to agree on what each metric means. Our data engineering agent builds the pipelines and tests, then we hand them to your team.</p></div>
       <div><div class="k">03 Ask</div><h3>Anyone asks</h3><p>Founders, product and growth ask in plain English. Each answer shows the metric and SQL it used, and each person's home page keeps the charts they check most.</p></div>
     </div>
   </section>
@@ -387,6 +518,27 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     </div>
   </section>
 
+
+  <section id="scope">
+    <div class="sh"><div class="k">Who does what</div><h2>We build the layer. Your team runs it.</h2></div>
+    <div class="scope">
+      <div class="sc2"><span class="k" style="color:var(--accent)">We do</span><h3>Build</h3><ul><li>Connect sources, build the pipeline</li><li>Raw tables, aggregates, semantic layer</li><li>Define and test metrics with you</li></ul></div>
+      <div class="sc2"><span class="k" style="color:var(--navy)">You do</span><h3>Run</h3><ul><li>Own the systems that feed your data</li><li>Run the pipelines day to day</li><li>Approve new metrics in the editor</li></ul></div>
+      <div class="sc2"><span class="k" style="color:var(--teal)">When you need it</span><h3>Expert help</h3><ul><li>A data engineer or scientist from our team</li><li>Billed per task</li><li>New sources, backfills, a stuck pipeline</li></ul></div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="sh"><div class="k">Pricing</div><h2>One price per company. Unlimited users.</h2></div>
+    <div class="ptiers">
+      <div class="pt"><h3>Pilot</h3><span class="n">$20,000</span><span class="u">Six weeks, 100 metrics. Credited to year one.</span></div>
+      <div class="pt hero"><h3>Startup</h3><span class="n">$5,000</span><span class="u">per month, up to 5 sources</span></div>
+      <div class="pt"><h3>Scale</h3><span class="n">$10,000</span><span class="u">per month, up to 15 sources</span></div>
+      <div class="pt"><h3>Enterprise</h3><span class="n">Custom</span><span class="u">From $150,000 per year</span></div>
+    </div>
+    <div class="pmore"><span>Billed annually. You bring your own Anthropic or OpenAI key.</span><a href="pricing/">See full pricing →</a></div>
+  </section>
+
   <section id="team">
     <h2>Built by people from Meta, Pinterest and Amazon, with more than a decade in data</h2>
     <div class="team">
@@ -396,13 +548,13 @@ GROUP BY 1 ORDER BY 1;</pre></details>
   </section>
 
   <div class="end">
-    <h2>Get your analytics layer set up</h2>
+    <div style="display:flex;flex-direction:column;gap:10px"><h2>See it on a mock of your data</h2><span class="mail">rahul.chaudhary@outlook.com</span></div>
     <div class="ctas" style="margin:0">
-      <a class="btn primary" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant">Talk to us</a>
+      <a class="btn primary" href="mailto:rahul.chaudhary@outlook.com?subject=ResidentQuant%20demo">Book a demo</a>
       <a class="btn" href="live/">Try the live demo</a>
     </div>
   </div>
-  <footer>ResidentQuant · 2026</footer>
+  <footer><div class="fl"><a href="#how">How it works</a><a href="#dashboards">Dashboards</a><a href="#layer">Semantic layer</a><a href="pricing/">Pricing</a><a href="live/">Live demo</a></div>ResidentQuant · 2026</footer>
 </div>
 
 <script>
