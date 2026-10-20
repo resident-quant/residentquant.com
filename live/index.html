@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>ResidentQuant Live</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='21' cy='21' r='14' fill='none' stroke='%230e1525' stroke-width='6.5'/%3E%3Crect x='33' y='30' width='7' height='14' rx='2' fill='%23d7263d'/%3E%3C/svg%3E">
 <meta name="description" content="Ask a governed semantic-layer API questions in plain English. Runs in your browser with your own Anthropic key: governed queries, DuckDB SQL, pandas and Vega-Lite charts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -255,12 +256,13 @@ select.srcsel{appearance:none;-webkit-appearance:none;cursor:pointer;color:var(-
 @media (max-width:820px){.cont{grid-template-columns:minmax(0,1fr)} .wbr tr .inv{opacity:1}}
 @media (max-width:560px){.flags{grid-template-columns:minmax(0,1fr)}.hhead .asof{text-align:left}.home{gap:20px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.logo{display:inline-flex;align-items:center}.logo .mk{width:1.15em;height:1.2em;flex:none;margin-right:.4em;color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="shell">
   <header class="top">
-    <span class="logo">Resident<span class="q">Quant</span></span>
+    <span class="logo"><svg class="mk" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Resident<span class="q">Quant</span></span>
     <span class="livebadge"><i></i>live</span>
     <div class="chips">
       <span class="chip" id="cModel">model <b>not set</b></span>
