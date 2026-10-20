@@ -314,6 +314,25 @@ section{padding-top:88px}
 .trust{margin:34px 0 0;gap:10px 34px;align-items:baseline}
 .trust span{font:500 13px/1 var(--f-mono);color:var(--muted)}
 .trust b{font:700 20px/1 var(--f-display);letter-spacing:-.02em;color:#6b7280}
+
+/* density: wider column, YC-median gaps, product in the first screen */
+.wrap{max-width:1240px}
+.hero{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px;align-items:center;padding:36px 0 8px}
+.hero h1{font-size:clamp(36px,4.4vw,54px);margin:14px 0 16px}
+.hshot{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:0 24px 50px -30px rgba(14,21,37,.5)}
+.hshot .chrome{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--sunk)}
+.hshot .chrome i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.hshot .chrome span{margin-left:8px;font:500 12px var(--f-mono);color:var(--faint)}
+.hshot img{display:block;width:100%;height:auto}
+.trust{margin:28px 0 0}
+section{padding-top:56px}
+.vs{padding-top:48px}
+.sh{margin:0 0 16px}
+#how{margin:48px 0 16px}
+.vs h2{margin:0 0 16px}
+.end{margin:48px 0 0;padding:32px 0 40px}
+@media (max-width:900px){.hero{grid-template-columns:1fr;gap:24px}}
+.shots{grid-template-columns:minmax(0,1fr);max-width:900px}
 </style>
 </head>
 <body>
@@ -332,12 +351,15 @@ section{padding-top:88px}
 <main>
 
   <header class="hero">
-    <div class="eyebrow">AI native · Data layer · AI analyst · Personal dashboards</div>
-    <h1>Your end to end analytics layer, built for you.</h1>
-    <div class="ctas">
-      <a class="btn primary" href="contact/">Book a demo</a>
-      <a class="btn" href="live/">Try it on sample data</a>
+    <div class="hcopy">
+      <div class="eyebrow">AI native · Data layer · AI analyst · Personal dashboards</div>
+      <h1>Your end to end analytics layer, built for you.</h1>
+      <div class="ctas">
+        <a class="btn primary" href="contact/">Book a demo</a>
+        <a class="btn" href="live/">Try it on sample data</a>
+      </div>
     </div>
+    <figure class="hshot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Metrics editor</span></div><img src="img/metrics-editor.webp" width="1600" height="922" alt="ResidentQuant metrics editor: governed ad metrics as tiles, each with its value, 7-day change, sparkline and definition."></figure>
   </header>
   <div class="trust"><span>Built by people from</span><b>Meta</b><b>Pinterest</b><b>Amazon</b><b>Airbnb</b><b>Grammarly</b></div>
 
@@ -546,7 +568,6 @@ GROUP BY 1 ORDER BY 1;</pre></details>
       <p class="flowcap">Counts from our demo warehouse: a social app with posts, engagement, search and ads.</p>
     </div>
     <div class="shots">
-      <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Metrics editor</span></div><img src="img/metrics-editor.webp" width="1600" height="922" loading="lazy" alt="Metrics editor showing governed ad metrics as tiles, each with its latest value, change over 7 days, a 28-day sparkline and its definition."><figcaption><b>Every metric, one place.</b></figcaption></figure>
       <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Ad revenue</span></div><img src="img/metric-detail.webp" width="1600" height="1009" loading="lazy" alt="Ad revenue metric opened in the editor: latest value, 7-day change, the definition sum of spend, roles that can see it, a 28-day chart and the form that defines it."><figcaption><b>Defined once.</b></figcaption></figure>
     </div>
     <div class="rules">
