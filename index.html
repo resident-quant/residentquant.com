@@ -332,7 +332,14 @@ section{padding-top:56px}
 .vs h2{margin:0 0 16px}
 .end{margin:48px 0 0;padding:32px 0 40px}
 @media (max-width:900px){.hero{grid-template-columns:1fr;gap:24px}}
-.shots{grid-template-columns:minmax(0,1fr);max-width:900px}
+
+/* hero row above the demo */
+.hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;padding:32px 0 20px}
+.hero .hcopy{max-width:760px}
+.hero h1{margin:12px 0 0}
+.hero .ctas{margin:0}
+.demo{margin:0}
+.trust{margin:28px 0 0}
 </style>
 </head>
 <body>
@@ -354,26 +361,13 @@ section{padding-top:56px}
     <div class="hcopy">
       <div class="eyebrow">AI native · Data layer · AI analyst · Personal dashboards</div>
       <h1>Your end to end analytics layer, built for you.</h1>
-      <div class="ctas">
-        <a class="btn primary" href="contact/">Book a demo</a>
-        <a class="btn" href="live/">Try it on sample data</a>
-      </div>
     </div>
-    <figure class="hshot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Metrics editor</span></div><img src="img/metrics-editor.webp" width="1600" height="922" alt="ResidentQuant metrics editor: governed ad metrics as tiles, each with its value, 7-day change, sparkline and definition."></figure>
+    <div class="ctas">
+      <a class="btn primary" href="contact/">Book a demo</a>
+      <a class="btn" href="live/">Try it on sample data</a>
+    </div>
   </header>
-  <div class="trust"><span>Built by people from</span><b>Meta</b><b>Pinterest</b><b>Amazon</b><b>Airbnb</b><b>Grammarly</b></div>
-
-
-  <section class="vs" aria-label="Pre-AI stack compared with ResidentQuant">
-    <h2>Built AI native, so you can skip the pre-AI stack.</h2>
-    <div class="vsrow">
-      <div class="vcol old"><span class="vk">Pre-AI stack</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>ETL tool</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>dbt project</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>BI dashboards</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Ticket queue for analysts</span></div>
-      <div class="varrow" aria-hidden="true">→</div>
-      <div class="vcol new"><span class="vk">ResidentQuant</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Agents build the pipeline</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>One governed semantic layer</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Ask in plain English</span></div>
-    </div>
-  </section>
-  <div class="sh" id="how"><div class="k">How it works</div><h2>From database to answer in three steps</h2></div>
-  <div class="demo" id="demo">
+  <div class="demo" id="demo"><span id="how"></span>
     <div class="steps" role="tablist">
       <button class="step" data-p="0" role="tab"><span class="n">01</span><span class="t">Your database today</span><span class="bar"></span></button>
       <button class="step" data-p="1" role="tab"><span class="n">02</span><span class="t">We build the layer</span><span class="bar"></span></button>
@@ -528,6 +522,16 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     </div>
     <div class="after"><span>Demo data: Maven Fuzzy Factory, a public online toy store dataset (CC0). Every number above is a real query result.</span><a href="live/">Ask your own questions on this data →</a></div>
   </div>
+  <div class="trust"><span>Built by people from</span><b>Meta</b><b>Pinterest</b><b>Amazon</b><b>Airbnb</b><b>Grammarly</b></div>
+
+  <section class="vs" aria-label="Pre-AI stack compared with ResidentQuant">
+    <h2>Built AI native, so you can skip the pre-AI stack.</h2>
+    <div class="vsrow">
+      <div class="vcol old"><span class="vk">Pre-AI stack</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>ETL tool</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>dbt project</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>BI dashboards</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Ticket queue for analysts</span></div>
+      <div class="varrow" aria-hidden="true">→</div>
+      <div class="vcol new"><span class="vk">ResidentQuant</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Agents build the pipeline</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>One governed semantic layer</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Ask in plain English</span></div>
+    </div>
+  </section>
 
 
   <section id="dashboards">
@@ -568,6 +572,7 @@ GROUP BY 1 ORDER BY 1;</pre></details>
       <p class="flowcap">Counts from our demo warehouse: a social app with posts, engagement, search and ads.</p>
     </div>
     <div class="shots">
+      <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Metrics editor</span></div><img src="img/metrics-editor.webp" width="1600" height="922" loading="lazy" alt="Metrics editor showing governed ad metrics as tiles, each with its latest value, change over 7 days, a 28-day sparkline and its definition."><figcaption><b>Every metric, one place.</b></figcaption></figure>
       <figure class="shot"><div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>Ad revenue</span></div><img src="img/metric-detail.webp" width="1600" height="1009" loading="lazy" alt="Ad revenue metric opened in the editor: latest value, 7-day change, the definition sum of spend, roles that can see it, a 28-day chart and the form that defines it."><figcaption><b>Defined once.</b></figcaption></figure>
     </div>
     <div class="rules">
