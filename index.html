@@ -340,6 +340,15 @@ section{padding-top:56px}
 .hero .ctas{margin:0}
 .demo{margin:0}
 .trust{margin:28px 0 0}
+
+/* security */
+.secg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.sec{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0}
+.sec svg{width:28px;height:28px;color:var(--accent)}
+.sec h3{margin:4px 0 0;font:700 18px/1.25 var(--f-display);letter-spacing:-.01em}
+.sec p{margin:0;font-size:14px;color:var(--muted)}
+@media (max-width:900px){.secg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.secg{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -350,6 +359,7 @@ section{padding-top:56px}
       <a href="#how" class="hide-s">How it works</a>
       <a href="#dashboards" class="hide-s">Dashboards</a>
       <a href="#layer" class="hide-s">Semantic layer</a>
+      <a href="#security" class="hide-s">Security</a>
       <a href="pricing/">Pricing</a>
       <a href="live/" class="hide-s">Live demo</a>
       <a href="contact/">Contact</a>
@@ -586,6 +596,16 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 
 
 
+
+  <section id="security" aria-labelledby="sec-h">
+    <div class="sh"><div class="k">Security</div><h2 id="sec-h">Your data stays where it is.</h2></div>
+    <div class="secg">
+      <div class="sec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Data stays in your warehouse</h3><p>Queries run in place. We keep no copy.</p></div>
+      <div class="sec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Read-only on production</h3><p>We read your app database. We never write to it.</p></div>
+      <div class="sec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7a4 4 0 1 1-3.5 6L5 19.5V22H2v-3l6.5-6.5A4 4 0 0 1 15 7zM16.5 9.5h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Your own model key</h3><p>Questions go to your Anthropic or OpenAI account.</p></div>
+      <div class="sec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3zM9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Roles and audit log</h3><p>Row-level security per role. Every query is logged.</p></div>
+    </div>
+  </section>
   <section id="pricing">
     <div class="sh"><div class="k">Pricing</div><h2>One price per company. Unlimited users.</h2></div>
     <div class="ptiers">
