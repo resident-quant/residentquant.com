@@ -275,10 +275,10 @@ footer .fl a{color:var(--muted);text-decoration:none}
 .vs{padding-top:72px}
 .vs h2{margin:0 0 20px}
 .stk{overflow-x:auto;outline:none}
-.stkin{min-width:760px;display:flex;flex-direction:column;gap:8px}
+.stkin{min-width:940px;display:flex;flex-direction:column;gap:8px}
 .lab{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
 .lab.n{color:var(--accent);margin-top:14px}
-.lane5,.who{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px}
+.lane6,.who{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:22px}
 .sb{position:relative;border:1px solid var(--line);background:var(--sunk);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-height:74px}
 .sb+.sb::before{content:"";position:absolute;left:-19px;top:50%;width:16px;height:2px;background:var(--line)}
 .sb+.sb::after{content:"";position:absolute;left:-7px;top:calc(50% - 4px);border:5px solid transparent;border-left-color:var(--line);border-right:0}
@@ -289,8 +289,13 @@ footer .fl a{color:var(--muted);text-decoration:none}
 .sb.s1{background:var(--ink);border-color:var(--ink)}
 .sb.s1 .sk{color:#fff} .sb.s1 .st{color:#5fd3c2}
 .sb.s2{background:#fff;border-style:dashed}
-.lane5:last-of-type .sb+.sb::before{background:var(--accent)}
-.lane5:last-of-type .sb+.sb::after{border-left-color:var(--accent)}
+.lane6.nw .sb+.sb::before{background:var(--accent)}
+.lane6.nw .sb+.sb::after{border-left-color:var(--accent)}
+.sb.s3{background:#fff;border:1.5px dashed #e3a1a8}
+.sb.s3 .sk{color:#b4232f}
+.sb.s4{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px rgba(215,38,61,.15)}
+.sb.s4 .sk{color:#fff} .sb.s4 .st{color:#ffe1e5}
+.tg{position:absolute;top:-9px;left:10px;background:#fff;color:var(--accent);border:1px solid var(--accent);border-radius:999px;font:600 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;white-space:nowrap}
 .rl{font:500 12px/1 var(--f-mono);color:var(--muted);border-top:2px solid var(--line);padding-top:7px;text-align:center}
 .rl.n{color:var(--ink);border-top-color:var(--accent)}
 .stkf{margin:10px 0 0;font-size:12px;color:var(--muted)} .stkf a{color:inherit}
@@ -540,11 +545,11 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     <div class="stk" tabindex="0" aria-label="The 2021 data stack compared with ResidentQuant, stage by stage">
       <div class="stkin">
         <div class="lab">Pre-AI stack, circa 2021</div>
-        <div class="lane5"><div class="sb s0"><span class="sk">Sources</span><span class="st">App database, events, ads</span></div><div class="sb "><span class="sk">Ingestion</span><span class="st">Fivetran, Stitch</span></div><div class="sb "><span class="sk">Warehouse</span><span class="st">Snowflake, BigQuery</span></div><div class="sb "><span class="sk">Transform</span><span class="st">dbt project</span></div><div class="sb bad"><span class="sk">BI</span><span class="st">Looker, Metabase</span><span class=sn>Metrics re-defined in each dashboard</span></div></div>
-        <div class="who"><span></span><span class="rl" style="grid-column:2/4">Data engineer</span><span class="rl">Analytics engineer</span><span class="rl">Analyst, ticket queue</span></div>
+        <div class="lane6"><div class="sb s0"><span class="sk">Sources</span><span class="st">App database, events, ads</span></div><div class="sb "><span class="sk">Ingestion</span><span class="st">Fivetran, Stitch</span></div><div class="sb "><span class="sk">Warehouse</span><span class="st">Snowflake, BigQuery</span></div><div class="sb "><span class="sk">Transform</span><span class="st">dbt project</span></div><div class="sb s3"><span class="sk">No semantic layer</span><span class="st"></span><span class=sn>Metrics re-defined in each dashboard</span></div><div class="sb "><span class="sk">BI and analysis</span><span class="st">Looker, Metabase, notebooks</span></div></div>
+        <div class="who"><span></span><span class="rl" style=grid-column:2/4>Data engineer</span><span class="rl">Analytics engineer</span><span></span><span class="rl">Analyst, data scientist</span></div>
         <div class="lab n">ResidentQuant</div>
-        <div class="lane5"><div class="sb s0"><span class="sk">Sources</span><span class="st">App database, events, ads</span></div><div class="sb s1"><span class="sk">Agents load it</span><span class="st">Tested on every run</span></div><div class="sb s2"><span class="sk">Your warehouse</span><span class="st">Stays yours</span></div><div class="sb s1"><span class="sk">Agents model it</span><span class="st">Metrics defined once</span></div><div class="sb s1"><span class="sk">Ask, home pages</span><span class="st">Plain English, SQL shown</span></div></div>
-        <div class="who"><span></span><span class="rl n" style="grid-column:2/-1">Your team asks questions. We run the rest.</span></div>
+        <div class="lane6 nw"><div class="sb s0"><span class="sk">Sources</span><span class="st">App database, events, ads</span></div><div class="sb s1"><span class="sk">Agents load it</span><span class="st">Tested on every run</span></div><div class="sb s2"><span class="sk">Your warehouse</span><span class="st">Stays yours</span></div><div class="sb s1"><span class="sk">Agents model it</span><span class="st">dbt models, tested</span></div><div class="sb s4"><span class=tg>Our abstraction layer</span><span class="sk">Semantic layer</span><span class="st">Every metric defined once</span></div><div class="sb s1"><span class="sk">Ask, home pages</span><span class="st">Plain English, SQL shown</span></div></div>
+        <div class="who"><span></span><span class="rl n" style=grid-column:2/4>AI data engineer</span><span class="rl n">AI analytics engineer</span><span class="rl n">One source of truth</span><span class="rl n">AI data scientist</span></div>
       </div>
     </div>
     <p class="stkf">2021 stack as described by <a href="https://www.getdbt.com/blog/future-of-the-modern-data-stack">dbt Labs</a>, <a href="https://incident.io/blog/data-stack">incident.io</a> and <a href="https://benn.substack.com/p/metrics-layer">Benn Stancil</a>.</p>
