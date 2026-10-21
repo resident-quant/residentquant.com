@@ -274,22 +274,28 @@ footer .fl a{color:var(--muted);text-decoration:none}
 /* AI native vs pre-AI stack */
 .vs{padding-top:72px}
 .vs h2{margin:0 0 20px}
-.cmp{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1fr)}
+.cmp{display:grid;grid-template-columns:210px minmax(0,1fr) 70px minmax(0,1fr) 70px}
 .cr{display:contents}
-.cr>span{padding:13px 18px;border-top:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
+.cr>span{padding:12px 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
 .ch>span{border-top:0;padding-top:14px;padding-bottom:10px;font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.ck{font:600 12px/1.3 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-left:0!important}
+.ck{font:600 12px/1.3 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);padding-left:0!important}
+.ck em{font:400 13px/1.3 var(--f-body);font-style:normal;letter-spacing:0;text-transform:none;color:var(--muted)}
 .co{font-size:16px;color:var(--muted)}
 .co small{font:400 13px/1.3 var(--f-body);color:var(--muted)}
-.cn{color:var(--ink);font:600 16px/1.35 var(--f-body)}
+.cf{white-space:nowrap;font:600 15px/1 var(--f-mono);color:var(--muted);align-items:flex-end;text-align:right}
+.cn{color:var(--ink);font:600 16px/1.35 var(--f-body);background:rgba(215,38,61,.045);border-top-color:rgba(215,38,61,.10)!important}
+.cn.cf{color:var(--ink)}
+.cn.y{background:#fff;border-top-color:var(--line)!important;color:var(--muted);font-weight:400;padding-left:42px}
+.cn.cf.y{padding-left:16px}
 .ch .cn{color:var(--ink)}
-.cn.y{color:var(--muted);font-weight:400;padding-left:44px}
+.ch .cn:not(.cf){border-radius:12px 0 0 0} .ch .cn.cf{border-radius:0 12px 0 0}
+.tot .cn:not(.cf){border-radius:0 0 0 12px} .tot .cn.cf{border-radius:0 0 12px 0}
+.tot>span{border-top:1.5px solid var(--ink)}
+.tot .cf{font:800 20px/1 var(--f-display);color:var(--ink)}
+.tot .cn{border-top-color:var(--ink)!important}
 .cw{display:flex;align-items:center;gap:10px}
-.cn{background:rgba(215,38,61,.045);border-top-color:rgba(215,38,61,.10)!important}
-.ch .cn{border-radius:12px 12px 0 0;padding-top:14px!important}
-.cr:last-child .cn{border-radius:0 0 12px 12px}
 .cm{width:16px;height:16px;flex:none;color:var(--ink)}
-@media (max-width:700px){.cmp{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ch>span:first-child{display:none}.ck{grid-column:1/-1;padding-bottom:2px!important}.cr:not(.ch)>.co,.cr:not(.ch)>.cn{border-top:0}.co,.cn{font-size:15px}}
+@media (max-width:700px){.cmp{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr) 34px}.ch>span:first-child{display:none}.ck{grid-column:1/-1;padding-bottom:2px!important;flex-direction:row;flex-wrap:wrap;gap:0 8px;align-items:baseline}.cr:not(.ch):not(.tot)>span:not(.ck){border-top:0}.cr>span{padding:10px 8px}.co,.cn{font-size:14px}.cf{font-size:13px}.cn.y{padding-left:8px}.cm{display:none}.tot .ck{grid-column:1/-1}}
 .stkf{margin:10px 0 0;font-size:12px;color:var(--muted)} .stkf a{color:inherit}
 
 /* type scale: 12 / 13 / 14 / 16 / 18 / 32 / 56 (one size per role) */
@@ -534,14 +540,15 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 
   <section class="vs" aria-label="Pre-AI stack compared with ResidentQuant">
     <h2>Built AI native, so you can skip the pre-AI stack.</h2>
-    <div class="cmp" role="table" aria-label="Pre-AI stack compared with ResidentQuant">
-      <div class="cr ch" role="row"><span role="columnheader"></span><span class="co" role="columnheader">Pre-AI stack, 2021</span><span class="cn" role="columnheader"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>ResidentQuant</span></span></div>
-      <div class="cr" role="row"><span class="ck" role="rowheader">Data engineering</span><span class="co " role="cell">Fivetran, Stitch<small>Data engineer</small></span><span class="cn " role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Data engineering agents</span></span></div>
-      <div class="cr" role="row"><span class="ck" role="rowheader">Warehouse</span><span class="co " role="cell">Snowflake, BigQuery<small>Data engineer</small></span><span class="cn y" role="cell">Yours, untouched</span></div>
-      <div class="cr" role="row"><span class="ck" role="rowheader">Analytics engineering</span><span class="co " role="cell">dbt project<small>Analytics engineer</small></span><span class="cn " role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Analytics engineering agents</span></span></div>
-      <div class="cr" role="row"><span class="ck" role="rowheader">Semantic layer</span><span class="co bad" role="cell">None. Metrics re-defined in each dashboard</span><span class="cn s" role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Every metric defined once</span></span></div>
-      <div class="cr" role="row"><span class="ck" role="rowheader">Data science</span><span class="co " role="cell">Looker, notebooks<small>Analysts, data scientists</small></span><span class="cn " role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Data science agents</span></span></div>
-      <div class="cr" role="row"><span class="ck" role="rowheader">Hard problems</span><span class="co " role="cell">The team's backlog</span><span class="cn h" role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Our data experts, on demand</span></span></div>
+    <div class="cmp" role="table" aria-label="Pre-AI stack compared with ResidentQuant, with full-time staff needed">
+      <div class="cr ch" role="row"><span role="columnheader"></span><span class="co" role="columnheader">Pre-AI stack, 2021</span><span class="cf" role="columnheader">FTE</span><span class="cn" role="columnheader"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>ResidentQuant</span></span><span class="cn cf" role="columnheader">FTE</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Data engineering<em>Move data from your apps into one place</em></span><span class="co" role="cell">Fivetran, Stitch<small>Data engineer</small></span><span class="cf" role="cell">1</span><span class="cn" role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Data engineering agents</span></span><span class="cn cf" role="cell">0</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Warehouse<em>Where the data lives</em></span><span class="co" role="cell">Snowflake, BigQuery<small>Same data engineer</small></span><span class="cf" role="cell">-</span><span class="cn y" role="cell">Yours, untouched</span><span class="cn cf y" role="cell">-</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Analytics engineering<em>Clean, join and test the tables</em></span><span class="co" role="cell">dbt project<small>Analytics engineer</small></span><span class="cf" role="cell">1</span><span class="cn" role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Analytics engineering agents</span></span><span class="cn cf" role="cell">0</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Semantic layer<em>One definition per metric</em></span><span class="co" role="cell">None. Metrics re-defined in each dashboard</span><span class="cf" role="cell">-</span><span class="cn" role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Every metric defined once</span></span><span class="cn cf" role="cell">0</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Data science<em>Answer questions, explain changes</em></span><span class="co" role="cell">Looker, notebooks<small>Analysts, data scientists</small></span><span class="cf" role="cell">1-2</span><span class="cn" role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Data science agents</span></span><span class="cn cf" role="cell">0</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Hard problems<em>Work that needs a person</em></span><span class="co" role="cell">The team's backlog</span><span class="cf" role="cell">-</span><span class="cn" role="cell"><span class="cw"><svg class="cm" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Our data experts, on demand</span></span><span class="cn cf" role="cell">0</span></div>
+      <div class="cr tot" role="row"><span class="ck" role="rowheader">Full-time hires</span><span class="co" role="cell"></span><span class="cf" role="cell">3-4</span><span class="cn" role="cell"></span><span class="cn cf" role="cell">0</span></div>
     </div>
     <p class="stkf">2021 stack as described by <a href="https://www.getdbt.com/blog/future-of-the-modern-data-stack">dbt Labs</a>, <a href="https://incident.io/blog/data-stack">incident.io</a> and <a href="https://benn.substack.com/p/metrics-layer">Benn Stancil</a>.</p>
   </section>
