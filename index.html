@@ -49,7 +49,7 @@ nav .links a{text-decoration:none}
 nav .links a:hover{color:var(--ink)}
 
 /* hero */
-.hero{padding:56px 0 34px;max-width:820px}
+header.hero{padding:56px 0 34px;max-width:820px}
 .eyebrow{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 h1{font:800 clamp(34px,5.4vw,58px)/1.02 var(--f-display);letter-spacing:-.035em;margin:16px 0 18px}
 .lede{font-size:18px;line-height:1.55;color:var(--muted);max-width:680px;margin:0}
@@ -264,7 +264,7 @@ footer .fl a{color:var(--muted);text-decoration:none}
   .steps .t{font-size:13px}
   .step{padding:12px 10px 14px}
   .metrics{grid-template-columns:1fr}
-  .hero{padding-top:32px}
+  header.hero{padding-top:32px}
   .ptiers,.tiles{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){.r,.chat .r.in{transition:none;animation:none}}
@@ -317,8 +317,8 @@ section{padding-top:88px}
 
 /* density: wider column, YC-median gaps, product in the first screen */
 .wrap{max-width:1240px}
-.hero{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px;align-items:center;padding:36px 0 8px}
-.hero h1{font-size:clamp(36px,4.4vw,54px);margin:14px 0 16px}
+header.hero{max-width:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:40px;align-items:center;padding:36px 0 8px}
+header.hero h1{font-size:clamp(36px,4.4vw,54px);margin:14px 0 16px}
 .hshot{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:0 24px 50px -30px rgba(14,21,37,.5)}
 .hshot .chrome{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--sunk)}
 .hshot .chrome i{width:9px;height:9px;border-radius:50%;background:var(--line)}
@@ -331,13 +331,13 @@ section{padding-top:56px}
 #how{margin:48px 0 16px}
 .vs h2{margin:0 0 16px}
 .end{margin:48px 0 0;padding:32px 0 40px}
-@media (max-width:900px){.hero{grid-template-columns:1fr;gap:24px}}
+@media (max-width:900px){header.hero{grid-template-columns:1fr;gap:24px}}
 
 /* hero row above the demo */
-.hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;padding:32px 0 20px}
-.hero .hcopy{max-width:760px}
-.hero h1{margin:12px 0 0}
-.hero .ctas{margin:0}
+header.hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px;padding:32px 0 20px}
+header.hero .hcopy{max-width:760px}
+header.hero h1{margin:12px 0 0}
+header.hero .ctas{margin:0}
 .demo{margin:0}
 .trust{margin:28px 0 0}
 
