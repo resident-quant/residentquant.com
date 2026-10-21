@@ -274,20 +274,21 @@ footer .fl a{color:var(--muted);text-decoration:none}
 /* AI native vs pre-AI stack */
 .vs{padding-top:72px}
 .vs h2{margin:0 0 20px}
-.vsrow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;align-items:stretch}
-.vcol{border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.vcol.old{background:var(--sunk);border:1px solid var(--line)}
-.vcol.new{background:var(--ink);border:1px solid var(--ink)}
-.vk{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
-.old .vk{color:var(--muted)} .new .vk{color:#ff8a98}
-.vi{display:flex;align-items:center;gap:10px;font:500 16px/1.3 var(--f-body)}
-.vi svg{width:14px;height:14px;flex:none}
-.old .vi{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(88,97,116,.45)}
-.old .vi svg{color:var(--muted)}
-.new .vi{color:#ffffff}
-.new .vi svg{color:#5fd3c2}
-.varrow{display:grid;place-items:center;font:700 28px/1 var(--f-display);color:var(--accent)}
-@media (max-width:700px){.vsrow{grid-template-columns:1fr}.varrow{transform:rotate(90deg);padding:4px 0}}
+.vt{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.vh,.vr{display:contents}
+.vt>div>span{padding:11px 16px;display:flex;align-items:center;min-width:0}
+.vh span{padding-top:14px;padding-bottom:8px}
+.vk{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase}
+.vk.o{color:var(--muted)} .vk.n{background:var(--ink);color:#ff8a98}
+.vj{font:600 12px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.vo{font:400 15px/1.35 var(--f-body);color:var(--muted)}
+.va{color:var(--accent);font:700 18px/1 var(--f-display);padding:0 4px!important;justify-content:center}
+.vn{background:var(--ink);color:#fff;font:500 15px/1.35 var(--f-body)}
+.vr>span{border-top:1px solid var(--line)}
+.vr>.vn{border-top-color:#232b3b}
+.vr.tot .vo b,.vr.tot .vn b{font:800 20px/1 var(--f-display);margin-right:6px}
+.vr.tot .vn b{color:#5fd3c2}
+@media (max-width:700px){.vt{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.vh span:first-child,.vh span:nth-child(3),.va{display:none!important}.vj{grid-column:1/-1;padding-bottom:0!important;border-top:1px solid var(--line)}.vr>.vo,.vr>.vn{border-top:0}}
 
 /* type scale: 12 / 13 / 14 / 16 / 18 / 32 / 56 (one size per role) */
 .lane .lk,.home .av2,.tile .s,.home .ex,.step .n,.shot .chrome span,.note b,.flowcap{font-size:12px}
@@ -531,10 +532,13 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 
   <section class="vs" aria-label="Pre-AI stack compared with ResidentQuant">
     <h2>Built AI native, so you can skip the pre-AI stack.</h2>
-    <div class="vsrow">
-      <div class="vcol old"><span class="vk">Pre-AI stack</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>ETL tool</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>dbt project</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>BI dashboards</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Ticket queue for analysts</span></div>
-      <div class="varrow" aria-hidden="true">→</div>
-      <div class="vcol new"><span class="vk">ResidentQuant</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Agents build the pipeline</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>One governed semantic layer</span><span class="vi"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.5l2.3 2.3 4.7-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Ask in plain English</span></div>
+    <div class="vt" role="table" aria-label="What each job looks like before and after">
+      <div class="vh" role="row"><span role="columnheader"></span><span class="vk o" role="columnheader">Pre-AI stack</span><span role="columnheader"></span><span class="vk n" role="columnheader">ResidentQuant</span></div>
+      <div class="vr" role="row"><span class="vj" role="cell">Pipeline</span><span class="vo" role="cell">ETL tool your team sets up</span><span class="va" aria-hidden="true">→</span><span class="vn" role="cell">Agents build and test it</span></div>
+      <div class="vr" role="row"><span class="vj" role="cell">Models</span><span class="vo" role="cell">dbt project your team maintains</span><span class="va" aria-hidden="true">→</span><span class="vn" role="cell">dbt models agents write and test</span></div>
+      <div class="vr" role="row"><span class="vj" role="cell">Metrics</span><span class="vo" role="cell">Logic copied into each dashboard</span><span class="va" aria-hidden="true">→</span><span class="vn" role="cell">Defined once in a semantic layer</span></div>
+      <div class="vr" role="row"><span class="vj" role="cell">Answers</span><span class="vo" role="cell">A ticket to an analyst, then wait</span><span class="va" aria-hidden="true">→</span><span class="vn" role="cell">Ask in plain English, see the SQL</span></div>
+      <div class="vr tot" role="row"><span class="vj" role="cell">Tools</span><span class="vo" role="cell"><b>4</b> to buy and run</span><span class="va" aria-hidden="true">→</span><span class="vn" role="cell"><b>1</b> we run for you</span></div>
     </div>
   </section>
 
