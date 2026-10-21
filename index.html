@@ -274,32 +274,21 @@ footer .fl a{color:var(--muted);text-decoration:none}
 /* AI native vs pre-AI stack */
 .vs{padding-top:72px}
 .vs h2{margin:0 0 20px}
-.stk{overflow-x:auto;outline:none}
-.stkin{min-width:940px;display:flex;flex-direction:column;gap:8px;padding:0 8px 10px 0}
-.lab{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.lane6,.who{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:22px}
-.lh{margin-top:20px;margin-bottom:10px}
-.lh .lab.n{grid-column:2/-1;color:var(--accent)}
-.sb{position:relative;z-index:1;border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-height:70px}
-.sb+.sb::before{content:"";position:absolute;left:-19px;top:50%;width:16px;height:2px;background:var(--line)}
-.sb+.sb::after{content:"";position:absolute;left:-7px;top:calc(50% - 4px);border:5px solid transparent;border-left-color:var(--line);border-right:0}
-.sk{font:700 15px/1.2 var(--f-display);color:var(--ink)}
-.st{font:400 13px/1.3 var(--f-body);color:var(--muted)}
-.sb.s0{background:#fff}
-.sb.s3{background:#fff;border:1.5px dashed #e3a1a8}
-.sb.s3 .sk,.sb.s3 .st{color:#b4232f}
-.nw{position:relative}
-.nw>.sb:nth-child(1){grid-row:1;grid-column:1}.nw>.sb:nth-child(2){grid-row:1;grid-column:2}.nw>.sb:nth-child(3){grid-row:1;grid-column:3}.nw>.sb:nth-child(4){grid-row:1;grid-column:4}.nw>.sb:nth-child(5){grid-row:1;grid-column:5}.nw>.sb:nth-child(6){grid-row:1;grid-column:6}
-.rqbg{grid-column:2/-1;grid-row:1;margin:-8px;background:var(--ink);border-radius:14px;z-index:0}
-.nw .sb.s1{background:transparent;border-color:#2b3447}
-.nw .sb.s1 .sk{color:#fff} .nw .sb.s1 .st{color:#5fd3c2}
-.nw .sb.s2{background:#1a2233;border:1px dashed #4a5570}
-.nw .sb.s2 .sk{color:#cfd5e1} .nw .sb.s2 .st{color:#9aa3b5}
-.nw .sb.s4{background:var(--accent);border-color:var(--accent)}
-.nw .sb.s4 .sk{color:#fff} .nw .sb.s4 .st{color:#ffe1e5}
-.nw .sb+.sb::before{background:#4a5570} .nw .sb+.sb::after{border-left-color:#4a5570}
-.nw .sb:nth-child(2)::before{background:var(--accent);left:-27px;width:24px} .nw .sb:nth-child(2)::after{border-left-color:var(--accent);left:-11px}
-.rl{font:500 12px/1 var(--f-mono);color:var(--muted);border-top:2px solid var(--line);padding-top:7px;text-align:center}
+.cmp{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1fr)}
+.cr{display:contents}
+.cr>span{padding:12px 18px;border-top:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
+.ch>span{border-top:0;padding-top:14px;padding-bottom:10px;font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ck{font:600 12px/1.3 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-left:0!important}
+.co{font-size:16px;color:var(--muted)}
+.co small{font:500 12px/1.3 var(--f-mono);color:var(--muted);opacity:.8}
+.co.bad{color:var(--accent)}
+.cn{background:var(--ink);color:#fff;font:600 16px/1.35 var(--f-body);border-top-color:#232b3b!important}
+.ch .cn{color:#ff8a98;border-radius:12px 12px 0 0}
+.cr:last-child .cn{border-radius:0 0 12px 12px}
+.cn.y{color:#9aa3b5;font-weight:400}
+.cn.s{color:#ff8a98}
+.cn.h{color:#5fd3c2}
+@media (max-width:700px){.cmp{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ch>span:first-child{display:none}.ck{grid-column:1/-1;padding-bottom:2px!important}.cr:not(.ch)>.co,.cr:not(.ch)>.cn{border-top:0}.co,.cn{font-size:15px}}
 .stkf{margin:10px 0 0;font-size:12px;color:var(--muted)} .stkf a{color:inherit}
 
 /* type scale: 12 / 13 / 14 / 16 / 18 / 32 / 56 (one size per role) */
@@ -544,14 +533,14 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 
   <section class="vs" aria-label="Pre-AI stack compared with ResidentQuant">
     <h2>Built AI native, so you can skip the pre-AI stack.</h2>
-    <div class="stk" tabindex="0" aria-label="The 2021 data stack compared with ResidentQuant, stage by stage">
-      <div class="stkin">
-        <div class="lab">Pre-AI stack, circa 2021</div>
-        <div class="lane6"><div class="sb s0"><span class="sk">Sources</span><span class="st">App DB, events, ads</span></div><div class="sb "><span class="sk">Ingestion</span><span class="st">Fivetran, Stitch</span></div><div class="sb "><span class="sk">Warehouse</span><span class="st">Snowflake, BigQuery</span></div><div class="sb "><span class="sk">Transform</span><span class="st">dbt project</span></div><div class="sb s3"><span class="sk">Semantic layer</span><span class="st">None. Metrics live in each dashboard</span></div><div class="sb "><span class="sk">Answers</span><span class="st">BI tools, notebooks</span></div></div>
-        <div class="who"><span></span><span class="rl" style="grid-column:2/4">Data engineer</span><span class="rl">Analytics engineer</span><span></span><span class="rl">Analyst, data scientist</span></div>
-        <div class="lane6 lh"><span></span><span class="lab n">ResidentQuant: our work starts here</span></div>
-        <div class="lane6 nw"><div class="sb s0"><span class="sk">Sources</span><span class="st">Yours</span></div><div class="sb s1"><span class="sk">Ingestion</span><span class="st">Agents</span></div><div class="sb s2"><span class="sk">Warehouse</span><span class="st">Yours, untouched</span></div><div class="sb s1"><span class="sk">Transform</span><span class="st">Agents, dbt</span></div><div class="sb s4"><span class="sk">Semantic layer</span><span class="st">Metrics defined once</span></div><div class="sb s1"><span class="sk">Answers</span><span class="st">Ask in plain English</span></div><div class="rqbg" aria-hidden="true"></div></div>
-      </div>
+    <div class="cmp" role="table" aria-label="Pre-AI stack compared with ResidentQuant">
+      <div class="cr ch" role="row"><span role="columnheader"></span><span class="co" role="columnheader">Pre-AI stack, 2021</span><span class="cn" role="columnheader">ResidentQuant</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Data engineering</span><span class="co " role="cell">Fivetran, Stitch<small>Data engineer</small></span><span class="cn " role="cell">Data engineering agents</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Warehouse</span><span class="co " role="cell">Snowflake, BigQuery<small>Data engineer</small></span><span class="cn y" role="cell">Yours, untouched</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Analytics engineering</span><span class="co " role="cell">dbt project<small>Analytics engineer</small></span><span class="cn " role="cell">Analytics engineering agents</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Semantic layer</span><span class="co bad" role="cell">None. Metrics re-defined in each dashboard</span><span class="cn s" role="cell">Every metric defined once</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Data science</span><span class="co " role="cell">Looker, notebooks<small>Analysts, data scientists</small></span><span class="cn " role="cell">Data science agents</span></div>
+      <div class="cr" role="row"><span class="ck" role="rowheader">Hard problems</span><span class="co " role="cell">The team's backlog</span><span class="cn h" role="cell">Our data experts, on demand</span></div>
     </div>
     <p class="stkf">2021 stack as described by <a href="https://www.getdbt.com/blog/future-of-the-modern-data-stack">dbt Labs</a>, <a href="https://incident.io/blog/data-stack">incident.io</a> and <a href="https://benn.substack.com/p/metrics-layer">Benn Stancil</a>.</p>
   </section>
