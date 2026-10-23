@@ -658,6 +658,8 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var tabs=[].slice.call(document.querySelectorAll('.step')), panels=[].slice.call(document.querySelectorAll('.panel'));
+  // demo pacing: PACE stretches the reveal of each step, HOLD is how long a finished step stays on screen (ms)
+  var PACE=1.8, HOLD=6000;
   var timers=[], cur=-1, started=false;
   function clear(){timers.forEach(clearTimeout);timers=[]}
   function show(p,auto){
@@ -668,8 +670,8 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     items.forEach(function(el){el.classList.remove('in')});
     if(reduce){items.forEach(function(el){el.classList.add('in')});return}
     var last=0;
-    items.forEach(function(el){var t=+el.dataset.at||0;last=Math.max(last,t);timers.push(setTimeout(function(){el.classList.add('in')},t))});
-    var dur=last+(p===2?2500:2600), bar=tabs[p].querySelector('.bar');
+    items.forEach(function(el){var t=(+el.dataset.at||0)*PACE;last=Math.max(last,t);timers.push(setTimeout(function(){el.classList.add('in')},t))});
+    var dur=last+HOLD, bar=tabs[p].querySelector('.bar');
     requestAnimationFrame(function(){requestAnimationFrame(function(){bar.style.transition='width '+dur+'ms linear';bar.style.width='100%'})});
     if(auto&&p<2) timers.push(setTimeout(function(){show(p+1,true)},dur));
   }
