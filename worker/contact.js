@@ -1,9 +1,10 @@
 // Contact form endpoint: POST https://residentquant.com/api/contact
 // Runs on our own Cloudflare account. Emails each submission with Cloudflare Email Routing.
-// Bindings (set in the Cloudflare dashboard, not in this public repo):
-//   MAIL  send_email binding, destination = the verified inbox that receives leads
-//   TO    plain-text var, same inbox address
-//   FROM  plain-text var, e.g. form@residentquant.com
+// Deploy: cd worker && npx wrangler deploy && npx wrangler secret put TO
+// Bindings:
+//   MAIL  send_email binding (wrangler.toml)
+//   TO    secret: the verified Email Routing destination inbox
+//   FROM  var: form@residentquant.com
 import { EmailMessage } from "cloudflare:email";
 
 const ORIGINS = ["https://residentquant.com", "https://www.residentquant.com"];
