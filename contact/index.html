@@ -31,6 +31,7 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
 a{color:var(--accent)}
@@ -42,42 +43,58 @@ nav{display:flex;align-items:center;gap:20px;padding:18px 0}
 nav .links{margin-left:auto;display:flex;gap:18px;font-size:14px}
 nav .links a{text-decoration:none;color:var(--muted)}
 nav .links a:hover,nav .links a[aria-current]{color:var(--ink)}
-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:48px;padding-block:48px 80px;align-items:start}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"head form" "side form";grid-template-rows:auto 1fr;column-gap:56px;padding-block:48px 80px;align-items:start}
+.head{grid-area:head}.side{grid-area:side}#contact,#done{grid-area:form}
 .k{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-h1{font:800 clamp(34px,5vw,52px)/1.04 var(--f-display);letter-spacing:-.035em;margin:14px 0 16px;text-wrap:balance}
-.lede{margin:0;font-size:17px;color:var(--muted);max-width:460px}
-.next{list-style:none;margin:30px 0 0;padding:0;display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line)}
-.next li{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
-.next .n{font:600 12px var(--f-mono);color:var(--accent);padding-top:2px}
-.next b{display:block;font:700 16px/1.3 var(--f-display)}
-.next span{font-size:14px;color:var(--muted)}
-.addr{margin-top:26px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h1{font:800 clamp(34px,5vw,52px)/1.04 var(--f-display);letter-spacing:-.035em;margin:14px 0 14px;text-wrap:balance}
+.lede{margin:0;font-size:17px;color:var(--muted);max-width:440px}
+/* timeline */
+.tl{list-style:none;margin:34px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);position:relative}
+.tl::before{content:"";position:absolute;top:15px;left:16px;right:calc(33.33% - 16px);height:2px;background:linear-gradient(90deg,var(--ink) 0 50%,var(--line) 50%)}
+.tl li{position:relative;padding-right:10px}
+.tl .dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--f-mono);background:var(--surface);border:2px solid var(--ink);color:var(--ink);position:relative}
+.tl li:last-child .dot{background:var(--accent);border-color:var(--accent);color:#fff}
+.tl b{display:block;font:700 16px/1.2 var(--f-display);margin-top:12px}
+.tl span{display:block;font:500 12px/1.4 var(--f-mono);color:var(--muted);margin-top:4px}
+.addr{margin-top:34px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .addr code{font:500 15px var(--f-mono);background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:8px 12px;user-select:all}
 .addr button{font:600 13px var(--f-body);padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;min-height:40px}
 .addr button:hover{border-color:var(--ink)}
-form{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px}
+/* form */
+form{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:18px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
-label small{font-weight:400;color:var(--faint)}
+.opt{font-weight:400;color:var(--faint)}
 input,select,textarea{font:400 15px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:11px 12px;width:100%}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
-textarea{min-height:120px;resize:vertical}
+input[aria-invalid=true]{border-color:var(--accent);background:var(--accent-bg)}
+textarea{min-height:96px;resize:vertical}
 fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 legend{font-size:13px;font-weight:600;padding:0;margin-bottom:8px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips label{flex-direction:row;align-items:center;gap:8px;font-weight:500;font-size:13.5px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;min-height:40px}
-.chips input{width:auto;margin:0;accent-color:var(--accent)}
-.chips label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#ffffff}
+.chips label{flex-direction:row;align-items:center;gap:6px;font-weight:500;font-size:13.5px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;min-height:38px;user-select:none}
+.chips input{position:absolute;opacity:0;width:1px;height:1px}
+.chips label::before{content:"+";font:600 13px var(--f-mono);color:var(--faint)}
+.chips label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#fff}
+.chips label:has(input:checked)::before{content:"✓";color:#fff}
+.chips label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.other{margin-top:4px}
 .send{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.send button{font:600 15px var(--f-body);padding:13px 22px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:#ffffff;cursor:pointer;min-height:44px}
-.send button:hover{background:var(--accent);border-color:var(--accent)}
+.send button{font:600 15px var(--f-body);padding:13px 26px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:#ffffff;cursor:pointer;min-height:46px}
+.send button:hover:not(:disabled){background:var(--accent);border-color:var(--accent)}
+.send button:disabled{opacity:.6;cursor:default}
 .send p{margin:0;font-size:13px;color:var(--faint)}
-.status{font-size:14px;padding:12px 14px;border-radius:10px;background:var(--teal-bg);color:var(--teal)}
-.err{font-size:13px;color:var(--accent)}
+.err{font-size:13px;color:var(--accent);margin:0}
+/* success */
+#done{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:40px 28px;text-align:center}
+#done .ok{width:56px;height:56px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;margin:0 auto 16px}
+#done h2{font:800 28px/1.1 var(--f-display);letter-spacing:-.02em;margin:0 0 8px}
+#done p{margin:0 auto;color:var(--muted);max-width:340px}
+#done button{margin-top:22px;font:600 13px var(--f-body);padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
 footer{padding:0 0 40px;color:var(--faint);font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
 footer a{color:var(--muted);text-decoration:none}
-@media (max-width:860px){main{grid-template-columns:1fr;gap:32px}}
-@media (max-width:560px){.row{grid-template-columns:1fr}form{padding:20px}nav .links .hide-s{display:none}}
+@media (max-width:860px){main{grid-template-columns:1fr;grid-template-areas:"head" "form" "side";grid-template-rows:auto;row-gap:28px;padding-block:28px 56px}.lede{font-size:16px}}
+@media (max-width:560px){.row{grid-template-columns:1fr}form{padding:20px}nav .links .hide-s{display:none}.send button{width:100%}.send p{width:100%;text-align:center}.tl b{font-size:15px}}
 .logo{display:inline-flex;align-items:center}.logo .mk{width:1.15em;height:1.2em;flex:none;margin-right:.4em;color:var(--ink)}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 </style>
@@ -95,16 +112,10 @@ footer a{color:var(--muted);text-decoration:none}
 </nav>
 
 <main>
-  <div>
+  <div class="head">
     <div class="k">Contact</div>
     <h1>See ResidentQuant on a mock of your data.</h1>
-    <p class="lede">Tell us your stack and the questions you ask most. We reply within one business day.</p>
-    <ol class="next">
-      <li><span class="n">01</span><div><b>30-minute call</b><span>Your sources, your top questions, where numbers disagree today.</span></div></li>
-      <li><span class="n">02</span><div><b>A demo built for you</b><span>A working layer on mock data shaped like yours.</span></div></li>
-      <li><span class="n">03</span><div><b>Six-week pilot</b><span>We build the real thing. The fee is credited to year one.</span></div></li>
-    </ol>
-    <div class="addr"><code id="email">hello@residentquant.com</code><button type="button" id="copy">Copy</button></div>
+    <p class="lede">Tell us your stack and your top questions. We reply within one business day.</p>
   </div>
 
   <form id="contact" novalidate>
@@ -113,25 +124,52 @@ footer a{color:var(--muted);text-decoration:none}
       <label for="work">Work email<input id="work" name="email" type="email" autocomplete="email" required></label>
     </div>
     <div class="row">
-      <label for="company">Company<input id="company" name="company" autocomplete="organization"></label>
-      <label for="size">Team size<select id="size" name="size"><option value="">Choose one</option><option>1 to 10</option><option>11 to 50</option><option>51 to 200</option><option>201 to 1,000</option><option>More than 1,000</option></select></label>
+      <label for="company"><span>Company <span class="opt">optional</span></span><input id="company" name="company" autocomplete="organization"></label>
+      <label for="size"><span>Team size <span class="opt">optional</span></span><select id="size" name="size"><option value="">Choose one</option><option>1 to 10</option><option>11 to 50</option><option>51 to 200</option><option>201 to 1,000</option><option>More than 1,000</option></select></label>
     </div>
     <fieldset>
       <legend>Interested in</legend>
       <div class="chips">
-        <label><input type="checkbox" name="interest" value="Demo" checked> Demo</label>
-        <label><input type="checkbox" name="interest" value="Pilot"> Pilot</label>
-        <label><input type="checkbox" name="interest" value="Pricing"> Pricing</label>
-        <label><input type="checkbox" name="interest" value="Enterprise"> Enterprise</label>
+        <label><input type="checkbox" name="interest" value="Demo" checked>Demo</label>
+        <label><input type="checkbox" name="interest" value="Pilot">Pilot</label>
+        <label><input type="checkbox" name="interest" value="Pricing">Pricing</label>
+        <label><input type="checkbox" name="interest" value="Enterprise">Enterprise</label>
       </div>
     </fieldset>
-    <label for="stack">Your data today <small>Database, warehouse, BI tools</small><input id="stack" name="stack" placeholder="Postgres on AWS, no warehouse yet"></label>
-    <label for="msg">Questions you ask most<textarea id="msg" name="message" placeholder="Which channels drive repeat buyers? Why did revenue dip last month?"></textarea></label>
+    <fieldset>
+      <legend>Your data today <span class="opt">optional</span></legend>
+      <div class="chips">
+        <label><input type="checkbox" name="pick" value="Postgres">Postgres</label>
+        <label><input type="checkbox" name="pick" value="MySQL">MySQL</label>
+        <label><input type="checkbox" name="pick" value="Snowflake">Snowflake</label>
+        <label><input type="checkbox" name="pick" value="BigQuery">BigQuery</label>
+        <label><input type="checkbox" name="pick" value="Databricks">Databricks</label>
+        <label><input type="checkbox" name="pick" value="dbt">dbt</label>
+        <label><input type="checkbox" name="pick" value="Spreadsheets">Spreadsheets</label>
+      </div>
+      <input class="other" id="stack" name="stack" aria-label="Other tools" placeholder="Other tools, e.g. Looker, Stripe, Shopify">
+    </fieldset>
+    <label for="msg"><span>Questions you ask most <span class="opt">optional</span></span><textarea id="msg" name="message" placeholder="Which channels drive repeat buyers? Why did revenue dip last month?"></textarea></label>
     <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <p class="err" id="err" hidden></p>
-    <div class="send"><button type="submit">Send</button><p>Goes straight to our inbox.</p></div>
-    <p class="status" id="ok" hidden>Sent. We reply within one business day.</p>
+    <p class="err" id="err" role="alert" hidden></p>
+    <div class="send"><button type="submit">Send</button><p>Goes straight to the founders' inbox.</p></div>
   </form>
+
+  <div id="done" role="status" hidden>
+    <div class="ok"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2>Sent.</h2>
+    <p>We reply within one business day to <b id="doneTo"></b>.</p>
+    <button type="button" id="again">Send another</button>
+  </div>
+
+  <div class="side">
+    <ol class="tl" aria-label="What happens next">
+      <li><div class="dot">1</div><b>Call</b><span>30 min</span></li>
+      <li><div class="dot">2</div><b>Demo</b><span>on a mock of your data</span></li>
+      <li><div class="dot">3</div><b>Pilot</b><span>6 weeks · fee credited to year one</span></li>
+    </ol>
+    <div class="addr"><code id="email">hello@residentquant.com</code><button type="button" id="copy">Copy</button></div>
+  </div>
 </main>
 
 <footer><span>ResidentQuant · 2026</span><a href="../">Home</a><a href="../pricing/">Pricing</a><a href="../live/">Live demo</a></footer>
@@ -140,34 +178,49 @@ footer a{color:var(--muted);text-decoration:none}
 <script>
 (function(){
   var TO = 'hello@residentquant.com';
-  var f = document.getElementById('contact'), err = document.getElementById('err'), ok = document.getElementById('ok');
+  var f = document.getElementById('contact'), err = document.getElementById('err'), done = document.getElementById('done');
+  var emailOk = function(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) };
+  [f.name, f.email].forEach(function(el){ el.addEventListener('input', function(){ el.removeAttribute('aria-invalid'); err.hidden = true }) });
+  function payload(){
+    var fd = new FormData(f);
+    var picks = fd.getAll('pick'); fd.delete('pick');
+    var other = (fd.get('stack') || '').trim();
+    fd.set('stack', picks.concat(other ? [other] : []).join(', '));
+    return fd;
+  }
   f.addEventListener('submit', function(e){
     e.preventDefault();
     var name = f.name.value.trim(), email = f.email.value.trim();
-    if(!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    if(!name || !emailOk(email)){
+      var bad = !name ? f.name : f.email;
+      bad.setAttribute('aria-invalid', 'true');
       err.textContent = !name ? 'Add your name.' : 'Add a work email we can reply to.';
-      err.hidden = false; (name ? f.email : f.name).focus(); return;
+      err.hidden = false; bad.focus(); return;
     }
     err.hidden = true;
-    var interests = [].slice.call(f.querySelectorAll('input[name=interest]:checked')).map(function(i){return i.value}).join(', ');
-    var body = ['Name: ' + name, 'Email: ' + email, 'Company: ' + f.company.value.trim(), 'Team size: ' + f.size.value,
-      'Interested in: ' + interests, 'Data today: ' + f.stack.value.trim(), '', f.message.value.trim()].join('\n');
-    var subj = 'ResidentQuant: ' + (interests || 'Contact') + (f.company.value.trim() ? ' from ' + f.company.value.trim() : '');
+    var fd = payload();
     function mail(){
-      window.location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
-      ok.textContent = 'Your email app should open with the message ready. If it did not, write to ' + TO + '.'; ok.hidden = false;
+      var body = ['Name: ' + name, 'Email: ' + email, 'Company: ' + (fd.get('company')||''), 'Team size: ' + (fd.get('size')||''),
+        'Interested in: ' + fd.getAll('interest').join(', '), 'Data today: ' + fd.get('stack'), '', fd.get('message')||''].join('\n');
+      window.location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent('ResidentQuant: ' + (fd.getAll('interest').join(', ') || 'Contact')) + '&body=' + encodeURIComponent(body);
+      err.textContent = 'Opening your email app instead. If nothing opens, write to ' + TO + '.'; err.hidden = false;
     }
-    var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Sending';
-    fetch('/api/contact', {method: 'POST', body: new FormData(f)})
+    var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Sending…';
+    fetch('/api/contact', {method: 'POST', body: fd})
       .then(function(r){ return r.ok ? r.json() : {ok: false} })
-      .then(function(j){ if(j.ok){ f.reset(); ok.hidden = false; btn.textContent = 'Sent' } else { btn.disabled = false; btn.textContent = 'Send'; mail() } })
+      .then(function(j){
+        btn.disabled = false; btn.textContent = 'Send';
+        if(j.ok){ document.getElementById('doneTo').textContent = email; f.reset(); f.hidden = true; done.hidden = false; done.scrollIntoView({block: 'nearest', behavior: 'smooth'}) }
+        else mail();
+      })
       .catch(function(){ btn.disabled = false; btn.textContent = 'Send'; mail() });
   });
+  document.getElementById('again').addEventListener('click', function(){ done.hidden = true; f.hidden = false; f.name.focus() });
   document.getElementById('copy').addEventListener('click', function(){
     var b = this;
-    function done(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy' }, 1600) }
-    function fallback(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('email')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
-    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(TO).then(done, fallback) } else { fallback() }
+    function ok(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy' }, 1600) }
+    function fallback(){ var r = document.createRange(); r.selectNodeContents(document.getElementById('email')); var s = getSelection(); s.removeAllRanges(); s.addRange(r) }
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(TO).then(ok, fallback) } else { fallback() }
   });
 })();
 </script>
