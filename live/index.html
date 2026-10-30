@@ -369,7 +369,7 @@ if(!S.apiUrl)S.apiUrl=DEFAULT_API;if(!S.model)S.model="claude-opus-5-5";if(!S.ro
 if(!S.source)S.source=lsGet("rq-src")||(S.apiKey?"api":"olist");
 /* models: Anthropic direct, or open models through OpenRouter (value prefixed "or:") */
 const A_MODELS=[["claude-opus-5-5","Claude Opus 5.5"],["claude-fable-5-1","Claude Fable 5.1"],["claude-sonnet-5-5","Claude Sonnet 5.5"],["claude-haiku-5-5","Claude Haiku 5.5"]];
-const OR_MODELS=[["or:z-ai/glm-5.3","GLM-5.3 · open"],["or:deepseek/deepseek-v4-pro","DeepSeek V4 Pro · open"],["or:minimax/minimax-m3","MiniMax M3 · open"],["or:moonshotai/kimi-k2.6","Kimi K2.6 · open"],["or:deepseek/deepseek-v4.1-flash","DeepSeek V4.1 Flash · open, cheapest"],["or:openai/gpt-oss-120b","gpt-oss-120b · open"]];
+const OR_MODELS=[["or:z-ai/glm-5.3","GLM-5.3 · open, best value"],["or:deepseek/deepseek-v4-pro","DeepSeek V4 Pro · open, most accurate, slow"],["or:deepseek/deepseek-v4.1-flash","DeepSeek V4.1 Flash · open, cheapest"]];
 const isOR=m=>String(m||"").startsWith("or:");
 const modelName=m=>([...A_MODELS,...OR_MODELS].find(x=>x[0]===m)||[0,String(m||"").replace(/^or:/,"")])[1];
 const hasModelKey=()=>isOR(S.model)?!!S.orKey:!!S.aKey;
