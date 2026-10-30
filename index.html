@@ -415,6 +415,15 @@ main{position:relative;isolation:isolate}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 @media (max-width:860px){.hcta{justify-self:start;max-width:none}}
+/* hero: headline left, pitch + form right, bottom-aligned */
+header.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px 56px;align-items:end}
+header.hero .hcopy h1{margin-bottom:0}
+.hcta{justify-self:stretch;max-width:none;gap:16px}
+.hsub{margin:0;max-width:none;padding-left:16px;border-left:3px solid var(--accent);font:400 19px/1.5 var(--f-body);color:var(--muted)}
+.hsub b{display:block;font:700 19px/1.35 var(--f-display);letter-spacing:-.01em;color:var(--ink);margin-bottom:4px}
+.hcta .qform{max-width:none}
+main>.built{margin-top:14px}
+@media (max-width:900px){header.hero{grid-template-columns:minmax(0,1fr);gap:22px}.hsub,.hsub b{font-size:16.5px}}
 </style>
 </head>
 <body>
@@ -436,9 +445,9 @@ main{position:relative;isolation:isolate}
   <header class="hero">
     <div class="hcopy">
       <h1>Your end to end analytics layer.<span class="h1b">Governed, AI native, expert backed.</span></h1>
-      <p class="hsub">For startups without a data team. We turn your production database into tested metrics, dashboards and an AI data scientist in six weeks.</p>
     </div>
     <div class="hcta">
+      <p class="hsub"><b>For startups without a data team.</b> We turn your production database into tested metrics, dashboards and an AI data scientist in six weeks.</p>
       <form class="qform" id="qform" novalidate>
         <label for="qemail" class="sr">Work email</label>
         <input id="qemail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
