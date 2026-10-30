@@ -380,6 +380,8 @@ header.hero .ctas{margin:0}
 .built svg{width:18px;height:18px;fill:currentColor}
 @media (max-width:560px){.built{gap:10px}.built ul{gap:8px 16px}.built li{font-size:14px}.built svg{width:16px;height:16px}}
 .h1b{display:block;color:var(--accent)}
+.hsub{margin:18px 0 0;max-width:44ch;font:400 17px/1.55 var(--f-body);color:var(--muted);text-wrap:pretty}
+@media (max-width:560px){.hsub{font-size:15.5px}}
 /* section rhythm: full-bleed bands with a faint tint, alternating, so the page reads as blocks */
 main>section:not(.built),main>.end{position:relative;padding-top:56px;padding-bottom:56px}
 main>section:not(.built)::before,main>.end::before{content:"";position:absolute;inset:0 calc(50% - 50vw);z-index:-1;pointer-events:none}
@@ -417,6 +419,7 @@ main{position:relative;isolation:isolate}
   <header class="hero">
     <div class="hcopy">
       <h1>Your end to end analytics layer.<span class="h1b">Governed, AI native, expert backed.</span></h1>
+      <p class="hsub">For startups without a data team. We turn your production database into tested metrics, dashboards and an AI data scientist in six weeks.</p>
     </div>
     <div class="ctas">
       <a class="btn primary" href="contact/">Book a demo</a>
