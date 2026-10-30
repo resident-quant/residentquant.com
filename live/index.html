@@ -318,12 +318,13 @@ print(pd.__version__)</textarea><div class="edrow"><small>Save result as <input 
 <div class="scrim" id="scrim" hidden>
   <form class="modal" id="setForm" aria-labelledby="setH">
     <h2 id="setH">Connect ResidentQuant</h2>
-    <p>Everything runs in this browser: the agent, DuckDB SQL, pandas and charts. Your keys are sent only to Anthropic and to the API you enter. The sample warehouses need only the Anthropic key.</p>
+    <p>Everything runs in this browser: the agent, DuckDB SQL, pandas and charts. Your keys are sent only to the model provider you pick (Anthropic, or OpenRouter for open models) and to the API you enter. The sample warehouses need only a model key.</p>
     <div class="fld"><label for="uName">Your name <span style="color:var(--faint)">(optional, for the home page)</span></label><input id="uName" autocomplete="off" placeholder="First name"></div>
     <fieldset class="fs"><legend>Model</legend>
       <div class="fld"><label for="aKey">Anthropic API key</label><input id="aKey" type="password" autocomplete="off" placeholder="sk-ant-…"></div>
       <div class="fld"><label for="wsId">Workspace ID <span style="color:var(--faint)">(only for keys starting sk-ant-usr)</span></label><input id="wsId" autocomplete="off" placeholder="wrkspc_…"></div>
-      <div class="fld"><label for="model">Model</label><select id="model"><option value="claude-opus-5-5">Claude Opus 5.5</option><option value="claude-fable-5-1">Claude Fable 5.1</option><option value="claude-sonnet-5-5">Claude Sonnet 5.5</option><option value="claude-haiku-5-5">Claude Haiku 5.5</option></select></div>
+      <div class="fld"><label for="orKey">OpenRouter API key <span style="color:var(--faint)">(for open models)</span></label><input id="orKey" type="password" autocomplete="off" placeholder="sk-or-v1-…"></div>
+      <div class="fld"><label for="model">Model</label><select id="model"></select><small id="modelNote" style="color:var(--faint);font-size:11.5px"></small></div>
     </fieldset>
     <fieldset class="fs"><legend>Semantic layer API <span style="color:var(--faint);font-weight:400">(only for that source)</span></legend>
       <div class="fld"><label for="apiUrl">API URL</label><input id="apiUrl" type="url" autocomplete="off" placeholder="https://your-semantic-layer.example.com"></div>
@@ -361,11 +362,19 @@ const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=nu
 
 /* ---------------- settings ---------------- */
 const DEFAULT_API="https://app.residentquant.com";
-const S={aKey:"",wsId:"",model:"claude-opus-5-5",apiUrl:DEFAULT_API,apiKey:"",role:"analyst",remember:false,autoPub:true,source:""};
+const S={aKey:"",orKey:"",wsId:"",model:"claude-opus-5-5",apiUrl:DEFAULT_API,apiKey:"",role:"analyst",remember:false,autoPub:true,source:""};
 const LS="rq-live-settings";
 try{const v=JSON.parse(localStorage.getItem(LS)||"null");if(v)Object.assign(S,v,{remember:true})}catch(e){}
 if(!S.apiUrl)S.apiUrl=DEFAULT_API;if(!S.model)S.model="claude-opus-5-5";if(!S.role)S.role="analyst";
 if(!S.source)S.source=lsGet("rq-src")||(S.apiKey?"api":"olist");
+/* models: Anthropic direct, or open models through OpenRouter (value prefixed "or:") */
+const A_MODELS=[["claude-opus-5-5","Claude Opus 5.5"],["claude-fable-5-1","Claude Fable 5.1"],["claude-sonnet-5-5","Claude Sonnet 5.5"],["claude-haiku-5-5","Claude Haiku 5.5"]];
+const OR_MODELS=[["or:z-ai/glm-5.3","GLM-5.3 · open"],["or:deepseek/deepseek-v4-pro","DeepSeek V4 Pro · open"],["or:minimax/minimax-m3","MiniMax M3 · open"],["or:moonshotai/kimi-k2.6","Kimi K2.6 · open"],["or:deepseek/deepseek-v4.1-flash","DeepSeek V4.1 Flash · open, cheapest"],["or:openai/gpt-oss-120b","gpt-oss-120b · open"]];
+const isOR=m=>String(m||"").startsWith("or:");
+const modelName=m=>([...A_MODELS,...OR_MODELS].find(x=>x[0]===m)||[0,String(m||"").replace(/^or:/,"")])[1];
+const hasModelKey=()=>isOR(S.model)?!!S.orKey:!!S.aKey;
+function modelOptions(aIds){const a=aIds&&aIds.length?aIds.map(i=>[i,i]):A_MODELS;
+  return `<optgroup label="Anthropic">${a.map(([v,n])=>`<option value="${esc(v)}">${esc(n)}</option>`).join("")}</optgroup><optgroup label="Open models via OpenRouter">${OR_MODELS.map(([v,n])=>`<option value="${esc(v)}">${esc(n)}</option>`).join("")}</optgroup>`}
 function saveSettings(){try{if(S.remember)localStorage.setItem(LS,JSON.stringify(S));else localStorage.removeItem(LS)}catch(e){}}
 const api=p=>S.apiUrl.replace(/\/+$/,"")+p;
 async function apiFetch(path,body,role){
@@ -375,11 +384,11 @@ async function apiFetch(path,body,role){
   return j}
 let CAT=null;
 function chips(){
-  $("#cModel").innerHTML=`model <b>${esc(S.model||"not set")}</b>`;$("#cModel").classList.toggle("bad",!S.aKey);
+  $("#cModel").innerHTML=`model <b>${esc(modelName(S.model)||"not set")}</b>`;$("#cModel").classList.toggle("bad",!hasModelKey());
   $("#cRole").innerHTML=`role <b>${esc(S.role)}</b>`;
   $("#cApi").innerHTML=CAT?`API <b>${CAT.metrics.length} metrics</b>`:`API <b>not connected</b>`;$("#cApi").classList.toggle("bad",!CAT);
   const wh=isWh();$("#cApi").hidden=wh;$("#cRole").hidden=wh;$("#src").value=S.source;
-  $("#hintR").textContent=wh?"Keys stay in this browser. Only api.anthropic.com is called; the warehouse loads from this site.":"Keys stay in this browser. Calls go only to api.anthropic.com and your API URL."}
+  $("#hintR").textContent=wh?`Keys stay in this browser. Only ${isOR(S.model)?"openrouter.ai":"api.anthropic.com"} is called; the warehouse loads from this site.`:`Keys stay in this browser. Calls go only to ${isOR(S.model)?"openrouter.ai":"api.anthropic.com"} and your API URL.`}
 async function loadCatalog(){
   CAT=null;if(!S.apiUrl||!S.apiKey){chips();return}
   try{CAT=await apiFetch("/v1/catalog");renderCat()}catch(e){$("#catBox").innerHTML=`<p class="errmsg">${esc(e.message)}</p>`}
@@ -393,25 +402,30 @@ function renderCat(){
 
 function openSettings(){
   $("#ghKey").value="";$("#ghKey").placeholder=ghToken()?"saved in this browser":"github_pat_…";$("#autoPub").checked=S.autoPub!==false;
-  $("#uName").value=S.name||"";$("#aKey").value=S.aKey;$("#wsId").value=S.wsId||"";$("#model").value=S.model;$("#apiUrl").value=S.apiUrl;$("#apiKey").value=S.apiKey;$("#remember").checked=S.remember;
-  $("#role").innerHTML=`<option>${esc(S.role)}</option>`;$("#scrim").hidden=false;setTimeout(()=>$(S.aKey?"#apiUrl":"#aKey").focus(),30)}
-function readForm(){S.name=$("#uName").value.trim();const g=$("#ghKey").value.trim();if(g)lsSet("vlc:token",g);S.autoPub=$("#autoPub").checked;S.aKey=$("#aKey").value.trim();S.wsId=$("#wsId").value.trim();S.model=$("#model").value;S.apiUrl=$("#apiUrl").value.trim();S.apiKey=$("#apiKey").value.trim();S.role=$("#role").value||"analyst";S.remember=$("#remember").checked}
+  $("#uName").value=S.name||"";$("#aKey").value=S.aKey;$("#orKey").value=S.orKey||"";$("#wsId").value=S.wsId||"";if(!$("#model").options.length)$("#model").innerHTML=modelOptions();$("#model").value=S.model;modelNote();$("#apiUrl").value=S.apiUrl;$("#apiKey").value=S.apiKey;$("#remember").checked=S.remember;
+  $("#role").innerHTML=`<option>${esc(S.role)}</option>`;$("#scrim").hidden=false;setTimeout(()=>$(hasModelKey()?"#apiUrl":(isOR(S.model)?"#orKey":"#aKey")).focus(),30)}
+function modelNote(){const m=$("#model").value;$("#modelNote").textContent=isOR(m)?"Runs on your OpenRouter key. Sample data only is safest: OpenRouter picks the host.":"Runs on your Anthropic key."}
+function readForm(){S.name=$("#uName").value.trim();const g=$("#ghKey").value.trim();if(g)lsSet("vlc:token",g);S.autoPub=$("#autoPub").checked;S.aKey=$("#aKey").value.trim();S.orKey=$("#orKey").value.trim();S.wsId=$("#wsId").value.trim();S.model=$("#model").value;S.apiUrl=$("#apiUrl").value.trim();S.apiKey=$("#apiKey").value.trim();S.role=$("#role").value||"analyst";S.remember=$("#remember").checked}
 $("#setBtn").onclick=openSettings;
-$("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim"&&S.aKey)$("#scrim").hidden=true});
+$("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim"&&hasModelKey())$("#scrim").hidden=true});
+$("#model").addEventListener("change",modelNote);
 $("#testBtn").onclick=async()=>{
   readForm();const t=$("#testOut");t.className="test";t.textContent="Testing…";const out=[];
   try{
     if(S.aKey){const r=await fetch("https://api.anthropic.com/v1/models?limit=50",{headers:aHeaders(false)});
       const j=await r.json();if(!r.ok)throw new Error("Anthropic: "+aErr(j?.error?.message||String(r.status)));
       const ids=(j.data||[]).map(m=>m.id);const cur=S.model;const order=ids.sort((a,b)=>(b.includes("opus")-a.includes("opus")));
-      if(order.length){$("#model").innerHTML=order.map(i=>`<option value="${esc(i)}">${esc((j.data.find(m=>m.id===i)||{}).display_name||i)}</option>`).join("");$("#model").value=order.includes(cur)?cur:(order.find(i=>i.includes("opus"))||order[0])}
+      if(order.length){$("#model").innerHTML=modelOptions(order.map(i=>[i,(j.data.find(m=>m.id===i)||{}).display_name||i]));$("#model").value=(order.includes(cur)||isOR(cur))?cur:(order.find(i=>i.includes("opus"))||order[0])}
       out.push(`Anthropic ok, ${ids.length} models`)}
+    if(S.orKey){const r=await fetch("https://openrouter.ai/api/v1/key",{headers:{Authorization:"Bearer "+S.orKey}});const j=await r.json().catch(()=>null);
+      if(!r.ok)throw new Error("OpenRouter: "+(j?.error?.message||r.status));const d=j.data||{};
+      out.push(`OpenRouter ok${d.limit_remaining!=null?`, $${Number(d.limit_remaining).toFixed(2)} left`:""}`)}
     if(S.apiUrl){const h=await fetch(api("/health")).then(r=>r.json());out.push(`API ${h.status}, ${h.metrics} metrics`);
       try{const roles=await apiFetch("/v1/roles");const list=Array.isArray(roles)?roles:roles.roles||[];if(list.length){$("#role").innerHTML=list.map(r=>`<option value="${esc(r.name)}" title="${esc(r.description||"")}">${esc(r.name)}</option>`).join("");$("#role").value=list.some(r=>r.name===S.role)?S.role:list[0].name}}catch(e){out.push("roles: "+e.message)}}
     t.className="test ok2";t.textContent=out.join(" · ")||"Enter keys to test"}
   catch(e){t.className="test bad";t.textContent=e.message}};
 $("#setForm").addEventListener("submit",async e=>{e.preventDefault();readForm();saveSettings();$("#scrim").hidden=true;for(const k in HOME_CACHE)delete HOME_CACHE[k];chips();if(!isWh())await loadCatalog();if(!location.hash)renderEmpty()});
-const needKeys=()=>!S.aKey||(!isWh()&&(!S.apiUrl||!S.apiKey));
+const needKeys=()=>!hasModelKey()||(!isWh()&&(!S.apiUrl||!S.apiKey));
 
 const aHeaders=(json)=>({"x-api-key":S.aKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true",...(S.wsId?{"anthropic-workspace-id":S.wsId}:{}),...(json?{"content-type":"application/json"}:{})});
 const aErr=m=>/workspace/i.test(m)&&!S.wsId?m+" Add your Workspace ID in Settings, or use a key created inside a workspace (sk-ant-api03-…).":m;
@@ -891,10 +905,39 @@ function md(src){
 
 /* ---------------- agent loop ---------------- */
 async function claude(body){
+  if(isOR(body.model))return openrouter(body);
   const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal:ctl.signal,headers:aHeaders(true),body:JSON.stringify(body)});
   const j=await r.json().catch(()=>null);
   if(!r.ok)throw new Error(j?.error?.message?`Anthropic: ${aErr(j.error.message)}`:`Anthropic HTTP ${r.status}`);
   return j}
+/* OpenRouter: translate Anthropic-style messages and tools to OpenAI chat format and back, so the loop stays the same */
+function toOpenAI(body){
+  const msgs=[{role:"system",content:(body.system||[]).map(b=>b.text).join("\n\n")}];
+  for(const m of body.messages){
+    if(typeof m.content==="string"){msgs.push({role:m.role,content:m.content});continue}
+    if(m.role==="assistant"){
+      const text=m.content.filter(b=>b.type==="text").map(b=>b.text).join("\n\n");
+      const calls=m.content.filter(b=>b.type==="tool_use").map(b=>({id:b.id,type:"function",function:{name:b.name,arguments:JSON.stringify(b.input||{})}}));
+      msgs.push({role:"assistant",content:text||null,...(calls.length?{tool_calls:calls}:{})});continue}
+    for(const b of m.content){
+      if(b.type==="tool_result")msgs.push({role:"tool",tool_call_id:b.tool_use_id,content:(b.is_error?"ERROR: ":"")+(typeof b.content==="string"?b.content:JSON.stringify(b.content))});
+      else if(b.type==="text")msgs.push({role:"user",content:b.text})}}
+  return {model:body.model.slice(3),max_tokens:Math.max(body.max_tokens||0,16000),reasoning:{effort:"low"},messages:msgs,usage:{include:true},
+    tools:(body.tools||[]).map(t=>({type:"function",function:{name:t.name,description:t.description,parameters:t.input_schema}})),tool_choice:"auto"}}
+async function openrouter(body){
+  const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",signal:ctl.signal,
+    headers:{Authorization:"Bearer "+S.orKey,"Content-Type":"application/json","HTTP-Referer":"https://residentquant.com","X-Title":"ResidentQuant"},body:JSON.stringify(toOpenAI(body))});
+  const j=await r.json().catch(()=>null);
+  if(!r.ok||j?.error)throw new Error(`OpenRouter: ${j?.error?.message||("HTTP "+r.status)}`);
+  const msg=j.choices?.[0]?.message||{};const content=[];
+  const txt=typeof msg.content==="string"?msg.content:Array.isArray(msg.content)?msg.content.map(c=>c.text||"").join(""):"";
+  if(txt.trim())content.push({type:"text",text:txt});
+  for(const c of msg.tool_calls||[]){let input={};const raw=c.function?.arguments||"{}";
+    try{input=typeof raw==="string"?JSON.parse(raw||"{}"):raw}catch(e){input={_bad_json:String(raw).slice(0,2000)}}
+    content.push({type:"tool_use",id:c.id||("call_"+Math.random().toString(36).slice(2,10)),name:c.function?.name,input})}
+  if(!content.length&&j.choices?.[0]?.finish_reason==="length")content.push({type:"text",text:"(The model hit its output limit before answering.)"});
+  const u=j.usage||{};
+  return {content,usage:{input_tokens:u.prompt_tokens||0,output_tokens:u.completion_tokens||0,cache_read_input_tokens:u.prompt_tokens_details?.cached_tokens||0,cost:u.cost||0},provider:j.provider}}
 function trimRows(rows,n){return rows.slice(0,n)}
 /* ---------------- step records (live and replay share these renderers) ---------------- */
 const KINDS=["q","sql","py","ch","note","err"];
@@ -1069,7 +1112,7 @@ async function renderTurn(turn,ti){
   if(turn.answer!=null){
     const ans=el("div","ans",`<div class="md">${md(turn.answer||"(no answer)")}</div>`);abody.appendChild(ans);
     for(const [,b] of charts.slice(-2)){const box=el("div","chart",`<h4>${esc(b.title)}</h4><div class="vg"></div>`);placeChart(ans,box);charts.push([box,b])}
-    if(turn.usage)ans.insertAdjacentHTML("beforeend",`<div class="usage"><span>${esc(turn.model||"")}</span><span>${nSteps} steps · ${esc(turn.secs)}s</span><span>${Number(turn.usage.in||0).toLocaleString("en-US")} in · ${Number(turn.usage.out||0).toLocaleString("en-US")} out tokens</span></div>`)}
+    if(turn.usage)ans.insertAdjacentHTML("beforeend",`<div class="usage"><span>${esc(modelName(turn.model)||"")}</span><span>${nSteps} steps · ${esc(turn.secs)}s</span><span>${Number(turn.usage.in||0).toLocaleString("en-US")} in · ${Number(turn.usage.out||0).toLocaleString("en-US")} out tokens</span></div>`)}
   for(const [box,b] of charts){try{await renderSpec(box.querySelector(".vg"),b.spec||{},Array.isArray(b.rows)?b.rows:[])}catch(e){box.querySelector(".vg").innerHTML=`<p class="muted">Chart could not be drawn: ${esc(e.message)}</p>`}}}
 async function showSession(sess,shared){
   tin.innerHTML="";tin.classList.remove("wide");if(shared)$("#body").classList.add("nows");
@@ -1131,7 +1174,7 @@ async function ask(q){
     for(let turnN=0;turnN<30;turnN++){
       wt.innerHTML=`<b>Working</b> · ${turnN?"reading results":"planning"}`;
       const res=await claude({model:S.model,max_tokens:8000,system:[{type:"text",text:systemPrompt(),cache_control:{type:"ephemeral"}}],tools:tools(),messages:history});
-      usage.in+=res.usage?.input_tokens||0;usage.out+=res.usage?.output_tokens||0;usage.cache+=res.usage?.cache_read_input_tokens||0;
+      usage.in+=res.usage?.input_tokens||0;usage.out+=res.usage?.output_tokens||0;usage.cache+=res.usage?.cache_read_input_tokens||0;usage.cost=(usage.cost||0)+(res.usage?.cost||0);
       history.push({role:"assistant",content:res.content});
       const uses=res.content.filter(b=>b.type==="tool_use");
       const texts=res.content.filter(b=>b.type==="text"&&b.text.trim()).map(b=>b.text);
@@ -1142,7 +1185,7 @@ async function ask(q){
           list.appendChild(el("div","st k-ch",`<span class="ic">${n}</span><span class="tt">${titleHTML(rec.title,rec.tag)}</span><div class="bd"></div>`))}}catch(e){}}
         const cb=turn.steps.flatMap(s=>(s.blocks||[]).filter(b=>b.t==="chart")).slice(-2);
         for(const c of cb){const box=el("div","chart",`<h4>${esc(c.title)}</h4><div class="vg"></div>`);placeChart(ans,box);try{await renderSpec(box.querySelector(".vg"),c.spec,c.rows)}catch(err){box.remove()}}
-        ans.insertAdjacentHTML("beforeend",`<div class="usage"><span>${esc(S.model)}</span><span>${n} steps · ${secs}s</span><span>${usage.in.toLocaleString("en-US")} in · ${usage.out.toLocaleString("en-US")} out${usage.cache?` · ${usage.cache.toLocaleString("en-US")} cached`:""} tokens</span></div>`);
+        ans.insertAdjacentHTML("beforeend",`<div class="usage"><span>${esc(modelName(S.model))}</span><span>${n} steps · ${secs}s</span><span>${usage.in.toLocaleString("en-US")} in · ${usage.out.toLocaleString("en-US")} out${usage.cache?` · ${usage.cache.toLocaleString("en-US")} cached`:""} tokens${usage.cost?` · $${usage.cost.toFixed(3)}`:""}</span></div>`);
         m.querySelector(".sp").outerHTML=`<span class="ok">✓</span>`;wt.innerHTML=`<b>Worked for ${secs}s</b> · ${n} steps`;
         const tg=m.querySelector(".wtog");tg.hidden=false;tg.textContent="Show work";m.querySelector(".work").classList.add("closed");scrollEnd();break}
       for(const tx of texts){turn.steps.push({kind:"note",text:tx});list.appendChild(el("div","st k-note",`<span class="ic">·</span><span class="tt">${esc(tx)}</span><div class="bd"></div>`))}
