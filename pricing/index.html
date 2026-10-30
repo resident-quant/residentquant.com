@@ -9,7 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ResidentQuant">
 <meta property="og:title" content="Pricing · ResidentQuant">
-<meta property="og:description" content="One price per company, unlimited users, your own model key. Pilot $20,000, credited to year one.">
+<meta property="og:description" content="One price per company, unlimited users, your own model key. Pilot $50,000, credited to year one.">
 <meta property="og:url" content="https://residentquant.com/pricing/">
 <meta property="og:image" content="https://residentquant.com/img/og.png">
 <meta property="og:image:width" content="1200">
@@ -52,7 +52,7 @@ h1{font-size:clamp(34px,5vw,54px);font-weight:800;line-height:1.04;letter-spacin
 .lede{margin:0;font-size:18px;color:var(--muted);max-width:700px}
 .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
 .chips span{font:600 11.5px var(--f-mono);padding:6px 10px;border-radius:999px;color:var(--muted);background:var(--sunk);border:1px solid var(--line)}
-.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;align-items:stretch}
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;align-items:stretch;max-width:860px}
 .tier{border:1px solid var(--line);border-radius:12px;padding:24px 20px;display:flex;flex-direction:column;gap:18px;background:var(--surface);min-width:0}
 .tier.hero{background:var(--ink);border-color:var(--ink);color:#e7ebf2;box-shadow:0 14px 34px -18px rgba(14,21,37,.55)}
 .tier h2{font-size:20px;font-weight:700;letter-spacing:-.02em}
@@ -128,54 +128,29 @@ footer{padding:0 0 40px;color:var(--faint);font-size:13px}
 </header>
 
 <section class="tiers" aria-label="Plans">
-  <article class="tier">
+  <article class="tier hero">
     <div><h2>Pilot</h2><p class="sub">We build your analytics layer in six weeks.</p></div>
-    <div><div class="price"><span class="n">$20,000</span><span class="u">once</span></div><span class="note">Credited in full to your first year</span></div>
-    <a class="btn" href="../contact/">Book a pilot</a>
+    <div><div class="price"><span class="n">$50,000</span><span class="u">once</span></div><span class="note">Credited in full to your first year</span></div>
+    <a class="btn red" href="../contact/">Book a pilot</a>
     <ul class="ck">
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Connect your sources, including app databases on AWS or GCP</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Raw tables, aggregates and the pipeline DAG built for you</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your first 100 governed metrics</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Three investigation playbooks for the questions you ask most</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Connect your sources, including app databases on AWS or GCP</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Raw tables, aggregates and the pipeline DAG built for you</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your first 100 governed metrics</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Metrics editor, Ask and a personal home page for each person</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited users</span></li>
     </ul>
   </article>
 
-  <article class="tier hero">
-    <div><div class="top"><h2>Startup</h2><span class="badge">Most teams</span></div><p class="sub">The full layer, handed over to your team.</p></div>
-    <div><div class="price"><span class="n">$5,000</span><span class="u">/ month</span></div><span class="note">Billed annually. Unlimited users.</span></div>
-    <a class="btn red" href="../contact/">Start with a pilot</a>
+  <article class="tier">
+    <div><h2>Enterprise</h2><p class="sub">The full layer, run across your teams.</p></div>
+    <div><div class="price"><span class="n">Custom</span></div><span class="note">One price per company. Unlimited users.</span></div>
+    <a class="btn" href="../contact/">Talk to us</a>
     <ul class="ck">
       <li class="lead">Everything in Pilot, plus:</li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Up to 5 data sources, unlimited governed metrics</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Metrics editor: describe a metric and the agent drafts it</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>A personal dashboard for each person, built from what they check</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#5fd3c2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Same question, same answer, from tested and cached queries</span></li>
-    </ul>
-  </article>
-
-  <article class="tier">
-    <div><h2>Scale</h2><p class="sub">More data, more teams, more owners.</p></div>
-    <div><div class="price"><span class="n">$10,000</span><span class="u">/ month</span></div><span class="note">Billed annually. Unlimited users.</span></div>
-    <a class="btn" href="../contact/">Book a pilot</a>
-    <ul class="ck">
-      <li class="lead">Everything in Startup, plus:</li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Up to 15 data sources</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sources and metrics sized to your stack</span></li>
       <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Metric owners, versions and history</span></li>
       <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Roles and row-level security</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Usage reports: which metrics and tables people query</span></li>
-    </ul>
-  </article>
-
-  <article class="tier">
-    <div><h2>Enterprise</h2><p class="sub">For many business units and owners.</p></div>
-    <div><div class="price"><span class="n">Custom</span></div><span class="note">From $150,000 per year</span></div>
-    <a class="btn ghost" href="../contact/">Talk to us</a>
-    <ul class="ck">
-      <li class="lead">Everything in Scale, plus:</li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sources sized to your stack</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Business hierarchy for every table, metric and dashboard</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SSO and audit logs</span></li>
-      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Security review and custom contract terms</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke="#d7263d" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>SSO, audit logs and security review</span></li>
     </ul>
   </article>
 </section>
@@ -194,7 +169,7 @@ footer{padding:0 0 40px;color:var(--faint);font-size:13px}
 <section class="grid3" aria-label="How pricing works">
   <div class="card"><h3>One price per company</h3><p>Invite your whole team. We do not count seats, so nobody shares a login to save money.</p></div>
   <div class="card"><h3>Your model key, your model bill</h3><p>Questions run against a tested semantic layer and cached queries instead of raw tables, so they use fewer tokens. You see it on your own provider bill.</p></div>
-  <div class="card"><h3>Priced on sources</h3><p>Tiers grow with the data sources we connect and build on. Asking more questions never costs more.</p></div>
+  <div class="card"><h3>Priced on scope</h3><p>Enterprise is priced on the sources we connect and build on. Asking more questions never costs more.</p></div>
 </section>
 
 <section aria-labelledby="q-h" style="display:flex;flex-direction:column;gap:14px">
@@ -203,7 +178,7 @@ footer{padding:0 0 40px;color:var(--faint);font-size:13px}
     <details open><summary>We do not have a warehouse yet. Can we still use it?</summary><p>Yes. Most startups we talk to only have their app database and logs. During the pilot we build the raw tables from your backend on AWS or GCP, then the aggregates and semantic layer on top.</p></details>
     <details open><summary>What counts as a governed metric?</summary><p>A metric with one definition, an owner, tests, and a known date range and grain. Everyone sees the same list, and the agent answers from it.</p></details>
     <details><summary>Do we need a data engineer?</summary><p>Not a full team. Someone on your side owns the systems that feed your data. For anything bigger, our experts help per task.</p></details>
-    <details><summary>What happens after the pilot?</summary><p>If you continue on Startup or Scale, the full $20,000 is credited to your first year. If you stop, you keep the tables and definitions we built.</p></details>
+    <details><summary>What happens after the pilot?</summary><p>If you continue on Enterprise, the full $50,000 is credited to your first year. If you stop, you keep the tables and definitions we built.</p></details>
   </div>
 </section>
 
