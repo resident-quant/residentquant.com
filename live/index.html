@@ -925,10 +925,15 @@ function toOpenAI(body){
   return {model:body.model.slice(3),max_tokens:Math.max(body.max_tokens||0,16000),reasoning:{effort:"low"},messages:msgs,usage:{include:true},
     tools:(body.tools||[]).map(t=>({type:"function",function:{name:t.name,description:t.description,parameters:t.input_schema}})),tool_choice:"auto"}}
 async function openrouter(body){
-  const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",signal:ctl.signal,
-    headers:{Authorization:"Bearer "+S.orKey,"Content-Type":"application/json","HTTP-Referer":"https://residentquant.com","X-Title":"ResidentQuant"},body:JSON.stringify(toOpenAI(body))});
-  const j=await r.json().catch(()=>null);
-  if(!r.ok||j?.error)throw new Error(`OpenRouter: ${j?.error?.message||("HTTP "+r.status)}`);
+  const req=JSON.stringify(toOpenAI(body));let r,j;
+  for(let attempt=0;attempt<3;attempt++){ /* retry empty bodies, rate limits and upstream errors */
+    r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",signal:ctl.signal,
+      headers:{Authorization:"Bearer "+S.orKey,"Content-Type":"application/json","HTTP-Referer":"https://residentquant.com","X-Title":"ResidentQuant"},body:req});
+    j=await r.json().catch(()=>null);
+    const transient=!j||!j.choices?.length||r.status===429||r.status>=500||(j.error&&(j.error.code===429||j.error.code>=500));
+    if(!transient||attempt===2)break;
+    await new Promise(res=>setTimeout(res,1500*(attempt+1)))}
+  if(!r.ok||j?.error||!j?.choices?.length)throw new Error(`OpenRouter: ${j?.error?.message||(j?"no answer returned":"empty response")} (HTTP ${r.status}). Try again or pick another model.`);
   const msg=j.choices?.[0]?.message||{};const content=[];
   const txt=typeof msg.content==="string"?msg.content:Array.isArray(msg.content)?msg.content.map(c=>c.text||"").join(""):"";
   if(txt.trim())content.push({type:"text",text:txt});
