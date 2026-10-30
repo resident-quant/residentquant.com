@@ -242,6 +242,12 @@ select.srcsel{appearance:none;-webkit-appearance:none;cursor:pointer;color:var(-
 .cc span.s{font-size:12.5px;color:var(--muted)}
 .tag{font:600 10px/1 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;border-radius:5px;padding:3px 5px}
 .tag.rep{background:var(--teal-bg);color:var(--teal)} .tag.an{background:var(--navy-bg);color:var(--navy)}
+.fresh{display:flex;gap:4px 10px;flex-wrap:wrap;align-items:baseline;font-size:12.5px;line-height:1.45;border-radius:10px;padding:9px 12px}
+.fresh b{font:600 12.5px var(--f-body)}
+.fresh code{font:600 11.5px var(--f-mono);background:none;padding:0;color:inherit}
+.fresh.bad{background:var(--amber-bg);color:var(--amber);border:1px solid color-mix(in srgb,var(--amber) 25%,transparent)}
+.fresh.ok{color:var(--teal);padding:0 2px;font-size:12px}
+.fresh.ok span{color:var(--faint);font:500 11.5px var(--f-mono)}
 .tag.pb{background:var(--accent-bg,#fde6ea);color:var(--accent)}
 .pbk .cc b{font-size:13.5px}
 .pbk .cc span.s{font:500 11px/1.4 var(--f-mono);color:var(--faint)}
@@ -689,6 +695,11 @@ function segRows(sg,rows,periods,tk,metricDefs){
     return {name:String(k),series:ser,total:tot,last:ser[ser.length-1],prev:ser[ser.length-2],extra:sg.extra.map(e=>({def:md(e),v:lastRow[e]}))}});
   items.sort((a,b)=>(b.total||0)-(a.total||0));
   return {title:sg.title,note:sg.note,dimension:sg.dimension,metric:md(sg.metric),extra:sg.extra.map(md),items:items.slice(0,sg.top||6)}}
+function freshness(cat){ /* fact tables whose latest date lags the newest fact table by more than a day */
+  const ts=(cat?.tables||[]).filter(t=>/^fct_/.test(t.name)&&t.date_range?.max).map(t=>({name:t.name,max:String(t.date_range.max).slice(0,10)}));
+  if(!ts.length)return null;const latest=ts.reduce((a,t)=>t.max>a?t.max:a,"");
+  const lag=d=>Math.round((Date.parse(latest)-Date.parse(d))/864e5);
+  return {latest,total:ts.length,stale:ts.filter(t=>lag(t.max)>1).map(t=>({...t,days:lag(t.max)})).sort((a,b)=>a.max<b.max?-1:1)}}
 function greet(){const h=new Date().getHours();return h<12?"Good morning":h<18?"Good afternoon":"Good evening"}
 async function renderHome(){
   const myToken=Symbol();renderHome.tok=myToken;
@@ -700,6 +711,9 @@ async function renderHome(){
   const cont=recent.length?recent.map(x=>`<button type="button" class="cc" data-open="${esc(x.id)}"><span class="ct"><span class="tag an">analysis</span><span>${esc(new Date(x.u).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}</span></span><b>${esc(x.t)}</b><span class="s">${x.n} question${x.n===1?"":"s"} · ${esc(srcName)}</span></button>`).join("")
     :((cat?cat.questions:(CAT?pickSugg():[])).slice(0,3).map(q=>`<button type="button" class="cc" data-q="${esc(q)}"><span class="ct"><span class="tag rep">start here</span><span>suggested</span></span><b>${esc(q)}</b><span class="s">Ask it and watch every step</span></button>`).join(""));
   tin.innerHTML=`<div class="home"><div class="hhead"><div><h2>${greet()}${S.name?", "+esc(S.name.split(" ")[0]):""}.</h2><p id="hSub">Reading the latest numbers from ${esc(srcName)}…</p></div><div class="asof" id="hAsof"></div></div>
+   ${(()=>{const f=cat&&freshness(cat);if(!f)return"";const d=x=>dlabel(x,{month:"short",day:"numeric",year:"numeric"});
+     return f.stale.length?`<div class="fresh bad" role="status"><b>⚠ Data didn't land</b><span>${f.stale.map(t=>`<code>${esc(t.name)}</code> ends ${esc(d(t.max))}`).join(" · ")} · rest ${esc(d(f.latest))}. Answers may be incomplete. Contact your data person.</span></div>`
+       :`<div class="fresh ok"><b>✓ All ${f.total} tables current</b><span>through ${esc(d(f.latest))}</span></div>`})()}
    ${srcs}
    ${cont?`<section class="hsec"><header><h3>${recent.length?"Continue where you left off":"Start here"}</h3><small>${recent.length?"your chats on this source":"questions this data answers well"}</small></header><div class="cont">${cont}</div></section>`:""}
    ${cat&&cat.playbook?`<section class="hsec pbk"><header><h3>Go deeper</h3><small>what a senior analyst would ask this data</small></header><div class="cont">${cat.playbook.map(p=>`<button type="button" class="cc" data-q="${esc(p.ask)}" title="${esc(p.ask)}"><span class="ct"><span class="tag pb">${esc(p.ch)}</span></span><b>${esc(p.q)}</b></button>`).join("")}</div></section>`:""}
@@ -782,7 +796,9 @@ Latest complete period for reviews: ${sm.as_of}. ${sm.as_of_note}
 `:"";
   return `You are ResidentQuant, a careful data scientist working for the user. You answer questions about their data warehouse through its semantic layer, and with DuckDB SQL in the browser when you need raw rows.
 
-Today is ${new Date().toISOString().slice(0,10)}, but this warehouse is historical: treat the latest date in the data as "now" and say so when a question says "last month" or "recent".
+Today is ${new Date().toISOString().slice(0,10)}, but this warehouse is historical: treat the latest date in the data as "now" and say so when a question says "last month" or "recent".${(()=>{const f=freshness(WCAT);return f&&f.stale.length?`
+
+Data freshness warning: ${f.stale.map(t=>`${t.name} stops on ${t.max}`).join(", ")}, while other fact tables run to ${f.latest}. If an answer uses any of these tables for dates after where they stop, say at the top that the data is incomplete and the user should contact their data person. Do not read the gap as a real drop.`:""})()}
 
 Warehouse: ${c.name} (schema ${c.id}). ${c.story}
 
