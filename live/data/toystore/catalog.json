@@ -425,5 +425,32 @@
   "Did /billing-2 beat /billing? Test it.",
   "Build the conversion funnel for gsearch nonbrand sessions.",
   "Which product has the highest refund rate?"
+ ],
+ "playbook": [
+  {
+   "ch": "Acquisition quality",
+   "q": "Which channel brings the most valuable sessions?",
+   "ask": "By channel_group and utm_source: sessions, conversion rate, revenue and margin per session, and the share of users who come back for a repeat session. Which channel brings the best users, not just the most?"
+  },
+  {
+   "ch": "Funnel",
+   "q": "Where does the purchase funnel leak most?",
+   "ask": "Build the pageview funnel from landing page to /thank-you-for-your-order, split by device_type. Where is the biggest drop between steps, and how much revenue would closing the mobile gap to desktop add?"
+  },
+  {
+   "ch": "Win-back",
+   "q": "Do users come back on their own, and from where?",
+   "ask": "For users with a repeat session: days between first and repeat session, and which channel the repeat session came from. What share of repeat revenue came through paid search, where we pay again for a user we already had?"
+  },
+  {
+   "ch": "Growth accounting",
+   "q": "Is growth from new users or repeat users?",
+   "ask": "Split each month's users and revenue into new and repeat (is_repeat_session). How has the repeat share changed from 2012 to 2015? Show the stacked trend."
+  },
+  {
+   "ch": "Revenue expansion",
+   "q": "Did new products grow order value or just shift sales?",
+   "ask": "Around each product launch in dim_products, compare items per order, average order value and each product's share of revenue in the 3 months before and after. Did each launch add revenue, or cannibalize existing products?"
+  }
  ]
 }

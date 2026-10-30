@@ -242,6 +242,11 @@ select.srcsel{appearance:none;-webkit-appearance:none;cursor:pointer;color:var(-
 .cc span.s{font-size:12.5px;color:var(--muted)}
 .tag{font:600 10px/1 var(--f-mono);letter-spacing:.05em;text-transform:uppercase;border-radius:5px;padding:3px 5px}
 .tag.rep{background:var(--teal-bg);color:var(--teal)} .tag.an{background:var(--navy-bg);color:var(--navy)}
+.tag.pb{background:var(--accent-bg,#fde6ea);color:var(--accent)}
+.pbk .cc b{font-size:13.5px}
+.pbk .cc span.s{font:500 11px/1.4 var(--f-mono);color:var(--faint)}
+.pbk .cont{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+@media (max-width:560px){.pbk .cont{grid-template-columns:1fr 1fr;gap:8px}.pbk .cc{padding:10px}.pbk .cc b{font-size:12.5px}}
 .wbr{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
 .wbr table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
 .wbr th{font:500 10px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -697,6 +702,7 @@ async function renderHome(){
   tin.innerHTML=`<div class="home"><div class="hhead"><div><h2>${greet()}${S.name?", "+esc(S.name.split(" ")[0]):""}.</h2><p id="hSub">Reading the latest numbers from ${esc(srcName)}…</p></div><div class="asof" id="hAsof"></div></div>
    ${srcs}
    ${cont?`<section class="hsec"><header><h3>${recent.length?"Continue where you left off":"Start here"}</h3><small>${recent.length?"your chats on this source":"questions this data answers well"}</small></header><div class="cont">${cont}</div></section>`:""}
+   ${cat&&cat.playbook?`<section class="hsec pbk"><header><h3>Growth playbook</h3><small>analyses from the Growth Data Analytics Playbook (Statsig, 2025)</small></header><div class="cont">${cat.playbook.map(p=>`<button type="button" class="cc" data-q="${esc(p.ask)}" title="${esc(p.ask)}"><span class="ct"><span class="tag pb">${esc(p.ch)}</span></span><b>${esc(p.q)}</b></button>`).join("")}</div></section>`:""}
    <section class="hsec" id="hFlags"><header><h3>Needs your attention</h3><small>flagged when a metric moves well outside its last 8 periods</small></header><div class="flags">${'<div class="flag sk"></div>'.repeat(4)}</div></section>
    <section class="hsec" id="hWbr"><header><h3>Business review</h3><small></small></header><div class="wbr"><p class="muted" style="padding:14px">Loading…</p></div></section>
    <section class="hsec" id="hSeg" hidden></section>

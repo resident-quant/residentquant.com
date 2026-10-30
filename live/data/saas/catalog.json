@@ -458,5 +458,32 @@
   "Do accounts that hit more errors churn more? Test it.",
   "Do our three churn flags agree? Which should we trust?",
   "Which features do Enterprise accounts use most?"
+ ],
+ "playbook": [
+  {
+   "ch": "Revenue accounting",
+   "q": "What drove MRR each month?",
+   "ask": "Split each month's change in MRR into new, expansion (upgrades), contraction (downgrades) and churned MRR, using fct_subscriptions. Chart it as stacked bars with the net change as a line, and say which part drives growth and which drags it."
+  },
+  {
+   "ch": "Revenue retention",
+   "q": "Which signup cohorts keep more revenue than they started with?",
+   "ask": "Group accounts by signup quarter. For each cohort compute net revenue retention (with upgrades) and gross revenue retention (without) 12 months after signup. Which cohorts clear 100% NRR, and is that from upgrades or from low churn?"
+  },
+  {
+   "ch": "Early signals",
+   "q": "Which first-month behavior predicts an account staying?",
+   "ask": "For each account, measure first-30-day signals: distinct features used, active days, error count, support tickets, and trial or not. For each signal, compute precision and recall for predicting the account did not churn, against the base rate. Rank the signals and pick the one a team should target."
+  },
+  {
+   "ch": "Power users",
+   "q": "Do a few accounts drive most of the usage?",
+   "ask": "Rank accounts by total feature usage. What share of usage comes from the top 1% and top 10% of accounts? Do these power accounts churn less than the rest? Show a cumulative share chart."
+  },
+  {
+   "ch": "Acquisition quality",
+   "q": "Which referral source brings the most valuable accounts?",
+   "ask": "By referral_source: accounts, churn rate, average MRR, and LTV estimated as average monthly MRR divided by monthly churn rate. Which source brings the highest-value accounts, not just the most accounts?"
+  }
  ]
 }

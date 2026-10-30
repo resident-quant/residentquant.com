@@ -524,5 +524,32 @@
   "Does late delivery lower review scores? Show it.",
   "What share of customers buy twice, and how long until they return?",
   "Which states have the worst late-delivery rate?"
+ ],
+ "playbook": [
+  {
+   "ch": "Growth accounting",
+   "q": "Is growth coming from new or returning buyers?",
+   "ask": "Using customer_unique_id, split each month's active buyers into new, retained (also bought the month before) and resurrected (bought before, not last month). Show the stacked trend and the share of monthly growth that comes from new buyers."
+  },
+  {
+   "ch": "Cohort retention",
+   "q": "Does any first-purchase cohort come back more?",
+   "ask": "Build a cohort table: customers grouped by first-purchase month, and the share who buy again 1 to 12 months later. Read it by row, by column and by diagonal, and say whether repeat rates are improving over time."
+  },
+  {
+   "ch": "Early signals",
+   "q": "Does the first order predict a second one?",
+   "ask": "For each customer's first order, compare repeat-purchase rates by late vs on-time delivery, review score, freight as a share of price, and number of installments. Give precision and recall for each signal against the base repeat rate, and name the strongest."
+  },
+  {
+   "ch": "Power sellers",
+   "q": "How concentrated is revenue across sellers?",
+   "ask": "What share of item revenue comes from the top 1% and top 10% of sellers? Show a cumulative share curve, and check whether concentration rose or fell from 2017 to 2018."
+  },
+  {
+   "ch": "Long tail",
+   "q": "Where are the slowest 10% of deliveries?",
+   "ask": "Compute median and P90 delivery days by customer state. Which states have the worst P90, and how much lower are review scores for orders slower than the P90?"
+  }
  ]
 }
