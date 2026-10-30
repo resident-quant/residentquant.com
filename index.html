@@ -380,6 +380,22 @@ header.hero .ctas{margin:0}
 .built svg{width:18px;height:18px;fill:currentColor}
 @media (max-width:560px){.built{gap:10px}.built ul{gap:8px 16px}.built li{font-size:14px}.built svg{width:16px;height:16px}}
 .h1b{display:block;color:var(--accent)}
+/* section rhythm: full-bleed bands with a faint tint, alternating, so the page reads as blocks */
+main>section:not(.built),main>.end{position:relative;padding-top:56px;padding-bottom:56px}
+main>section:not(.built)::before,main>.end::before{content:"";position:absolute;inset:0 calc(50% - 50vw);z-index:-1;pointer-events:none}
+main>section.vs::before{background:linear-gradient(180deg,rgba(10,48,105,0) 0,rgba(10,48,105,.035) 120px,rgba(10,48,105,.035) calc(100% - 120px),rgba(10,48,105,0) 100%)}
+main>#dashboards::before{background:transparent}
+main>#layer::before{background:rgba(13,148,136,.045);border-block:1px solid rgba(13,148,136,.10)}
+main>#security::before{background:transparent}
+main>#pricing::before{background:rgba(215,38,61,.035);border-block:1px solid rgba(215,38,61,.09)}
+main>.end{margin-top:56px}
+main>.end::before{background:var(--ink)}
+main>.end h2{color:#fff}
+main>.end .btn:not(.primary){background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
+main>.end .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+body{overflow-x:clip}
+main{position:relative;isolation:isolate}
+@media (max-width:700px){main>section:not(.built),main>.end{padding-top:40px;padding-bottom:40px}}
 </style>
 </head>
 <body>
