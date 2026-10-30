@@ -1,0 +1,12 @@
+name = "rq-contact"
+main = "contact.js"
+compatibility_date = "2026-10-01"
+routes = [{ pattern = "residentquant.com/api/contact", zone_name = "residentquant.com" }]
+
+# Lets the Worker send to any verified Email Routing destination address.
+send_email = [{ name = "MAIL" }]
+
+[vars]
+FROM = "form@residentquant.com"
+# TO is a secret so the inbox address stays out of this public repo:
+#   npx wrangler secret put TO

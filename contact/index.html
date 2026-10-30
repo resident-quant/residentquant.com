@@ -79,6 +79,7 @@ footer a{color:var(--muted);text-decoration:none}
 @media (max-width:860px){main{grid-template-columns:1fr;gap:32px}}
 @media (max-width:560px){.row{grid-template-columns:1fr}form{padding:20px}nav .links .hide-s{display:none}}
 .logo{display:inline-flex;align-items:center}.logo .mk{width:1.15em;height:1.2em;flex:none;margin-right:.4em;color:var(--ink)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 </style>
 </head>
 <body>
@@ -126,9 +127,10 @@ footer a{color:var(--muted);text-decoration:none}
     </fieldset>
     <label for="stack">Your data today <small>Database, warehouse, BI tools</small><input id="stack" name="stack" placeholder="Postgres on AWS, no warehouse yet"></label>
     <label for="msg">Questions you ask most<textarea id="msg" name="message" placeholder="Which channels drive repeat buyers? Why did revenue dip last month?"></textarea></label>
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
     <p class="err" id="err" hidden></p>
-    <div class="send"><button type="submit">Send</button><p>Opens your email app with the details filled in.</p></div>
-    <p class="status" id="ok" hidden>Your email app should open with the message ready. If it didn't, copy hello@residentquant.com and write to us directly.</p>
+    <div class="send"><button type="submit">Send</button><p>Goes straight to our inbox.</p></div>
+    <p class="status" id="ok" hidden>Sent. We reply within one business day.</p>
   </form>
 </main>
 
@@ -151,8 +153,15 @@ footer a{color:var(--muted);text-decoration:none}
     var body = ['Name: ' + name, 'Email: ' + email, 'Company: ' + f.company.value.trim(), 'Team size: ' + f.size.value,
       'Interested in: ' + interests, 'Data today: ' + f.stack.value.trim(), '', f.message.value.trim()].join('\n');
     var subj = 'ResidentQuant: ' + (interests || 'Contact') + (f.company.value.trim() ? ' from ' + f.company.value.trim() : '');
-    window.location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
-    ok.hidden = false;
+    function mail(){
+      window.location.href = 'mailto:' + TO + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+      ok.textContent = 'Your email app should open with the message ready. If it did not, write to ' + TO + '.'; ok.hidden = false;
+    }
+    var btn = f.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Sending';
+    fetch('/api/contact', {method: 'POST', body: new FormData(f)})
+      .then(function(r){ return r.ok ? r.json() : {ok: false} })
+      .then(function(j){ if(j.ok){ f.reset(); ok.hidden = false; btn.textContent = 'Sent' } else { btn.disabled = false; btn.textContent = 'Send'; mail() } })
+      .catch(function(){ btn.disabled = false; btn.textContent = 'Send'; mail() });
   });
   document.getElementById('copy').addEventListener('click', function(){
     var b = this;
