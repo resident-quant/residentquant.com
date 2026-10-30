@@ -3,7 +3,7 @@
 // Deploy: cd worker && npx wrangler deploy && npx wrangler secret put TO
 // Bindings:
 //   MAIL  send_email binding (wrangler.toml)
-//   TO    secret: the verified Email Routing destination inbox
+//   TO    secret: verified Email Routing destination inbox(es), comma-separated
 //   FROM  var: form@residentquant.com
 import { EmailMessage } from "cloudflare:email";
 
@@ -30,15 +30,20 @@ export default {
       String(f.get("message") ?? "").slice(0, 5000),
     ].join("\n");
 
-    const raw = [
-      `From: ResidentQuant site <${env.FROM}>`, `To: ${env.TO}`, `Reply-To: ${name} <${email}>`,
+    const raw = to => [
+      `From: ResidentQuant site <${env.FROM}>`, `To: ${to}`, `Reply-To: ${name} <${email}>`,
       `Subject: New lead: ${name}${company ? " at " + company : ""}`,
       `Message-ID: <${crypto.randomUUID()}@residentquant.com>`, `Date: ${new Date().toUTCString()}`,
       "MIME-Version: 1.0", "Content-Type: text/plain; charset=utf-8", "Content-Transfer-Encoding: 8bit", "", body,
     ].join("\r\n");
 
-    try { await env.MAIL.send(new EmailMessage(env.FROM, env.TO, raw)); }
-    catch (e) { return json({ ok: false, error: "send failed" }, 502); }
+    // TO may list several verified inboxes, comma-separated. Succeed if any one receives it.
+    let sent = 0;
+    for (const to of String(env.TO).split(",").map(s => s.trim()).filter(Boolean)) {
+      try { await env.MAIL.send(new EmailMessage(env.FROM, to, raw(to))); sent++; }
+      catch (e) { console.log("send failed: " + to + ": " + e); }
+    }
+    if (!sent) return json({ ok: false, error: "send failed" }, 502);
     return json({ ok: true });
   },
 };
