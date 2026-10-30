@@ -20,19 +20,19 @@ export default {
     if (f.get("website")) return json({ ok: true });            // honeypot: bots fill hidden fields
 
     const name = clean(f.get("name"), 200), email = clean(f.get("email"), 200), company = clean(f.get("company"), 200);
-    if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ ok: false, error: "Name and work email are required." }, 400);
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ ok: false, error: "A work email is required." }, 400);
+    const want = f.getAll("interest").map(v => clean(v, 40)).join(", ") || "Contact";
+    const who = name || email;
 
-    const body = [
-      `Name: ${name}`, `Email: ${email}`, `Company: ${company}`,
-      `Team size: ${clean(f.get("size"), 50)}`,
-      `Interested in: ${f.getAll("interest").map(v => clean(v, 30)).join(", ")}`,
-      `Data today: ${clean(f.get("stack"), 500)}`, "",
-      String(f.get("message") ?? "").slice(0, 5000),
-    ].join("\n");
+    const fields = [
+      ["Wants", want], ["Email", email], ["Name", name], ["Company", company],
+      ["Team size", clean(f.get("size"), 50)], ["Data today", clean(f.get("stack"), 500)],
+    ].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+    const body = [...fields, "", String(f.get("message") ?? "").slice(0, 5000)].join("\n");
 
     const raw = to => [
-      `From: ResidentQuant site <${env.FROM}>`, `To: ${to}`, `Reply-To: ${name} <${email}>`,
-      `Subject: New lead: ${name}${company ? " at " + company : ""}`,
+      `From: ResidentQuant site <${env.FROM}>`, `To: ${to}`, `Reply-To: ${name ? name + " " : ""}<${email}>`,
+      `Subject: ${want}: ${who}${company ? " at " + company : ""}`,
       `Message-ID: <${crypto.randomUUID()}@residentquant.com>`, `Date: ${new Date().toUTCString()}`,
       "MIME-Version: 1.0", "Content-Type: text/plain; charset=utf-8", "Content-Transfer-Encoding: 8bit", "", body,
     ].join("\r\n");
