@@ -186,23 +186,45 @@ footer{padding:0 0 30px;font-size:12px;color:var(--faint)}
 .sh p{margin:0;color:var(--muted);font-size:16px}
 
 /* personal dashboards */
-.dash{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.home{border:1px solid var(--line);border-radius:14px;background:var(--soft);overflow:hidden}
-.home .bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
-.home .av2{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:700 11px/1 var(--f-mono);background:var(--navy-bg);color:var(--navy)}
-.home .who{font:600 14px/1.2 var(--f-body)}
-.home .who small{display:block;font:400 12px var(--f-mono);color:var(--faint)}
-.home .ex{margin-left:auto;font:500 11px var(--f-mono);color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:3px 8px}
-.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:14px}
-.tile{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0}
-.tile .t{font:600 13px/1.25 var(--f-body)}
-.tile .s{font:400 11px var(--f-mono);color:var(--faint)}
-.tile svg{width:100%;height:46px;display:block}
-.tile svg path.l{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.tile.pin{border-color:var(--accent)}
-.tile.pin .s{color:var(--accent)}
-.sameline{margin:16px 0 0;font:500 13px var(--f-mono);color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pd{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 210px minmax(0,1fr);gap:28px;align-items:stretch}
+.pd .layer{align-self:center}
+.pg{display:flex;flex-direction:column}.pg-grid{flex:1}
+.pd-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.pd-lines path{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:3 4;transition:stroke .2s,stroke-width .2s}
+.pd-lines path.on{stroke:var(--teal);stroke-width:2;stroke-dasharray:none}
+.pg{position:relative;z-index:1;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 1px 0 rgba(14,21,37,.04),0 12px 32px -18px rgba(14,21,37,.25);overflow:hidden}
+.pg-top{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.pg-top .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 11px/1 var(--f-mono);color:#fff}
+.pg-top b{display:block;font:700 14px/1.15 var(--f-display)}
+.pg-top small{display:block;font:500 11px/1.3 var(--f-mono);color:var(--faint)}
+.pg-top .ex{margin-left:auto;font:500 10px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.pg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;background:var(--soft)}
+.tl2{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:10px 11px 8px;display:flex;flex-direction:column;gap:2px;min-width:0;transition:border-color .2s,box-shadow .2s}
+.tl2 .h{display:flex;justify-content:space-between;align-items:center;gap:6px;font:600 11.5px/1.2 var(--f-body);color:var(--muted)}
+.tl2 .v{display:flex;align-items:baseline;gap:6px;font:800 21px/1.1 var(--f-display);letter-spacing:-.02em;color:var(--ink)}
+.tl2 .v i{font:600 11px var(--f-mono);font-style:normal}
+.up{color:var(--teal)} .dn{color:var(--accent)} .am{color:var(--amber)}
+.tl2 svg{width:100%;height:30px;display:block;margin-top:4px}
+.tl2 .q{align-self:flex-start;margin-top:6px;font:500 10.5px/1.3 var(--f-mono);color:var(--accent);background:var(--accent-bg);border-radius:6px;padding:3px 6px;display:flex;gap:4px;align-items:flex-start}
+.tl2 .q svg{width:10px;height:10px;margin:1px 0 0;flex:none}
+.tl2 .mref{align-self:flex-start;margin-top:6px;font:500 10.5px var(--f-mono);color:var(--teal)}
+.tl2 .al{margin-top:6px;font:500 10.5px var(--f-mono);color:var(--amber)}
+.tl2[data-m]{cursor:default}
+.tl2.on{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal-bg)}
+.split{display:flex;height:8px;border-radius:4px;overflow:hidden;margin:10px 0 4px}
+.split+small{font:500 10.5px var(--f-mono);color:var(--faint)}
+.layer{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.layer .lh{display:flex;align-items:center;gap:7px;justify-content:center;font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.layer .lh svg{width:16px;height:17px}
+.def{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 11px;cursor:default;transition:border-color .2s,box-shadow .2s}
+.def code{display:block;font:600 12px var(--f-mono);color:var(--ink)}
+.def span{display:block;font:400 11px/1.35 var(--f-mono);color:var(--faint);margin-top:3px}
+.def em{font-style:normal;color:var(--teal)}
+.def.on{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal-bg)}
+.layer .lf{text-align:center;font:400 11px var(--f-mono);color:var(--faint)}
+.sameline{margin:22px 0 0;font:500 13px var(--f-mono);color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .sameline span{padding:4px 9px;border-radius:999px;background:var(--teal-bg);color:var(--teal)}
+@media (max-width:900px){.pd{grid-template-columns:minmax(0,1fr);gap:14px}.pd-lines{display:none}.layer{order:2}.pg.f{order:1}.pg.g{order:3}.layer{flex-direction:row;flex-wrap:wrap;justify-content:center}.layer .lh{width:100%}.layer .lf{width:100%}.def{flex:1 1 150px}}
 
 /* governed layer flow */
 .flow{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:22px;overflow-x:auto}
@@ -544,27 +566,35 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 
   <section id="dashboards">
     <div class="sh"><div class="k">Personal dashboards</div><h2>Same numbers. A different home page for each person.</h2></div>
-    <div class="dash">
-      <div class="home">
-        <div class="bar"><div class="av2">CF</div><div class="who">Founder<small>home page</small></div><span class="ex">Example</span></div>
-        <div class="tiles">
-          <div class="tile pin"><div class="t">Monthly revenue</div><div class="s">Pinned from your questions</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 40 L20 36 L38 37 L56 28 L74 26 L92 16 L118 8" stroke="var(--accent)"/></svg></div>
-          <div class="tile"><div class="t">Paid conversion rate</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 26 L20 24 L38 27 L56 22 L74 25 L92 21 L118 22" stroke="var(--navy)"/></svg></div>
-          <div class="tile"><div class="t">Orders</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 40 L20 36 L38 37 L56 28 L74 26 L92 16 L118 8" stroke="var(--navy)"/></svg></div>
-          <div class="tile"><div class="t">Refund rate</div><div class="s">Alert: above target</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 14 L20 16 L38 22 L56 30 L74 26 L92 32 L118 36" stroke="var(--amber)"/></svg></div>
+    <div class="pd" id="pd">
+      <svg class="pd-lines" id="pdLines" aria-hidden="true"></svg>
+      <div class="pg f" aria-label="Example founder home page">
+        <div class="pg-top"><span class="av" style="background:var(--ink)">CF</span><div><b>Founder</b><small>Monday brief</small></div><span class="ex">Example</span></div>
+        <div class="pg-grid">
+          <div class="tl2"><div class="h">Revenue, this month</div><div class="v">$412k<i class="up">▲ 8.1%</i></div><svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path d="M2 25 L18 23 L34 24 L50 18 L66 17 L82 11 L98 9 L118 4 L118 30 L2 30Z" fill="var(--accent)" opacity=".10"/><path d="M2 25 L18 23 L34 24 L50 18 L66 17 L82 11 L98 9 L118 4" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M5 17h14l-2-4V5h1V2H6v3h1v8z"/></svg>"How is revenue trending?"</span></div>
+          <div class="tl2" data-m="conv"><div class="h">Paid conversion</div><div class="v">3.42%<i class="up">▲ 0.2 pt</i></div><svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path d="M2 17 L18 16 L34 18 L50 15 L66 16 L82 14 L98 15 L118 13 L118 30 L2 30Z" fill="var(--navy)" opacity=".10"/><path d="M2 17 L18 16 L34 18 L50 15 L66 16 L82 14 L98 15 L118 13" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="mref">= paid_conversion</span></div>
+          <div class="tl2"><div class="h">Refund rate</div><div class="v">4.9%<i class="dn">▲ 1.1 pt</i></div><svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path d="M2 22 L18 21 L34 19 L50 20 L66 15 L82 13 L98 10 L118 8 L118 30 L2 30Z" fill="var(--amber)" opacity=".10"/><path d="M2 22 L18 21 L34 19 L50 20 L66 15 L82 13 L98 10 L118 8" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="al">● above 4.0% target</span></div>
+          <div class="tl2" data-m="orders"><div class="h">Orders</div><div class="v">9,812<i class="up">▲ 6.4%</i></div><svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path d="M2 25 L18 23 L34 24 L50 18 L66 17 L82 11 L98 9 L118 4 L118 30 L2 30Z" fill="var(--navy)" opacity=".10"/><path d="M2 25 L18 23 L34 24 L50 18 L66 17 L82 11 L98 9 L118 4" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="mref">= orders</span></div>
         </div>
       </div>
-      <div class="home">
-        <div class="bar"><div class="av2">GL</div><div class="who">Growth lead<small>home page</small></div><span class="ex">Example</span></div>
-        <div class="tiles">
-          <div class="tile pin"><div class="t">Sessions by channel</div><div class="s">Pinned from your questions</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 30 L18 20 L34 28 L50 16 L66 24 L82 12 L100 20 L118 10" stroke="var(--accent)"/></svg></div>
-          <div class="tile pin"><div class="t">Paid search CPA</div><div class="s">Pinned from your questions</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 14 L20 16 L38 22 L56 30 L74 26 L92 32 L118 36" stroke="var(--accent)"/></svg></div>
-          <div class="tile"><div class="t">Paid conversion rate</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 26 L20 24 L38 27 L56 22 L74 25 L92 21 L118 22" stroke="var(--navy)"/></svg></div>
-          <div class="tile"><div class="t">New vs repeat visitors</div><div class="s">Shared metric</div><svg viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true"><path class="l" d="M2 40 L20 36 L38 37 L56 28 L74 26 L92 16 L118 8" stroke="var(--navy)"/></svg></div>
+      <div class="layer" aria-label="Shared metric definitions">
+        <div class="lh"><svg viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Metric layer</div>
+        <div class="def" data-m="conv"><code>paid_conversion</code><span>paid orders ÷ paid sessions<br><em>used on 2 pages</em></span></div>
+        <div class="def" data-m="orders"><code>orders</code><span>completed, net of tests</span></div>
+        <div class="def" data-m="nvr"><code>new_vs_repeat</code><span>first visit ever vs returning</span></div>
+        <div class="lf">defined once, versioned</div>
+      </div>
+      <div class="pg g" aria-label="Example growth lead home page">
+        <div class="pg-top"><span class="av" style="background:var(--accent)">GL</span><div><b>Growth lead</b><small>Monday brief</small></div><span class="ex">Example</span></div>
+        <div class="pg-grid">
+          <div class="tl2" data-m="conv"><div class="h">Paid conversion</div><div class="v">3.42%<i class="up">▲ 0.2 pt</i></div><svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path d="M2 17 L18 16 L34 18 L50 15 L66 16 L82 14 L98 15 L118 13 L118 30 L2 30Z" fill="var(--navy)" opacity=".10"/><path d="M2 17 L18 16 L34 18 L50 15 L66 16 L82 14 L98 15 L118 13" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="mref">= paid_conversion</span></div>
+          <div class="tl2"><div class="h">Sessions by channel</div><div class="v">48.2k<i class="up">▲ 12%</i></div><svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><rect x="2" y="12" width="11" height="4" fill="var(--slate,#64748b)" opacity=".45"/><rect x="2" y="16" width="11" height="6" fill="var(--navy)"/><rect x="2" y="22" width="11" height="8" fill="var(--accent)"/><rect x="17" y="10" width="11" height="5" fill="var(--slate,#64748b)" opacity=".45"/><rect x="17" y="15" width="11" height="6" fill="var(--navy)"/><rect x="17" y="21" width="11" height="9" fill="var(--accent)"/><rect x="32" y="10" width="11" height="4" fill="var(--slate,#64748b)" opacity=".45"/><rect x="32" y="14" width="11" height="7" fill="var(--navy)"/><rect x="32" y="21" width="11" height="9" fill="var(--accent)"/><rect x="47" y="7" width="11" height="5" fill="var(--slate,#64748b)" opacity=".45"/><rect x="47" y="12" width="11" height="7" fill="var(--navy)"/><rect x="47" y="19" width="11" height="11" fill="var(--accent)"/><rect x="62" y="7" width="11" height="5" fill="var(--slate,#64748b)" opacity=".45"/><rect x="62" y="12" width="11" height="8" fill="var(--navy)"/><rect x="62" y="20" width="11" height="10" fill="var(--accent)"/><rect x="77" y="4" width="11" height="6" fill="var(--slate,#64748b)" opacity=".45"/><rect x="77" y="10" width="11" height="8" fill="var(--navy)"/><rect x="77" y="18" width="11" height="12" fill="var(--accent)"/><rect x="92" y="3" width="11" height="6" fill="var(--slate,#64748b)" opacity=".45"/><rect x="92" y="9" width="11" height="8" fill="var(--navy)"/><rect x="92" y="17" width="11" height="13" fill="var(--accent)"/><rect x="107" y="1" width="11" height="6" fill="var(--slate,#64748b)" opacity=".45"/><rect x="107" y="7" width="11" height="9" fill="var(--navy)"/><rect x="107" y="16" width="11" height="14" fill="var(--accent)"/></svg><span class="q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M5 17h14l-2-4V5h1V2H6v3h1v8z"/></svg>"Which channel brings the best users?"</span></div>
+          <div class="tl2" data-m="nvr"><div class="h">New vs repeat</div><div class="v">71%<i style="color:var(--faint)">new</i></div><div class="split"><span style="width:71%;background:var(--navy)"></span><span style="width:29%;background:var(--teal)"></span></div><small>71% new · 29% repeat</small><span class="mref">= new_vs_repeat</span></div>
+          <div class="tl2"><div class="h">Paid search CPA</div><div class="v">$38<i class="up">▼ 5.0%</i></div><svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7 L18 9 L34 8 L50 13 L66 12 L82 17 L98 18 L118 21 L118 30 L2 30Z" fill="var(--teal)" opacity=".10"/><path d="M2 7 L18 9 L34 8 L50 13 L66 12 L82 17 L98 18 L118 21" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg><span class="q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M5 17h14l-2-4V5h1V2H6v3h1v8z"/></svg>"What does a paid customer cost?"</span></div>
         </div>
       </div>
     </div>
-    <div class="sameline"><span>Paid conversion rate</span>is one definition, so it reads the same on both pages.</div>
+    <div class="sameline"><span>paid_conversion</span>is defined once, so both pages read 3.42%.</div>
   </section>
 
   <section id="layer">
@@ -675,6 +705,25 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&!started){started=true;show(0,true);io.disconnect()}})},{threshold:.35});
     io.observe(document.getElementById('demo'));
   }
+})();
+</script>
+<script>
+(function(){
+  var pd=document.getElementById('pd'),svg=document.getElementById('pdLines');if(!pd||!svg)return;
+  var defs=[].slice.call(pd.querySelectorAll('.def[data-m]')),tiles=[].slice.call(pd.querySelectorAll('.tl2[data-m]'));
+  function draw(){
+    if(getComputedStyle(svg).display==='none')return;
+    var R=pd.getBoundingClientRect();svg.setAttribute('viewBox','0 0 '+R.width+' '+R.height);
+    svg.innerHTML=tiles.map(function(t){
+      var d=pd.querySelector('.def[data-m="'+t.dataset.m+'"]');if(!d)return'';
+      var a=t.getBoundingClientRect(),b=d.getBoundingClientRect(),left=a.left<b.left;
+      var x1=(left?a.right:a.left)-R.left,y1=a.top+a.height/2-R.top,x2=(left?b.left:b.right)-R.left,y2=b.top+b.height/2-R.top,mx=(x1+x2)/2;
+      return '<path data-m="'+t.dataset.m+'" d="M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+'"/>'}).join('');
+    hi(cur)}
+  var cur='conv';
+  function hi(m){cur=m;[].forEach.call(pd.querySelectorAll('[data-m]'),function(e){e.classList.toggle('on',e.dataset.m===m)})}
+  defs.concat(tiles).forEach(function(e){e.addEventListener('mouseenter',function(){hi(e.dataset.m)});e.addEventListener('mouseleave',function(){hi('conv')})});
+  draw();addEventListener('resize',draw);if(document.fonts)document.fonts.ready.then(draw);
 })();
 </script>
 </body>
