@@ -398,6 +398,23 @@ main>.end .btn.primary{background:var(--accent);border-color:var(--accent);color
 body{overflow-x:clip}
 main{position:relative;isolation:isolate}
 @media (max-width:700px){main>section:not(.built),main>.end{padding-top:40px;padding-bottom:40px}}
+.hcta{display:flex;flex-direction:column;gap:10px;align-items:flex-start;width:100%;max-width:440px;justify-self:end}
+.qform{display:flex;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px;box-shadow:0 1px 2px rgba(14,21,37,.05);transition:border-color .15s,box-shadow .15s}
+.qform:focus-within{border-color:var(--ink);box-shadow:0 0 0 4px rgba(14,21,37,.06)}
+.qform input[type=email]{flex:1;min-width:0;border:0;outline:0;background:transparent;font:400 15px var(--f-body);color:var(--ink);padding:0 14px}
+.qform button{flex:none;border:0;border-radius:999px;background:var(--ink);color:#fff;font:600 14px/1 var(--f-body);padding:12px 18px;cursor:pointer;transition:background .15s}
+.qform button:hover:not(:disabled){background:var(--accent)}
+.qform button:disabled{opacity:.7;cursor:default}
+.qform.bad{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-bg)}
+.qform.ok{border-color:var(--teal)}
+.qform.ok button{background:var(--teal)}
+.qnote{margin:0 0 0 18px;font-size:13.5px;color:var(--muted)}
+.qnote a{color:var(--ink);font-weight:600;text-decoration:none;white-space:nowrap}
+.qnote a:hover{color:var(--accent)}
+.qnote .er{color:var(--accent)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+@media (max-width:860px){.hcta{justify-self:start;max-width:none}}
 </style>
 </head>
 <body>
@@ -421,9 +438,15 @@ main{position:relative;isolation:isolate}
       <h1>Your end to end analytics layer.<span class="h1b">Governed, AI native, expert backed.</span></h1>
       <p class="hsub">For startups without a data team. We turn your production database into tested metrics, dashboards and an AI data scientist in six weeks.</p>
     </div>
-    <div class="ctas">
-      <a class="btn primary" href="contact/">Book a demo</a>
-      <a class="btn" href="live/">Try it on sample data</a>
+    <div class="hcta">
+      <form class="qform" id="qform" novalidate>
+        <label for="qemail" class="sr">Work email</label>
+        <input id="qemail" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+        <input type="hidden" name="interest" value="Demo">
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button type="submit">Get a demo</button>
+      </form>
+      <p class="qnote" id="qnote" aria-live="polite">or <a href="live/">try it on sample data →</a></p>
     </div>
   </header>
   <section class="built" aria-label="Who builds ResidentQuant">
@@ -751,6 +774,23 @@ GROUP BY 1 ORDER BY 1;</pre></details>
   function hi(m){cur=m;[].forEach.call(pd.querySelectorAll('[data-m]'),function(e){e.classList.toggle('on',e.dataset.m===m)})}
   defs.concat(tiles).forEach(function(e){e.addEventListener('mouseenter',function(){hi(e.dataset.m)});e.addEventListener('mouseleave',function(){hi('conv')})});
   draw();addEventListener('resize',draw);if(document.fonts)document.fonts.ready.then(draw);
+})();
+</script>
+<script>
+(function(){
+  var f=document.getElementById('qform'),n=document.getElementById('qnote');if(!f)return;
+  var em=f.querySelector('#qemail'),btn=f.querySelector('button'),idle=n.innerHTML;
+  em.addEventListener('input',function(){f.classList.remove('bad');n.innerHTML=idle});
+  f.addEventListener('submit',function(e){
+    e.preventDefault();var v=em.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){f.classList.add('bad');n.innerHTML='<span class="er">Add a work email we can reply to.</span>';em.focus();return}
+    btn.disabled=true;btn.textContent='Sending…';
+    fetch('/api/contact',{method:'POST',body:new FormData(f)}).then(function(r){return r.ok?r.json():{ok:false}}).then(function(j){
+      if(!j.ok)throw 0;f.classList.add('ok');btn.textContent='Sent ✓';em.disabled=true;
+      n.innerHTML='We reply within one business day. Meanwhile, <a href="live/">try it on sample data →</a>';
+    }).catch(function(){btn.disabled=false;btn.textContent='Get a demo';
+      n.innerHTML='<span class="er">Could not send.</span> Email <a href="mailto:hello@residentquant.com?subject=Demo&body='+encodeURIComponent('Email: '+v)+'">hello@residentquant.com</a>'});
+  });
 })();
 </script>
 </body>
