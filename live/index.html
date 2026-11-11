@@ -365,14 +365,15 @@ const DEFAULT_API="https://app.residentquant.com";
 const S={aKey:"",orKey:"",wsId:"",model:"claude-opus-5-5",apiUrl:DEFAULT_API,apiKey:"",role:"analyst",remember:false,autoPub:true,source:""};
 const LS="rq-live-settings";
 try{const v=JSON.parse(localStorage.getItem(LS)||"null");if(v)Object.assign(S,v,{remember:true})}catch(e){}
-if(!S.apiUrl)S.apiUrl=DEFAULT_API;if(!S.model)S.model="claude-opus-5-5";if(!S.role)S.role="analyst";
+if(!S.apiUrl)S.apiUrl=DEFAULT_API;if(freeLLM()&&!S.aKey&&!S.orKey&&!String(S.model||"").startsWith("or:"))S.model="or:z-ai/glm-5.3";if(!S.model)S.model="claude-opus-5-5";if(!S.role)S.role="analyst";
 if(!S.source)S.source=lsGet("rq-src")||(S.apiKey?"api":"olist");
 /* models: Anthropic direct, or open models through OpenRouter (value prefixed "or:") */
 const A_MODELS=[["claude-opus-5-5","Claude Opus 5.5"],["claude-fable-5-1","Claude Fable 5.1"],["claude-sonnet-5-5","Claude Sonnet 5.5"],["claude-haiku-5-5","Claude Haiku 5.5"]];
 const OR_MODELS=[["or:z-ai/glm-5.3","GLM-5.3 · open, best value"],["or:deepseek/deepseek-v4-pro","DeepSeek V4 Pro · open, most accurate, slow"],["or:deepseek/deepseek-v4.1-flash","DeepSeek V4.1 Flash · open, cheapest"]];
 const isOR=m=>String(m||"").startsWith("or:");
+function freeLLM(){return (typeof PRODUCT!=="undefined"&&PRODUCT)?location.origin+"/v1/llm":""}
 const modelName=m=>([...A_MODELS,...OR_MODELS].find(x=>x[0]===m)||[0,String(m||"").replace(/^or:/,"")])[1];
-const hasModelKey=()=>isOR(S.model)?!!S.orKey:!!S.aKey;
+const hasModelKey=()=>isOR(S.model)?(!!S.orKey||!!freeLLM()):!!S.aKey;
 function modelOptions(aIds){const a=aIds&&aIds.length?aIds.map(i=>[i,i]):A_MODELS;
   return `<optgroup label="Anthropic">${a.map(([v,n])=>`<option value="${esc(v)}">${esc(n)}</option>`).join("")}</optgroup><optgroup label="Open models via OpenRouter">${OR_MODELS.map(([v,n])=>`<option value="${esc(v)}">${esc(n)}</option>`).join("")}</optgroup>`}
 function saveSettings(){try{if(S.remember)localStorage.setItem(LS,JSON.stringify(S));else localStorage.removeItem(LS)}catch(e){}}
@@ -388,7 +389,7 @@ function chips(){
   $("#cRole").innerHTML=`role <b>${esc(S.role)}</b>`;
   $("#cApi").innerHTML=CAT?`API <b>${CAT.metrics.length} metrics</b>`:`API <b>not connected</b>`;$("#cApi").classList.toggle("bad",!CAT);
   const wh=isWh();$("#cApi").hidden=wh;$("#cRole").hidden=wh;$("#src").value=S.source;
-  $("#hintR").textContent=wh?`Keys stay in this browser. Only ${isOR(S.model)?"openrouter.ai":"api.anthropic.com"} is called; the warehouse loads from this site.`:`Keys stay in this browser. Calls go only to ${isOR(S.model)?"openrouter.ai":"api.anthropic.com"} and your API URL.`}
+  $("#hintR").textContent=wh?`Keys stay in this browser. Only ${isOR(S.model)?(S.orKey||!freeLLM()?"openrouter.ai":"ResidentQuant\u2019s free model relay"):"api.anthropic.com"} is called; the warehouse loads from this site.`:`Keys stay in this browser. Calls go only to ${isOR(S.model)?(S.orKey||!freeLLM()?"openrouter.ai":"ResidentQuant\u2019s free model relay"):"api.anthropic.com"} and your API URL.`}
 async function loadCatalog(){
   CAT=null;if(!S.apiUrl||!S.apiKey){chips();return}
   try{CAT=await apiFetch("/v1/catalog");renderCat()}catch(e){$("#catBox").innerHTML=`<p class="errmsg">${esc(e.message)}</p>`}
@@ -404,7 +405,7 @@ function openSettings(){
   $("#ghKey").value="";$("#ghKey").placeholder=ghToken()?"saved in this browser":"github_pat_…";$("#autoPub").checked=S.autoPub!==false;
   $("#uName").value=S.name||"";$("#aKey").value=S.aKey;$("#orKey").value=S.orKey||"";$("#wsId").value=S.wsId||"";if(!$("#model").options.length)$("#model").innerHTML=modelOptions();$("#model").value=S.model;modelNote();$("#apiUrl").value=S.apiUrl;$("#apiKey").value=S.apiKey;$("#remember").checked=S.remember;
   $("#role").innerHTML=`<option>${esc(S.role)}</option>`;$("#scrim").hidden=false;setTimeout(()=>$(hasModelKey()?"#apiUrl":(isOR(S.model)?"#orKey":"#aKey")).focus(),30)}
-function modelNote(){const m=$("#model").value;$("#modelNote").textContent=isOR(m)?"Runs on your OpenRouter key. Sample data only is safest: OpenRouter picks the host.":"Runs on your Anthropic key."}
+function modelNote(){const m=$("#model").value;$("#modelNote").textContent=isOR(m)?($("#orKey").value.trim()||!freeLLM()?"Runs on your OpenRouter key. Sample data only is safest: OpenRouter picks the host.":"Free, no key needed. Limited questions per day."):"Runs on your Anthropic key."}
 function readForm(){S.name=$("#uName").value.trim();const g=$("#ghKey").value.trim();if(g)lsSet("vlc:token",g);S.autoPub=$("#autoPub").checked;S.aKey=$("#aKey").value.trim();S.orKey=$("#orKey").value.trim();S.wsId=$("#wsId").value.trim();S.model=$("#model").value;S.apiUrl=$("#apiUrl").value.trim();S.apiKey=$("#apiKey").value.trim();S.role=$("#role").value||"analyst";S.remember=$("#remember").checked}
 $("#setBtn").onclick=openSettings;
 $("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim"&&hasModelKey())$("#scrim").hidden=true});
@@ -926,10 +927,12 @@ function toOpenAI(body){
     tools:(body.tools||[]).map(t=>({type:"function",function:{name:t.name,description:t.description,parameters:t.input_schema}})),tool_choice:"auto"}}
 async function openrouter(body){
   const req=JSON.stringify(toOpenAI(body));let r,j;
+  const free=S.orKey?"":freeLLM(); /* no key of their own: the server's free relay, with a daily limit */
   for(let attempt=0;attempt<3;attempt++){ /* retry empty bodies, rate limits and upstream errors */
-    r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",signal:ctl.signal,
-      headers:{Authorization:"Bearer "+S.orKey,"Content-Type":"application/json","HTTP-Referer":"https://residentquant.com","X-Title":"ResidentQuant"},body:req});
+    r=await fetch(free||"https://openrouter.ai/api/v1/chat/completions",{method:"POST",signal:ctl.signal,
+      headers:free?{"Content-Type":"application/json"}:{Authorization:"Bearer "+S.orKey,"Content-Type":"application/json","HTTP-Referer":"https://residentquant.com","X-Title":"ResidentQuant"},body:req});
     j=await r.json().catch(()=>null);
+    if(free&&r.status===402)throw new Error(j?.error?.message||"Free daily limit reached. Add your own Anthropic or OpenRouter key in Settings.");
     const transient=!j||!j.choices?.length||r.status===429||r.status>=500||(j.error&&(j.error.code===429||j.error.code>=500));
     if(!transient||attempt===2)break;
     await new Promise(res=>setTimeout(res,1500*(attempt+1)))}
