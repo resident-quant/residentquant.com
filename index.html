@@ -445,6 +445,9 @@ main>.built{margin-top:14px}
 @media (max-width:760px){.zoom figcaption{grid-template-columns:1fr}.pin{width:20px;height:20px;font-size:11px}}
 .cta-n{display:block;text-decoration:none;color:inherit;font-size:clamp(22px,2.4vw,28px)!important;line-height:1.15}
 .cta-n:hover{color:var(--accent)}
+html{scroll-behavior:smooth}
+main section[id],main header[id]{scroll-margin-top:20px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -452,14 +455,14 @@ main>.built{margin-top:14px}
   <nav>
     <a class="logo" href="./"><svg class="mk" viewBox="2 2 42 44" aria-hidden="true"><circle cx="21" cy="21" r="14" fill="none" stroke="currentColor" stroke-width="6.5"/><rect x="33" y="30" width="7" height="14" rx="2" fill="#d7263d"/></svg>Resident<span class="q">Quant</span></a>
     <div class="links">
-      <a href="#how" class="hide-s">How it works</a>
-      <a href="#dashboards" class="hide-s">Dashboards</a>
-      <a href="#layer" class="hide-s">Semantic layer</a>
-      <a href="#security" class="hide-s">Security</a>
-      <a href="pricing/">Pricing</a>
-      <a href="live/" class="hide-s">Live demo</a>
-      <a href="contact/">Contact</a>
-    </div>
+    <a href="/#how" class="hide-s">How it works</a>
+    <a href="/#dashboards" class="hide-s">Dashboards</a>
+    <a href="/#layer" class="hide-s">Semantic layer</a>
+    <a href="/#security" class="hide-s">Security</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/live/" class="hide-s">Live demo</a>
+    <a href="/contact/">Contact</a>
+  </div>
   </nav>
 <main>
 
