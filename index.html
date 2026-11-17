@@ -446,8 +446,12 @@ main>.built{margin-top:14px}
 .cta-n{display:block;text-decoration:none;color:inherit;font-size:clamp(22px,2.4vw,28px)!important;line-height:1.15}
 .cta-n:hover{color:var(--accent)}
 html{scroll-behavior:smooth}
-main section[id],main header[id]{scroll-margin-top:20px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* pinned top menu: stays visible while scrolling; hairline appears once the page scrolls */
+nav{position:sticky;top:0;z-index:60;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax -1px)}
+nav::after{content:"";position:absolute;left:50%;bottom:0;width:100vw;height:1px;transform:translateX(-50%);background:var(--line);opacity:0;transition:opacity .2s}
+nav.scrolled::after{opacity:1}
+main section[id],main header[id],main [id]{scroll-margin-top:60px}
 </style>
 </head>
 <body>
@@ -832,5 +836,6 @@ GROUP BY 1 ORDER BY 1;</pre></details>
   });
 })();
 </script>
+<script>(function(){var n=document.querySelector('nav');if(!n)return;var f=function(){n.classList.toggle('scrolled',scrollY>4)};f();addEventListener('scroll',f,{passive:true})})();</script>
 </body>
 </html>

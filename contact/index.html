@@ -105,8 +105,12 @@ footer a{color:var(--muted);text-decoration:none}
 .logo{display:inline-flex;align-items:center}.logo .mk{width:1.15em;height:1.2em;flex:none;margin-right:.4em;color:var(--ink)}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 html{scroll-behavior:smooth}
-main section[id],main header[id]{scroll-margin-top:20px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* pinned top menu: stays visible while scrolling; hairline appears once the page scrolls */
+nav{position:sticky;top:0;z-index:60;background:var(--bg);box-shadow:0 0 0 100vmax var(--bg);clip-path:inset(0 -100vmax -1px)}
+nav::after{content:"";position:absolute;left:50%;bottom:0;width:100vw;height:1px;transform:translateX(-50%);background:var(--line);opacity:0;transition:opacity .2s}
+nav.scrolled::after{opacity:1}
+main section[id],main header[id],main [id]{scroll-margin-top:60px}
 </style>
 </head>
 <body>
@@ -225,5 +229,6 @@ main section[id],main header[id]{scroll-margin-top:20px}
   });
 })();
 </script>
+<script>(function(){var n=document.querySelector('nav');if(!n)return;var f=function(){n.classList.toggle('scrolled',scrollY>4)};f();addEventListener('scroll',f,{passive:true})})();</script>
 </body>
 </html>
