@@ -251,17 +251,6 @@ to{left:100%}}
 .ver div.on{background:var(--navy-bg);color:var(--navy)}
 
 
-/* pricing teaser */
-.ptiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.pt{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--surface);display:flex;flex-direction:column;gap:8px}
-.pt.hero{background:var(--ink);border-color:var(--ink);color:#e7ebf2}
-.pt h3{font:700 17px/1.2 var(--f-display);margin:0}
-.pt .n{font:600 28px/1.1 var(--f-mono);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.pt.hero .n,.pt.hero h3{color:#ffffff}
-.pt .u{font-size:13px;color:var(--muted)}
-.pt.hero .u{color:#9aa3b5}
-.pmore{margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:14px;color:var(--muted)}
-.pmore a{font-weight:600;color:var(--accent);text-decoration:none}
 footer .fl{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}
 footer .fl a{color:var(--muted);text-decoration:none}
 
@@ -389,7 +378,6 @@ main>section.vs::before{background:linear-gradient(180deg,rgba(10,48,105,0) 0,rg
 main>#dashboards::before{background:transparent}
 main>#layer::before{background:rgba(13,148,136,.045);border-block:1px solid rgba(13,148,136,.10)}
 main>#security::before{background:transparent}
-main>#pricing::before{background:rgba(215,38,61,.035);border-block:1px solid rgba(215,38,61,.09)}
 main>.end{margin-top:56px}
 main>.end::before{background:var(--ink)}
 main>.end h2{color:#fff}
@@ -463,7 +451,6 @@ main section[id],main header[id],main [id]{scroll-margin-top:60px}
     <a href="/#dashboards" class="hide-s">Dashboards</a>
     <a href="/#layer" class="hide-s">How it's governed</a>
     <a href="/#security" class="hide-s">Security</a>
-    <a href="/pricing/">Pricing</a>
     <a href="/live/" class="hide-s">Live demo</a>
     <a href="/contact/">Contact</a>
   </div>
@@ -729,14 +716,6 @@ GROUP BY 1 ORDER BY 1;</pre></details>
       <div class="sec"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3zM9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Roles and audit log</h3><p>Row-level security per role. Every query is logged.</p></div>
     </div>
   </section>
-  <section id="pricing">
-    <div class="sh"><h2>Start with a four-week pilot.</h2></div>
-    <div class="ptiers">
-      <div class="pt hero"><h3>Pilot</h3><a class="n cta-n" href="contact/">Contact the team →</a><span class="u">Four weeks. Your analytics layer, built and handed over.</span></div>
-      <div class="pt"><h3>Enterprise</h3><a class="n cta-n" href="contact/">Contact the team →</a><span class="u">Unlimited users. Pilot credited in full to year one.</span></div>
-    </div>
-    <div class="pmore"><span></span><a href="pricing/">See full pricing →</a></div>
-  </section>
 
 
   <div class="end">
@@ -747,7 +726,7 @@ GROUP BY 1 ORDER BY 1;</pre></details>
     </div>
   </div>
 </main>
-  <footer><div class="fl"><a href="#how">How it works</a><a href="#dashboards">Dashboards</a><a href="#layer">How it's governed</a><a href="pricing/">Pricing</a><a href="live/">Live demo</a><a href="contact/">Contact</a></div>ResidentQuant · 2026</footer>
+  <footer><div class="fl"><a href="#how">How it works</a><a href="#dashboards">Dashboards</a><a href="#layer">How it's governed</a><a href="live/">Live demo</a><a href="contact/">Contact</a></div>ResidentQuant · 2026</footer>
 </div>
 
 <script>
@@ -837,5 +816,28 @@ GROUP BY 1 ORDER BY 1;</pre></details>
 })();
 </script>
 <script>(function(){var n=document.querySelector('nav');if(!n)return;var f=function(){n.classList.toggle('scrolled',scrollY>4)};f();addEventListener('scroll',f,{passive:true})})();</script>
+<script>
+/* Same-page menu links glide to their section instead of jumping */
+(function(){
+  var navH=function(){var n=document.querySelector('nav');return n?n.offsetHeight:0};
+  function glide(el){
+    var start=window.scrollY,target=el.getBoundingClientRect().top+start-navH()-4,dist=target-start;
+    if(Math.abs(dist)<2)return;
+    var dur=Math.min(900,Math.max(450,Math.abs(dist)*0.35)),t0=null;
+    var ease=function(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2};
+    document.documentElement.style.scrollBehavior='auto';
+    function step(ts){if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/dur);window.scrollTo(0,start+dist*ease(k));
+      if(k<1)requestAnimationFrame(step);else document.documentElement.style.scrollBehavior=''}
+    requestAnimationFrame(step);
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href*="#"]');if(!a||e.metaKey||e.ctrlKey||e.shiftKey)return;
+    var u=new URL(a.href,location.href);
+    if(u.origin!==location.origin||u.pathname.replace(/index\.html$/,'')!==location.pathname.replace(/index\.html$/,''))return;
+    var el=u.hash&&document.getElementById(decodeURIComponent(u.hash.slice(1)));if(!el)return;
+    e.preventDefault();history.pushState(null,'',u.hash);glide(el);
+  });
+})();
+</script>
 </body>
 </html>
