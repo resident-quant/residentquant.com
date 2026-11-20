@@ -1,9 +1,0 @@
-.git
-.github
-worker
-wrangler.jsonc
-.assetsignore
-CNAME
-README.md
-node_modules
-.wrangler
